@@ -4,10 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
-
     <typeAliases>
-        <package name="com.xuan"></package>
+        <package name="com.xuan.dtrun.entity"></package>
     </typeAliases>
-
 
 </configuration>
