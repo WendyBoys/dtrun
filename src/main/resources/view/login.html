@@ -48,9 +48,11 @@
 		var password = $('#password').val();
 		if (account.trim() == '' || account == undefined) {
 			alert('账号不能为空');
+			return;
 		}
 		if (password.trim() == '' || password == undefined) {
 			alert('密码不能为空');
+			return;
 		}
 		axios.post('http://localhost/user/login', {
 			account: account,
