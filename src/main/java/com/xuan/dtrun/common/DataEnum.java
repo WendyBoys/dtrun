@@ -7,7 +7,7 @@ public enum DataEnum {
     private String mapping;
 
     DataEnum(String mapping) {
-        this.mapping=mapping;
+        this.mapping = mapping;
     }
 
 
@@ -15,8 +15,6 @@ public enum DataEnum {
     public String toString() {
         return this.mapping;
     }
-
-
 
 
 }

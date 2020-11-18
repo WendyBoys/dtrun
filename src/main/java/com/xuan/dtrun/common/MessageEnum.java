@@ -1,14 +1,14 @@
 package com.xuan.dtrun.common;
 
 public enum MessageEnum {
-    SUCCESS("操作成功"),
-    FAIL("操作失败"),
-    LOGINREFUSE("账号已被封禁");
+    SUCCESS("Success"),
+    FAIL("Fail"),
+    LOGINREFUSE("LoginRefuse");
 
     private String mapping;
 
     MessageEnum(String mapping) {
-        this.mapping=mapping;
+        this.mapping = mapping;
     }
 
 
@@ -16,8 +16,6 @@ public enum MessageEnum {
     public String toString() {
         return this.mapping;
     }
-
-
 
 
 }

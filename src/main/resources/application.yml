@@ -23,6 +23,7 @@ spring:
   druid:
     username: xiaoxiaoxuan
     password: 199951
+
 server:
   port: 80
 

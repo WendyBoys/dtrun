@@ -28,8 +28,7 @@ public class CommonResult {
     }
 
     public Object getData() {
-        if(data instanceof DataEnum)
-        {
+        if (data instanceof DataEnum) {
             DataEnum dataEnum = (DataEnum) data;
             return dataEnum.toString();
         }
