@@ -39,9 +39,9 @@ public class UserController {
 
 
     @PostMapping(value = "/register",produces = "application/json;charset=utf-8")
-    public String  save(@RequestBody  User user){
+    public CommonResult  save(@RequestBody  User user){
         userService.save(user);
-        return "redirect:login.html";
+        return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
     }
 
 }

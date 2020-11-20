@@ -43,26 +43,29 @@
 
 			<h4 class="modal-title text-center" id="registerLabel">注册</h4>
 		</div>
-		<div class="modal-body" id="model-body">
+		<div class="modal-body" id="model-body1">
+
 			<div class="form-group">
 
-				<input type="text" id="account" class="form-control" placeholder="账号" autocomplete="off">
+				<input type="text" id="registerAccount" class="form-control" placeholder="账号" autocomplete="off">
 			</div>
 			<div class="form-group">
 
-				<input type="password" id="password" class="form-control" placeholder="密码" autocomplete="off">
+				<input type="password" id="registerPassword" class="form-control" placeholder="密码" autocomplete="off">
 			</div>
 		</div>
+
 		<div class="modal-footer">
 			<div>
 				<span id="goLogin" class="pull-left" style="margin: 0 0 10px 0;cursor: pointer">已有账号?直接登录</span>
 			</div>
 
 			<div class="form-group">
-				<button type="button" id="register" style="outline: none;" class="btn btn-default form-control">注册</button>
+				<button type="button" id="register" style="outline: none;" class="btn btn-default form-control" >注册</button>
 			</div>
 
 		</div>
+
 	</div>
 </div>
 
@@ -110,7 +113,21 @@
 	});
 
 	$('#register').click(function() {
+        var registerAccount = $('#registerAccount').val();
+        var registerPassword = $('#registerPassword').val();
+        axios.post('http://localhost/user/register', {
+            account: registerAccount,
+            password: registerPassword,
+        }).then((response) => {
+            var result = response.data.message;
+        if (result == 'Success') {
+           window.location.href="login.html";
+        }  else {
+            alert('注册失败');
+        }
 
-	});
+
+    });
+    });
 
 </script>
