@@ -8,6 +8,8 @@
     <select id="login"   resultType="user">
         select id,username,iconUrl,isUse from user where account=#{account} and password=#{password}
     </select>
+
+
     <insert id="save"  parameterType="user">
           inesrt into  user (account,password,createtime,isUse) VALUES (#{account},#{password},#{createtime},1)
     </insert>

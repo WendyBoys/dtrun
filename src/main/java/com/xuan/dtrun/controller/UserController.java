@@ -37,7 +37,6 @@ public class UserController {
         return new CommonResult(500, MessageEnum.FAIL, DataEnum.LOGINERROR);
     }
 
-
     @PostMapping(value = "/save",produces = "application/json;charset=utf-8")
     public String  save(@RequestBody  User user){
         userService.save(user);

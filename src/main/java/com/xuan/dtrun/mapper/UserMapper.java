@@ -10,6 +10,5 @@ public interface UserMapper {
 
     User login(String account, String password);
 
-
     void save(User user);
 }

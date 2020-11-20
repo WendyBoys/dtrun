@@ -8,6 +8,5 @@ public interface UserService {
 
     User login(String account, String password);
 
-
     void save(User user);
 }
