@@ -10,8 +10,7 @@
     </select>
 
     <insert id="save"  parameterType="user">
-          inesrt into  user (account,password,createtime,isUse) VALUES (#{account},#{password},#{createtime},1)
+          insert into  user (account,password,createTime,isUse) VALUES (#{account},#{password},#{createTime},1)
     </insert>
-
 
 </mapper>

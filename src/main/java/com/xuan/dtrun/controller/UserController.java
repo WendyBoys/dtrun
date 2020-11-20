@@ -38,7 +38,7 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/save",produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/register",produces = "application/json;charset=utf-8")
     public String  save(@RequestBody  User user){
         userService.save(user);
         return "redirect:login.html";

@@ -18,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
         http.formLogin().loginPage("/login.html")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/login", "/login", "/login.html").permitAll()
+                .antMatchers("/user/**", "/login", "/login.html").permitAll() //放行的路径
                 .anyRequest() // 任何请求
                 .authenticated()// 需要身份认证
         ;
