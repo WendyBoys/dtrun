@@ -6,5 +6,6 @@ public interface UserDao {
     User login(String account, String password);
 
 
+
     void save(User user);
 }
