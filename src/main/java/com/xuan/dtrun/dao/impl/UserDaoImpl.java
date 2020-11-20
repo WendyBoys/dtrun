@@ -19,6 +19,7 @@ public class UserDaoImpl implements UserDao {
           return userMapper.login(account, password);
      }
 
+
      @Override
      public void save(User user) {
           user.setCreateTime(new Date());
