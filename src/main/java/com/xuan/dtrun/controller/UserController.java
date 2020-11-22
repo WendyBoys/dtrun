@@ -2,12 +2,16 @@ package com.xuan.dtrun.controller;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.UserService;
 import com.xuan.dtrun.common.CommonResult;
+import com.xuan.dtrun.utils.TokenUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private UserService userService;
+
+    public static final String SALT = "DTRUN";
 
     @PostMapping(value = "/login", produces = "application/json;charset=utf-8")
     public CommonResult login(@RequestBody JSONObject json) {
@@ -28,6 +37,8 @@ public class UserController {
             User user = userService.login(account, password);
             if (user != null) {
                 if (user.getIsUse() == 1) {
+                    String md5Token = DigestUtils.md5Hex(TokenUtils.token(account, password) + SALT);
+                    redisTemplate.opsForValue().set(md5Token, user);
                     return new CommonResult(200, MessageEnum.SUCCESS, user);
                 } else {
                     return new CommonResult(200, MessageEnum.LOGINREFUSE, DataEnum.LOGINREFUSE);
@@ -38,10 +49,11 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/register",produces = "application/json;charset=utf-8")
-    public CommonResult  save(@RequestBody  User user){
+    @PostMapping(value = "/register", produces = "application/json;charset=utf-8")
+    public CommonResult save(@RequestBody User user) {
         userService.save(user);
         return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
     }
+
 
 }
