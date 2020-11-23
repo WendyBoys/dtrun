@@ -3,7 +3,8 @@ package com.xuan.dtrun.common;
 public enum MessageEnum {
     SUCCESS("Success"),
     FAIL("Fail"),
-    LOGINREFUSE("LoginRefuse");
+    LOGINREFUSE("LoginRefuse"),
+    LOGINEXPIRE("LOGINEXPIRE");
 
     private String mapping;
 

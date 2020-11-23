@@ -12,10 +12,9 @@ import com.xuan.dtrun.utils.TokenUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -38,14 +37,14 @@ public class UserController {
             if (user != null) {
                 if (user.getIsUse() == 1) {
                     String md5Token = DigestUtils.md5Hex(TokenUtils.token(account, password) + SALT);
-                    redisTemplate.opsForValue().set(md5Token, user);
-                    return new CommonResult(200, MessageEnum.SUCCESS, user);
+                    redisTemplate.opsForValue().set(md5Token, user, 7, TimeUnit.DAYS);
+                    return new CommonResult(200, MessageEnum.SUCCESS, md5Token);
                 } else {
                     return new CommonResult(200, MessageEnum.LOGINREFUSE, DataEnum.LOGINREFUSE);
                 }
             }
         }
-        return new CommonResult(500, MessageEnum.FAIL, DataEnum.LOGINERROR);
+        return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINERROR);
     }
 
 
@@ -53,6 +52,17 @@ public class UserController {
     public CommonResult save(@RequestBody User user) {
         userService.save(user);
         return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
+    }
+
+
+    @GetMapping(value = "/getCurrentUser", produces = "application/json;charset=utf-8")
+    public CommonResult save(String token) {
+        User currentUser = (User) redisTemplate.opsForValue().get(token);
+        if(currentUser!=null)
+        {
+            return new CommonResult(200, MessageEnum.SUCCESS, currentUser);
+        }
+        return new CommonResult(200, MessageEnum.LOGINEXPIRE, currentUser);
     }
 
 
