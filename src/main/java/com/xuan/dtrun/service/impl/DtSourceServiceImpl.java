@@ -1,0 +1,19 @@
+package com.xuan.dtrun.service.impl;
+
+import com.xuan.dtrun.dao.DtSourceDao;
+import com.xuan.dtrun.entity.DtSourceEntity;
+import com.xuan.dtrun.service.DtSourceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class DtSourceServiceImpl implements DtSourceService {
+
+    @Autowired
+    private DtSourceDao dtSourceDao;
+
+    @Override
+    public void create(DtSourceEntity dtSourceEntity) {
+        dtSourceDao.create(dtSourceEntity);
+    }
+}

@@ -310,10 +310,10 @@
                             </div>
                             <label for="validationCustom04">数据源类型</label>
                             <select class="custom-select" id="dataSourceType" required>
-                                <option>腾讯云COS</option>
-                                <option>阿里云OSS</option>
-                                <option>百度云BOS</option>
-                                <option>华为云OBS</option>
+                                <option value="cos">腾讯云COS</option>
+                                <option value="oss">阿里云OSS</option>
+                                <option value="bos">百度云BOS</option>
+                                <option value="obs">华为云OBS</option>
                             </select>
                             <label for="validationCustom02">AccessKey</label>
                             <input type="text" class="form-control" id="accessKey" placeholder="请输入AccessKey" required>
@@ -597,6 +597,41 @@
         }, false);
     })();
 
+    $('#submit').click(function() {
+        var dataSourceName = $('#dataSourceName').val();
+        var dataSourceType = $('#dataSourceType').val();
+        var accessKey = $('#accessKey').val();
+        var accessSecret = $('#accessSecret').val();
+        var region = $('#region').val();
+        if (dataSourceName == undefined || dataSourceName.trim() == '') {
+            return true;
+        } else if (dataSourceType == undefined || dataSourceType.trim() == '') {
+            return true;
+        } else if (accessKey == undefined || accessKey.trim() == '') {
+            return true;
+        } else if (accessSecret == undefined || accessSecret.trim() == '') {
+            return true;
+        } else if (region == undefined || region.trim() == '') {
+            return true;
+        }
+        axios.post('http://localhost/dtsource/create', {
+            dataSourceName: dataSourceName,
+            dataSourceType: dataSourceType,
+            secretId: accessKey,
+            secretKey: accessSecret,
+            region: region,
+        }).then((response) => {
+            var result = response.data.message;
+            if (result == 'Success') {
+                alert('创建成功');
+            } else {
+                alert('创建失败');
+            }
+        });
+
+    });
+
+
     $('#test').click(function() {
         var dataSourceName = $('#dataSourceName').val();
         var dataSourceType = $('#dataSourceType').val();
@@ -606,20 +641,16 @@
 
         if (dataSourceName == undefined || dataSourceName.trim() == '') {
             return true;
-        }
-        if (dataSourceType == undefined || dataSourceType.trim() == '') {
+        } else if (dataSourceType == undefined || dataSourceType.trim() == '') {
+            return true;
+        } else if (accessKey == undefined || accessKey.trim() == '') {
+            return true;
+        } else if (accessSecret == undefined || accessSecret.trim() == '') {
+            return true;
+        } else if (region == undefined || region.trim() == '') {
             return true;
         }
-        if (accessKey == undefined || accessKey.trim() == '') {
-            return true;
-        }
-        if (accessSecret == undefined || accessSecret.trim() == '') {
-            return true;
-        }
-        if (region == undefined || region.trim() == '') {
-            return true;
-        }
-        axios.post('http://localhost/cos/connection', {
+        axios.post('http://localhost/dtsource/connection', {
             secretId: accessKey,
             secretKey: accessSecret,
             region: region,
