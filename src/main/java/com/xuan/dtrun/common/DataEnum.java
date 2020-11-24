@@ -3,7 +3,9 @@ package com.xuan.dtrun.common;
 public enum DataEnum {
     LOGINERROR("账号或密码错误"),
     LOGINREFUSE("账号已被封禁"),
-    REGISTERSUCCESS("注册成功");
+    REGISTERSUCCESS("注册成功"),
+    CONNECTIOSUCCESS("数据源连接成功"),
+    CONNECTIONFAIL("数据源连接失败，请检查您的数据源参数");
 
     private String mapping;
 
