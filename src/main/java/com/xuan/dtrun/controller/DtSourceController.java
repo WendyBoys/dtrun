@@ -58,8 +58,11 @@ public class DtSourceController {
             map.put("accessSecret", secretKey);
             map.put("region", region);
             JSONObject jsonObject = new JSONObject(map);
+            User user = new User();
+            user.setId(1);
+            dtSourceEntity.setUser(user);
             dtSourceEntity.setDtSourceType(dataSourceType);
-            dtSourceEntity.setCreateTime(new Date());
+            dtSourceEntity.setCreateTime(new Date().toLocaleString());
             dtSourceEntity.setDtsourceJson(jsonObject.toJSONString());
             dtSourceService.create(dtSourceEntity);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);

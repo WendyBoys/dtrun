@@ -16,12 +16,12 @@
     </resultMap>
 
 
-    <insert id="create" parameterType="user">
-          insert into  dtsource (dtsourcename,dtSourceType,dtsourceJson,createTime) VALUES (#{dtsourcename},#{dtSourceType},#{dtsourceJson},#{createTime})
+    <insert id="create">
+          insert into  dtsource (dtsourcename,dtSourceType,dtsourceJson,createTime,uid) VALUES (#{dtsourcename},#{dtSourceType},#{dtsourceJson},#{createTime},#{user.id})
     </insert>
 
     <select id="findAll" resultMap="DtsourceMap">
-       SELECT u.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
+       SELECT dts.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>
 
 </mapper>

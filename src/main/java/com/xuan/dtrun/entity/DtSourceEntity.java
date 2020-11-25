@@ -8,19 +8,21 @@ public class DtSourceEntity implements Serializable {
     private String dtsourcename;
     private String dtSourceType;
     private String dtsourceJson;
-    private Date createTime;
+    private String createTime;
     private User user;
+    private int uid;
 
     public DtSourceEntity() {
     }
 
-    public DtSourceEntity(int id, String dtsourcename, String dtSourceType, String dtsourceJson, Date createTime,User user) {
+    public DtSourceEntity(int id, String dtsourcename, String dtSourceType, String dtsourceJson, String createTime,User user,int uid) {
         this.id = id;
         this.dtsourcename = dtsourcename;
         this.dtSourceType = dtSourceType;
         this.dtsourceJson = dtsourceJson;
         this.createTime = createTime;
         this.user=user;
+        this.uid=uid;
     }
 
     public int getId() {
@@ -55,11 +57,11 @@ public class DtSourceEntity implements Serializable {
         this.dtsourceJson = dtsourceJson;
     }
 
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -69,5 +71,13 @@ public class DtSourceEntity implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 }
