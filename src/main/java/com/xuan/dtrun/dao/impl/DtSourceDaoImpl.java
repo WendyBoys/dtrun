@@ -19,8 +19,8 @@ public class DtSourceDaoImpl implements DtSourceDao {
     }
 
     @Override
-    public List<DtSourceEntity> findAll(Integer integer) {
-        return dtSourceMapper.findAll(integer);
+    public List<DtSourceEntity> findAll(int userId) {
+        return dtSourceMapper.findAll(userId);
     }
 
 

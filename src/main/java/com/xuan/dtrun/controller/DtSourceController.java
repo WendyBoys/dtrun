@@ -70,12 +70,15 @@ public class DtSourceController {
     }
 
     @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
-    public  CommonResult findAll(Integer integer){
-        List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(integer);
-        if (dtSourceEntityList!=null){
-        return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUERYSUCCESSFUL);
-    }else
+    public CommonResult findAll(int userId) {
+        try {
+            List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(userId);
+            return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
+        } catch (Exception e) {
+            e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILED);
+        }
+
     }
 
 

@@ -8,7 +8,7 @@ public interface DtSourceService {
 
     void create(DtSourceEntity dtSourceEntity);
 
-     List<DtSourceEntity> findAll(Integer integer);
+     List<DtSourceEntity> findAll(int userId);
 
 
 }

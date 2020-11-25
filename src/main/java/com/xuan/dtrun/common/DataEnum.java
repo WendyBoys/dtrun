@@ -9,7 +9,7 @@ public enum DataEnum {
     CREATESUCCESS("创建成功"),
     CREATEFAIL("创建失败"),
     QUERYSUCCESSFUL("查询成功"),
-    QUERYFAILED("没有可查询的存储"),
+    QUERYFAILED("查询失败"),
     DELETESUCCESS("删除成功");
 
     private String mapping;

@@ -4,12 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xuan.dtrun.mapper.DtSourceMapper">
 
-    <insert id="create"  parameterType="user">
+    <resultMap id="DtsourceMap" type="DtSourceEntity">
+        <id property="id" column="id"></id>
+        <result property="dtsourcename" column="dtsourcename"></result>
+        <result property="dtSourceType" column="dtSourceType"></result>
+        <result property="dtsourceJson" column="dtsourceJson"></result>
+        <result property="createTime" column="createTime"></result>
+        <association property="user" javaType="User">
+            <id property="id" column="id"></id>
+        </association>
+    </resultMap>
+
+
+    <insert id="create" parameterType="user">
           insert into  dtsource (dtsourcename,dtSourceType,dtsourceJson,createTime) VALUES (#{dtsourcename},#{dtSourceType},#{dtsourceJson},#{createTime})
     </insert>
 
-    <select id="findAll"  parameterType="java.lang.Integer" resultMap="">
-       SELECT dtSourceName,dtSourceType,dtSourceJson,dtsource.createTime FROM dtsource LEFT JOIN user ON dtsource.uid = user.id  WHERE  user.id=#{id}
+    <select id="findAll" resultMap="DtsourceMap">
+       SELECT u.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>
 
 </mapper>
