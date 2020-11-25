@@ -6,6 +6,8 @@ import com.xuan.dtrun.mapper.DtSourceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class DtSourceDaoImpl implements DtSourceDao {
     @Autowired
@@ -15,4 +17,13 @@ public class DtSourceDaoImpl implements DtSourceDao {
     public void create(DtSourceEntity dtSourceEntity) {
         dtSourceMapper.create(dtSourceEntity);
     }
+
+    @Override
+    public List<DtSourceEntity> findAll(Integer integer) {
+        return dtSourceMapper.findAll(integer);
+    }
+
+
+
+
 }

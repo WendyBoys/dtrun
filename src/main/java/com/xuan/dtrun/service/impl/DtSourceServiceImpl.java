@@ -6,6 +6,8 @@ import com.xuan.dtrun.service.DtSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class DtSourceServiceImpl implements DtSourceService {
 
@@ -16,4 +18,11 @@ public class DtSourceServiceImpl implements DtSourceService {
     public void create(DtSourceEntity dtSourceEntity) {
         dtSourceDao.create(dtSourceEntity);
     }
+
+    @Override
+    public List<DtSourceEntity> findAll(Integer integer) {
+        return dtSourceDao.findAll(integer);
+    }
+
+
 }

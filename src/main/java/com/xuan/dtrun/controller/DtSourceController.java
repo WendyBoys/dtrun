@@ -11,12 +11,14 @@ import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.CosEntity;
 import com.xuan.dtrun.entity.DtSourceEntity;
+import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -66,5 +68,15 @@ public class DtSourceController {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
         }
     }
+
+    @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
+    public  CommonResult findAll(Integer integer){
+        List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(integer);
+        if (dtSourceEntityList!=null){
+        return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUERYSUCCESSFUL);
+    }else
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILED);
+    }
+
 
 }

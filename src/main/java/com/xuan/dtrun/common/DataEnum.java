@@ -7,7 +7,10 @@ public enum DataEnum {
     CONNECTIOSUCCESS("数据源连接成功"),
     CONNECTIONFAIL("数据源连接失败，请检查您的数据源参数"),
     CREATESUCCESS("创建成功"),
-    CREATEFAIL("创建失败");;
+    CREATEFAIL("创建失败"),
+    QUERYSUCCESSFUL("查询成功"),
+    QUERYFAILED("没有可查询的存储"),
+    DELETESUCCESS("删除成功");
 
     private String mapping;
 
