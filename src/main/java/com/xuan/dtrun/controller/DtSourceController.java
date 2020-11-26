@@ -77,6 +77,11 @@ public class DtSourceController {
     @PostMapping(value = "/create", produces = "application/json;charset=utf-8")
     public CommonResult create(@RequestBody JSONObject json) {
         try {
+            String token = json.getString("token");
+            User user = (User) redisTemplate.opsForValue().get(token);
+            if (user == null) {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+            }
             String dataSourceName = json.getString("dataSourceName");
             String dataSourceType = json.getString("dataSourceType");
             String secretId = json.getString("secretId");
@@ -90,8 +95,6 @@ public class DtSourceController {
             map.put("accessSecret", secretKey);
             map.put("region", region);
             JSONObject jsonObject = new JSONObject(map);
-            User user = new User();
-            user.setId(1);
             dtSourceEntity.setUser(user);
             dtSourceEntity.setDtSourceType(dataSourceType);
             dtSourceEntity.setCreateTime(new Date().toLocaleString());
@@ -136,7 +139,7 @@ public class DtSourceController {
     @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
     public CommonResult findAll(String token) {
         try {
-            User user= (User) redisTemplate.opsForValue().get(token);
+            User user = (User) redisTemplate.opsForValue().get(token);
             List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(user.getId());
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
         } catch (Exception e) {
