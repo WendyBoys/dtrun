@@ -96,15 +96,22 @@ public class DtSourceController {
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
         } catch (Exception e) {
             e.printStackTrace();
-            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILED);
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
         }
 
     }
-    @DeleteMapping (value = "/delete", produces = "application/json;charset=utf-8")
-    public CommonResult delete(@RequestBody JSONObject json){
-        String id = json.getString("id");
 
+    @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
+    public CommonResult delete(@RequestBody JSONObject json) {
+        try {
+            String id = json.getString("id");
             dtSourceService.delete(Integer.parseInt(id));
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
+        }
+
+
     }
 }

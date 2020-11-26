@@ -9,9 +9,9 @@ public enum DataEnum {
     CREATESUCCESS("创建成功"),
     CREATEFAIL("创建失败"),
     QUERYSUCCESSFUL("查询成功"),
-    QUERYFAILED("查询失败"),
-    DELETESUCCESS("删除成功");
-
+    QUERYFAILE("查询失败"),
+    DELETESUCCESS("删除成功"),
+    DELETEFAIL("删除失败");
     private String mapping;
 
     DataEnum(String mapping) {

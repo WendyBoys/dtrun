@@ -377,7 +377,7 @@
     fentch();
     function fentch() {
         var $table = $("#dtsource");
-        $table.html('');
+        $table.empty();
         axios.get('http://localhost/dtsource/findAll?userId=1').then((response) => {
             var result = response.data.message;
             var data = response.data.data;
@@ -426,7 +426,9 @@
     function deletedts(id) {
         //发删除请求
         axios.delete('http://localhost/dtsource/delete', {
-            id: id,
+           data:{
+               id: id,
+           }
         }).then((response) => {
             var result = response.data.message;
         if (result == 'Success') {
@@ -434,6 +436,7 @@
                 color: 'green'
             });
             $('#resultModal').modal('show');
+            fentch();
         } else {
             $('#resultMessgae').text('删除失败X﹏X').css({
                 color: 'red'
