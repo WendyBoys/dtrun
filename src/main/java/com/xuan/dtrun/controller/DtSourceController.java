@@ -15,6 +15,7 @@ import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,6 +30,9 @@ public class DtSourceController {
 
     @Autowired
     private DtSourceService dtSourceService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     @PostMapping(value = "/testconnection", produces = "application/json;charset=utf-8")
@@ -130,9 +134,10 @@ public class DtSourceController {
     }
 
     @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
-    public CommonResult findAll(int userId) {
+    public CommonResult findAll(String token) {
         try {
-            List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(userId);
+            User user= (User) redisTemplate.opsForValue().get(token);
+            List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(user.getId());
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
         } catch (Exception e) {
             e.printStackTrace();
