@@ -29,5 +29,10 @@ public class DtSourceServiceImpl implements DtSourceService {
         return dtSourceDao.findAll(userId);
     }
 
+    @Override
+    public void delete(Integer id) {
+        dtSourceDao.delete(id);
+    }
+
 
 }

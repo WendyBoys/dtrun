@@ -28,4 +28,7 @@
        SELECT dts.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>
 
+    <delete id="delete">
+       DELETE FROM dtsource WHERE id=#{id}
+    </delete>
 </mapper>

@@ -100,6 +100,11 @@ public class DtSourceController {
         }
 
     }
+    @DeleteMapping (value = "/delete", produces = "application/json;charset=utf-8")
+    public CommonResult delete(@RequestBody JSONObject json){
+        String id = json.getString("id");
 
-
+            dtSourceService.delete(Integer.parseInt(id));
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+    }
 }

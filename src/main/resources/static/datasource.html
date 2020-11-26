@@ -424,8 +424,23 @@
     }
 
     function deletedts(id) {
-
         //发删除请求
+        axios.delete('http://localhost/dtsource/delete', {
+            id: id,
+        }).then((response) => {
+            var result = response.data.message;
+        if (result == 'Success') {
+            $('#resultMessgae').text('删除成功 └(^o^)┘').css({
+                color: 'green'
+            });
+            $('#resultModal').modal('show');
+        } else {
+            $('#resultMessgae').text('删除失败X﹏X').css({
+                color: 'red'
+            })
+            $('#resultModal').modal('show');
+        }
+    });
     }
 
     $('#create').click(function() {

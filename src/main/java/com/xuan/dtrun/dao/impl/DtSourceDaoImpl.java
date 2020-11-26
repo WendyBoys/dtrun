@@ -28,7 +28,10 @@ public class DtSourceDaoImpl implements DtSourceDao {
         return dtSourceMapper.findAll(userId);
     }
 
-
+    @Override
+    public void delete(Integer id) {
+        dtSourceMapper.delete(id);
+    }
 
 
 }
