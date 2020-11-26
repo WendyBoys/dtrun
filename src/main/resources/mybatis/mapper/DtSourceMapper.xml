@@ -20,6 +20,10 @@
           insert into  dtsource (dtsourcename,dtSourceType,dtsourceJson,createTime,uid) VALUES (#{dtsourcename},#{dtSourceType},#{dtsourceJson},#{createTime},#{user.id})
     </insert>
 
+    <select id="getDtSourceById" resultType="DtSourceEntity">
+       SELECT dtSourceType,dtSourceJson FROM dtsource  WHERE  id=#{id}
+    </select>
+
     <select id="findAll" resultMap="DtsourceMap">
        SELECT dts.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>

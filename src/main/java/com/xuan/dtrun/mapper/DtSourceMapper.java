@@ -11,6 +11,8 @@ import java.util.List;
 public interface DtSourceMapper {
      void create(DtSourceEntity dtSourceEntity);
 
+     DtSourceEntity getDtSourceById(int id);
+
      List<DtSourceEntity> findAll(int userId);
 
 

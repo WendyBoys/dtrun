@@ -1,5 +1,6 @@
 package com.xuan.dtrun.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -30,12 +31,28 @@ public class DtSourceController {
     private DtSourceService dtSourceService;
 
 
-    @PostMapping(value = "/connection", produces = "application/json;charset=utf-8")
-    public CommonResult connection(@RequestBody CosEntity cosEntity) {
+    @PostMapping(value = "/testconnection", produces = "application/json;charset=utf-8")
+    public CommonResult testconnection(@RequestBody CosEntity cosEntity) {
         try {
             COSClient cosClient = new COSClient(new BasicCOSCredentials(cosEntity.getSecretId(), cosEntity.getSecretKey()),
                     new ClientConfig(new Region(cosEntity.getRegion())));
             cosClient.listBuckets();
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
+        } catch (CosServiceException e) {
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.CONNECTIONFAIL);
+        }
+    }
+
+    @PostMapping(value = "/connection", produces = "application/json;charset=utf-8")
+    public CommonResult connection(@RequestBody JSONObject idJson) {
+        try {
+            DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(Integer.parseInt(idJson.getString("id")));
+            JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtsourceJson());
+            if ("cos".equals(dtSourceEntity.getDtSourceType())) {
+                COSClient cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
+                        new ClientConfig(new Region(jsonObject.getString("region"))));
+                cosClient.listBuckets();
+            }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
         } catch (CosServiceException e) {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CONNECTIONFAIL);
@@ -54,7 +71,7 @@ public class DtSourceController {
             dtSourceEntity.setDtsourcename(dataSourceName);
             Map map = new HashMap<>();
             map.put("dataSourceType", dataSourceType);
-            map.put("secretId", secretId);
+            map.put("accessKey", secretId);
             map.put("accessSecret", secretKey);
             map.put("region", region);
             JSONObject jsonObject = new JSONObject(map);

@@ -405,7 +405,22 @@
 
 
     function testdts(id) {
-        //发测试请求
+        axios.post('http://localhost/dtsource/connection', {
+            id: id,
+        }).then((response) => {
+            var result = response.data.message;
+            if (result == 'Success') {
+                $('#resultMessgae').text('连接成功 └(^o^)┘').css({
+                    color: 'green'
+                });
+                $('#resultModal').modal('show');
+            } else {
+                $('#resultMessgae').text('连接失败X﹏X').css({
+                    color: 'red'
+                })
+                $('#resultModal').modal('show');
+            }
+        });
     }
 
     function deletedts(id) {
@@ -490,7 +505,7 @@
         } else if (region == undefined || region.trim() == '') {
             return true;
         }
-        axios.post('http://localhost/dtsource/connection', {
+        axios.post('http://localhost/dtsource/testconnection', {
             secretId: accessKey,
             secretKey: accessSecret,
             region: region,

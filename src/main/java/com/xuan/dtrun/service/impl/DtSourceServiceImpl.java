@@ -20,6 +20,11 @@ public class DtSourceServiceImpl implements DtSourceService {
     }
 
     @Override
+    public DtSourceEntity getDtSourceById(int id) {
+        return dtSourceDao.getDtSourceById(id);
+    }
+
+    @Override
     public List<DtSourceEntity> findAll(int userId) {
         return dtSourceDao.findAll(userId);
     }
