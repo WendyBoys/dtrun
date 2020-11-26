@@ -7,7 +7,7 @@
     <title>Filedash - File Manager Dashboard</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="assets/media/image/favicon.png" />
+    <link rel="shortcut icon" href="assets/media/image/favicon.png"/>
 
     <!-- Main css -->
     <link rel="stylesheet" href="vendors/bundle.css" type="text/css">
@@ -50,7 +50,7 @@
             <!-- 数据源创建页面 -->
             <div id="createdts" class="content" style="display: none;">
                 <div class="page-header d-flex justify-content-between">
-                    <h2>创建数据源</h2>
+                    <h2 id="title">创建数据源</h2>
                     <a href="#" class="components-toggler">
                         <i class="ti-menu"></i>
                     </a>
@@ -59,7 +59,7 @@
                 <div class="row">
 
                     <div class="col-xl-7 components-sidebar">
-                        <form id="dtsform"  onsubmit="return false" class="needs-validation" novalidate>
+                        <form id="dtsform" onsubmit="return false" class="needs-validation" novalidate>
                             <label for="dataSourceName">数据源名称</label>
                             <input type="text" class="form-control" id="dataSourceName" placeholder="请输入数据源名称" required>
                             <div class="valid-feedback">
@@ -82,7 +82,8 @@
                                 请输入AccessKey
                             </div>
                             <label for="accessSecret">AccessSecret</label>
-                            <input type="text" class="form-control" id="accessSecret" placeholder="请输入AccessSecret" required>
+                            <input type="text" class="form-control" id="accessSecret" placeholder="请输入AccessSecret"
+                                   required>
                             <div class="valid-feedback">
                             </div>
                             <div class="invalid-feedback">
@@ -97,9 +98,12 @@
                             </div>
 
                             <div style="margin-top: 20px;">
-                                <button class="btn btn-primary" id="submit">确定</button>
-                                <button type="submit" style="margin-left: 20px;" class="btn btn-success" id="test">测试</button>
-
+                                <button class="btn btn-primary" id="create">确定</button>
+                                <button class="btn btn-primary" style="display: none;" id="update">确定</button>
+                                <button type="submit" style="margin-left: 20px;" class="btn btn-success" id="test">测试
+                                </button>
+                                <button type="button" style="margin-left: 20px;" class="btn btn-success" id="quit">取消
+                                </button>
                             </div>
                         </form>
 
@@ -112,10 +116,9 @@
             <div id="listdts" class="content">
                 <div class="row" style="margin-bottom: 10px;">
                     <div class="col-xl-12 ">
-                        <button id="create" class="btn btn-primary pull-right" id="submit">创建</button>
+                        <button id="toCreate" class="btn btn-primary pull-right">创建</button>
                     </div>
                 </div>
-
 
 
                 <div class="row">
@@ -133,7 +136,6 @@
                             <tbody id="dtsource">
                             </tbody>
                         </table>
-
 
 
                     </div>
@@ -220,7 +222,8 @@
                                     <div class="card-body text-center">
                                         <img class="img-fluid mb-3" src="assets/media/svg/upgrade.svg" alt="upgrade">
                                         <h5>Get an Upgrade</h5>
-                                        <p class="text-muted">Get additional 500 GB space for your documents and files. Unlock now
+                                        <p class="text-muted">Get additional 500 GB space for your documents and files.
+                                            Unlock now
                                             for more space.</p>
                                         <button class="btn btn-primary">Upgrade</button>
                                     </div>
@@ -293,32 +296,39 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item pl-0 pr-0">
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="customSwitch1" checked>
-                                            <label class="custom-control-label" for="customSwitch1">Allow notifications.</label>
+                                            <input type="checkbox" class="custom-control-input" id="customSwitch1"
+                                                   checked>
+                                            <label class="custom-control-label" for="customSwitch1">Allow
+                                                notifications.</label>
                                         </div>
                                     </li>
                                     <li class="list-group-item pl-0 pr-0">
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input" id="customSwitch2">
-                                            <label class="custom-control-label" for="customSwitch2">Hide user requests</label>
+                                            <label class="custom-control-label" for="customSwitch2">Hide user
+                                                requests</label>
                                         </div>
                                     </li>
                                     <li class="list-group-item pl-0 pr-0">
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="customSwitch3" checked>
-                                            <label class="custom-control-label" for="customSwitch3">Speed up demands</label>
+                                            <input type="checkbox" class="custom-control-input" id="customSwitch3"
+                                                   checked>
+                                            <label class="custom-control-label" for="customSwitch3">Speed up
+                                                demands</label>
                                         </div>
                                     </li>
                                     <li class="list-group-item pl-0 pr-0">
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="customSwitch4" checked>
+                                            <input type="checkbox" class="custom-control-input" id="customSwitch4"
+                                                   checked>
                                             <label class="custom-control-label" for="customSwitch4">Hide menus</label>
                                         </div>
                                     </li>
                                     <li class="list-group-item pl-0 pr-0">
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input" id="customSwitch5">
-                                            <label class="custom-control-label" for="customSwitch5">Remember next visits</label>
+                                            <label class="custom-control-label" for="customSwitch5">Remember next
+                                                visits</label>
                                         </div>
                                     </li>
                                     <li class="list-group-item pl-0 pr-0">
@@ -375,6 +385,8 @@
     $("#header").load("header.html");
     $("#nav").load("nav.html");
     fentch();
+    var currentdtsid;
+
     function fentch() {
         var $table = $("#dtsource");
         $table.empty();
@@ -386,7 +398,8 @@
                 for (i = 0; i < data.length; i++) {
                     var $tr = $("<tr>" +
                         "<td>" + index++ + "</td>" +
-                        "<td>" + data[i].dtsourcename + "</td>" +
+                        "<td>" + "<a href='javascript:updatedts(" + data[i].id +
+                        ")' style='color: #007bff;'>" + data[i].dtSourceName + "</a></td>" +
                         "<td>" + data[i].dtSourceType + "</td>" +
                         "<td>" + data[i].createTime + "</td>" +
                         "<td><a href='javascript:testdts(" + data[i].id +
@@ -402,6 +415,68 @@
         });
 
     }
+
+
+    function updatedts(id) {
+        $("#title").text('修改数据源');
+        $("#listdts").css('display', 'none');
+        $("#createdts").css('display', '');
+        $('#create').css('display', 'none');
+        $('#update').css('display', '');
+        currentdtsid=id;
+        axios.get('http://localhost/dtsource/getDtSourceById?id='+id).then((response) => {
+            var result = response.data.message;
+            var data = response.data.data;
+            var dtSourceJson= jQuery.parseJSON(data.dtSourceJson);
+            if (result == 'Success') {
+                $('#dataSourceName').val(data.dtSourceName);
+                $('#dataSourceType').val(data.dtSourceType);
+                $('#accessKey').val(dtSourceJson.accessKey);
+                $('#accessSecret').val(dtSourceJson.accessSecret);
+                $('#region').val(dtSourceJson.region);
+            } else {
+                alert('操作失败，请重试');
+            }
+        });
+    }
+
+
+    $('#update').click(function(){
+        var dataSourceName = $('#dataSourceName').val();
+        var dataSourceType = $('#dataSourceType').val();
+        var accessKey = $('#accessKey').val();
+        var accessSecret = $('#accessSecret').val();
+        var region = $('#region').val();
+        if (dataSourceName == undefined || dataSourceName.trim() == '') {
+            return true;
+        } else if (dataSourceType == undefined || dataSourceType.trim() == '') {
+            return true;
+        } else if (accessKey == undefined || accessKey.trim() == '') {
+            return true;
+        } else if (accessSecret == undefined || accessSecret.trim() == '') {
+            return true;
+        } else if (region == undefined || region.trim() == '') {
+            return true;
+        }
+        axios.post('http://localhost/dtsource/update', {
+            id:currentdtsid,
+            dataSourceName: dataSourceName,
+            dataSourceType: dataSourceType,
+            secretId: accessKey,
+            secretKey: accessSecret,
+            region: region,
+        }).then((response) => {
+            var result = response.data.message;
+            if (result == 'Success') {
+                $("#listdts").css('display', '');
+                $("#createdts").css('display', 'none');
+                window.location.href = 'datasource.html'
+            } else {
+                alert('修改失败');
+            }
+        });
+    })
+
 
 
     function testdts(id) {
@@ -426,38 +501,43 @@
     function deletedts(id) {
         //发删除请求
         axios.delete('http://localhost/dtsource/delete', {
-           data:{
-               id: id,
-           }
+            data: {
+                id: id,
+            }
         }).then((response) => {
             var result = response.data.message;
-        if (result == 'Success') {
-            $('#resultMessgae').text('删除成功 └(^o^)┘').css({
-                color: 'green'
-            });
-            $('#resultModal').modal('show');
-            fentch();
-        } else {
-            $('#resultMessgae').text('删除失败X﹏X').css({
-                color: 'red'
-            })
-            $('#resultModal').modal('show');
-        }
-    });
+            if (result == 'Success') {
+                $('#resultMessgae').text('删除成功 └(^o^)┘').css({
+                    color: 'green'
+                });
+                $('#resultModal').modal('show');
+                fentch();
+            } else {
+                $('#resultMessgae').text('删除失败X﹏X').css({
+                    color: 'red'
+                })
+                $('#resultModal').modal('show');
+            }
+        });
     }
 
-    $('#create').click(function() {
+    $('#toCreate').click(function () {
         $("#listdts").css('display', 'none');
         $("#createdts").css('display', '');
     });
 
+    $('#quit').click(function () {
+        $("#listdts").css('display', '');
+        $("#createdts").css('display', 'none');
+    });
 
-    (function() {
+
+    (function () {
         'use strict';
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             var forms = document.getElementsByClassName('needs-validation');
-            var validation = Array.prototype.filter.call(forms, function(form) {
-                form.addEventListener('submit', function(event) {
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -468,7 +548,7 @@
         }, false);
     })();
 
-    $('#submit').click(function() {
+    $('#create').click(function () {
         var dataSourceName = $('#dataSourceName').val();
         var dataSourceType = $('#dataSourceType').val();
         var accessKey = $('#accessKey').val();
@@ -496,7 +576,7 @@
             if (result == 'Success') {
                 $("#listdts").css('display', '');
                 $("#createdts").css('display', 'none');
-                window.location.href='datasource.html'
+                window.location.href = 'datasource.html'
             } else {
                 alert('创建失败');
             }
@@ -505,7 +585,7 @@
     });
 
 
-    $('#test').click(function() {
+    $('#test').click(function () {
         var dataSourceName = $('#dataSourceName').val();
         var dataSourceType = $('#dataSourceType').val();
         var accessKey = $('#accessKey').val();

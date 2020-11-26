@@ -43,11 +43,22 @@ public class DtSourceController {
         }
     }
 
+    @GetMapping(value = "/getDtSourceById", produces = "application/json;charset=utf-8")
+    public CommonResult connection(int id) {
+        try {
+            DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(id);
+            return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+    }
+
     @PostMapping(value = "/connection", produces = "application/json;charset=utf-8")
     public CommonResult connection(@RequestBody JSONObject idJson) {
         try {
             DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(Integer.parseInt(idJson.getString("id")));
-            JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtsourceJson());
+            JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtSourceJson());
             if ("cos".equals(dtSourceEntity.getDtSourceType())) {
                 COSClient cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
                         new ClientConfig(new Region(jsonObject.getString("region"))));
@@ -68,7 +79,7 @@ public class DtSourceController {
             String secretKey = json.getString("secretKey");
             String region = json.getString("region");
             DtSourceEntity dtSourceEntity = new DtSourceEntity();
-            dtSourceEntity.setDtsourcename(dataSourceName);
+            dtSourceEntity.setDtSourceName(dataSourceName);
             Map map = new HashMap<>();
             map.put("dataSourceType", dataSourceType);
             map.put("accessKey", secretId);
@@ -80,8 +91,37 @@ public class DtSourceController {
             dtSourceEntity.setUser(user);
             dtSourceEntity.setDtSourceType(dataSourceType);
             dtSourceEntity.setCreateTime(new Date().toLocaleString());
-            dtSourceEntity.setDtsourceJson(jsonObject.toJSONString());
+            dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
             dtSourceService.create(dtSourceEntity);
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+        }
+    }
+
+
+    @PostMapping(value = "/update", produces = "application/json;charset=utf-8")
+    public CommonResult update(@RequestBody JSONObject json) {
+        try {
+            String id = json.getString("id");
+            String dataSourceName = json.getString("dataSourceName");
+            String dataSourceType = json.getString("dataSourceType");
+            String secretId = json.getString("secretId");
+            String secretKey = json.getString("secretKey");
+            String region = json.getString("region");
+            DtSourceEntity dtSourceEntity = new DtSourceEntity();
+            dtSourceEntity.setDtSourceName(dataSourceName);
+            Map map = new HashMap<>();
+            map.put("dataSourceType", dataSourceType);
+            map.put("accessKey", secretId);
+            map.put("accessSecret", secretKey);
+            map.put("region", region);
+            JSONObject jsonObject = new JSONObject(map);
+            dtSourceEntity.setId(Integer.parseInt(id));
+            dtSourceEntity.setDtSourceType(dataSourceType);
+            dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
+            dtSourceService.update(dtSourceEntity);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,7 +151,7 @@ public class DtSourceController {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
         }
-
-
     }
+
+
 }

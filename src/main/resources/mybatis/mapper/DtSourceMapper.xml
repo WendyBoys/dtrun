@@ -6,9 +6,9 @@
 
     <resultMap id="DtsourceMap" type="DtSourceEntity">
         <id property="id" column="id"></id>
-        <result property="dtsourcename" column="dtsourcename"></result>
+        <result property="dtSourceName" column="dtSourceName"></result>
         <result property="dtSourceType" column="dtSourceType"></result>
-        <result property="dtsourceJson" column="dtsourceJson"></result>
+        <result property="dtSourceJson" column="dtSourceJson"></result>
         <result property="createTime" column="createTime"></result>
         <association property="user" javaType="User">
             <id property="id" column="id"></id>
@@ -17,16 +17,20 @@
 
 
     <insert id="create">
-          insert into  dtsource (dtsourcename,dtSourceType,dtsourceJson,createTime,uid) VALUES (#{dtsourcename},#{dtSourceType},#{dtsourceJson},#{createTime},#{user.id})
+          insert into  dtsource (dtSourceName,dtSourceType,dtSourceJson,createTime,uid) VALUES (#{dtSourceName},#{dtSourceType},#{dtSourceJson},#{createTime},#{user.id})
     </insert>
 
     <select id="getDtSourceById" resultType="DtSourceEntity">
-       SELECT dtSourceType,dtSourceJson FROM dtsource  WHERE  id=#{id}
+       SELECT dtSourceName,dtSourceType,dtSourceJson FROM dtsource  WHERE  id=#{id}
     </select>
 
     <select id="findAll" resultMap="DtsourceMap">
        SELECT dts.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>
+
+    <update id="update">
+      update dtsource set dtSourceName=#{dtSourceName},dtSourceType=#{dtSourceType},dtSourceJson=#{dtSourceJson} WHERE id=#{id}
+    </update>
 
     <delete id="delete">
        DELETE FROM dtsource WHERE id=#{id}

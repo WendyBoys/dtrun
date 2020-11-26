@@ -16,4 +16,6 @@ public interface DtSourceMapper {
      List<DtSourceEntity> findAll(int userId);
 
      void delete(Integer id);
+
+     void update(DtSourceEntity dtSourceEntity);
 }

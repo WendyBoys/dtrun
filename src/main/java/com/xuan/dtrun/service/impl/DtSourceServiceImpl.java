@@ -34,5 +34,10 @@ public class DtSourceServiceImpl implements DtSourceService {
         dtSourceDao.delete(id);
     }
 
+    @Override
+    public void update(DtSourceEntity dtSourceEntity) {
+        dtSourceDao.update(dtSourceEntity);
+    }
+
 
 }

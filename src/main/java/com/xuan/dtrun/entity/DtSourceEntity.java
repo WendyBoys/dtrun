@@ -1,13 +1,13 @@
 package com.xuan.dtrun.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+
 
 public class DtSourceEntity implements Serializable {
     private int id;
-    private String dtsourcename;
+    private String dtSourceName;
     private String dtSourceType;
-    private String dtsourceJson;
+    private String dtSourceJson;
     private String createTime;
     private User user;
     private int uid;
@@ -15,11 +15,11 @@ public class DtSourceEntity implements Serializable {
     public DtSourceEntity() {
     }
 
-    public DtSourceEntity(int id, String dtsourcename, String dtSourceType, String dtsourceJson, String createTime,User user,int uid) {
+    public DtSourceEntity(int id, String dtSourceName, String dtSourceType, String dtSourceJson, String createTime, User user, int uid) {
         this.id = id;
-        this.dtsourcename = dtsourcename;
+        this.dtSourceName = dtSourceName;
         this.dtSourceType = dtSourceType;
-        this.dtsourceJson = dtsourceJson;
+        this.dtSourceJson = dtSourceJson;
         this.createTime = createTime;
         this.user=user;
         this.uid=uid;
@@ -33,12 +33,12 @@ public class DtSourceEntity implements Serializable {
         this.id = id;
     }
 
-    public String getDtsourcename() {
-        return dtsourcename;
+    public String getDtSourceName() {
+        return dtSourceName;
     }
 
-    public void setDtsourcename(String dtsourcename) {
-        this.dtsourcename = dtsourcename;
+    public void setDtSourceName(String dtSourceName) {
+        this.dtSourceName = dtSourceName;
     }
 
     public String getDtSourceType() {
@@ -49,12 +49,12 @@ public class DtSourceEntity implements Serializable {
         this.dtSourceType = dtSourceType;
     }
 
-    public String getDtsourceJson() {
-        return dtsourceJson;
+    public String getDtSourceJson() {
+        return dtSourceJson;
     }
 
-    public void setDtsourceJson(String dtsourceJson) {
-        this.dtsourceJson = dtsourceJson;
+    public void setDtSourceJson(String dtSourceJson) {
+        this.dtSourceJson = dtSourceJson;
     }
 
     public String getCreateTime() {

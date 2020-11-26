@@ -33,5 +33,10 @@ public class DtSourceDaoImpl implements DtSourceDao {
         dtSourceMapper.delete(id);
     }
 
+    @Override
+    public void update(DtSourceEntity dtSourceEntity) {
+        dtSourceMapper.update(dtSourceEntity);
+    }
+
 
 }
