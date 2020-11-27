@@ -76,10 +76,9 @@ public class DtSourceController {
     }
 
     @PostMapping(value = "/create", produces = "application/json;charset=utf-8")
-    public CommonResult create(@RequestBody JSONObject json) {
+    public CommonResult create(@RequestBody JSONObject json,@RequestHeader String token) {
         try {
-            String token = json.getString("token");
-            User user = (User) redisTemplate.opsForValue().get(token);
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user == null) {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
             }

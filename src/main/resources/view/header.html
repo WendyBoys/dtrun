@@ -17,7 +17,7 @@
 											<i class="ti-search"></i>
 										</button>
 									</div>
-									<input type="text" class="form-control" placeholder="Search something...">
+									<input type="text" id="search"  class="form-control" placeholder="Search something...">
 									<div class="input-group-append">
 										<button class="btn header-search-close-btn">
 											<i data-feather="x"></i>
@@ -57,9 +57,9 @@
 										<a href="#" class="list-group-item d-flex hide-show-toggler">
 											<div>
 												<figure class="avatar mr-3">
-																<span class="avatar-title bg-secondary-bright text-secondary rounded-circle">
-																	<i class="ti-server"></i>
-																</span>
+													<span class="avatar-title bg-secondary-bright text-secondary rounded-circle">
+														<i class="ti-server"></i>
+													</span>
 												</figure>
 											</div>
 											<div class="flex-grow-1">
@@ -95,9 +95,9 @@
 										<a href="#" class="list-group-item d-flex hide-show-toggler">
 											<div>
 												<figure class="avatar mr-3">
-																<span class="avatar-title bg-info-bright text-info rounded-circle">
-																	<i class="fa fa-cloud-upload"></i>
-																</span>
+													<span class="avatar-title bg-info-bright text-info rounded-circle">
+														<i class="fa fa-cloud-upload"></i>
+													</span>
 												</figure>
 											</div>
 											<div class="flex-grow-1">
@@ -113,9 +113,9 @@
 										<a href="#" class="list-group-item d-flex hide-show-toggler">
 											<div>
 												<figure class="avatar mr-3">
-																<span class="avatar-title bg-success-bright text-success rounded-circle">
-																	<i class="ti-share"></i>
-																</span>
+													<span class="avatar-title bg-success-bright text-success rounded-circle">
+														<i class="ti-share"></i>
+													</span>
 												</figure>
 											</div>
 											<div class="flex-grow-1">
@@ -161,7 +161,7 @@
 							</div>
 							<div class="list-group list-group-flush">
 								<a href="#" class="list-group-item" data-sidebar-target="#settings">Settings</a>
-								<span id="logout" style="cursor: pointer;"  class="list-group-item text-danger">注销</span>
+								<span id="logout" style="cursor: pointer;" class="list-group-item text-danger">注销</span>
 							</div>
 							<div class="pb-0 p-4">
 								<div class="mb-4">
@@ -170,8 +170,8 @@
 										<span class="float-right">%68</span>
 									</h6>
 									<div class="progress" style="height:5px;">
-										<div class="progress-bar bg-primary" role="progressbar" style="width: 68%;" aria-valuenow="68"
-											 aria-valuemin="0" aria-valuemax="100"></div>
+										<div class="progress-bar bg-primary" role="progressbar" style="width: 68%;" aria-valuenow="68" aria-valuemin="0"
+										 aria-valuemax="100"></div>
 									</div>
 								</div>
 							</div>
@@ -196,9 +196,4 @@
 	</div>
 </div>
 <!-- ./ Header -->
-<script type="text/javascript">
-	$("#logout").click(function() {
-		window.location.href = "login.html";
-		$.removeCookie('token');
-	});
-</script>
+
