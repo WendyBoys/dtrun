@@ -195,5 +195,10 @@
 		</ul>
 	</div>
 </div>
-<!-- ./ Header -->
+<script>
+	$('#logout').click(function () {
+		window.location.href = "login.html";
+		$.removeCookie('token');
+	});
+</script>
 

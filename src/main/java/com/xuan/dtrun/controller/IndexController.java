@@ -9,6 +9,6 @@ public class IndexController {
 
     @RequestMapping(value = {"", "/login"})
     public String index() {
-        return "redirect:login.html";
+        return "redirect:view/login.html";
     }
 }

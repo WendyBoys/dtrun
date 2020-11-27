@@ -32,13 +32,14 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/view/");
+        registry.addResourceHandler("/view/**").addResourceLocations("classpath:/view/");
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor()).addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "", "/view/**");
+        registry.addInterceptor(new TokenInterceptor())
+                .excludePathPatterns("/user/login","/user/register", "/", "/login", "/view/**")
+                .addPathPatterns("/**");
     }
 
 }
