@@ -14,6 +14,7 @@ import com.xuan.dtrun.entity.CosEntity;
 import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
+import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -137,9 +138,9 @@ public class DtSourceController {
     }
 
     @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
-    public CommonResult findAll(String token) {
+    public CommonResult findAll(@RequestHeader("token") String token) {
         try {
-            User user = (User) redisTemplate.opsForValue().get(token);
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             List<DtSourceEntity> dtSourceEntityList = dtSourceService.findAll(user.getId());
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
         } catch (Exception e) {

@@ -180,21 +180,37 @@
 </html>
 
 <script>
+	var token = $.cookie('token');
+	if (token == undefined || token.trim() == '') {
+		alert('登录过期，请重新登录');
+		window.location.href = "login.html";
+	}
+	axios.interceptors.request.use(function(config) {
+		config.headers.common['token'] = token;
+		return config;
+	});
+
 	$("#header").load("header.html");
 	$("#nav").load("nav.html");
 	$("#sidebar").load("sidebar.html");
-	var token = $.cookie('token');
-	if (token == undefined || token.trim() == '') {
-		alert('登录失效，请重新登录');
-		window.location.href = "login.html";
-	}
 	fentch();
 	var currentdtsid;
+
+	axios.get('http://localhost/user/getCurrentUser').then((response) => {
+		var result = response.data.message;
+		if (result == 'Success') {
+			var user = response.data.data;
+			$(".username").text(user.username);
+		} else {
+			alert(response.data.data);
+			window.location.href = "login.html";
+		}
+	});
 
 	function fentch() {
 		var $table = $("#dtsource");
 		$table.empty();
-		axios.get('http://localhost/dtsource/findAll?token=' + token).then((response) => {
+		axios.get('http://localhost/dtsource/findAll').then((response) => {
 			var result = response.data.message;
 			var data = response.data.data;
 			var index = 1;

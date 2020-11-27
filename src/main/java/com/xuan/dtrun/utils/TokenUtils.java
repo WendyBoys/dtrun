@@ -40,6 +40,11 @@ public class TokenUtils {
         }
         return token;
     }
+
+    public static String md5Token(String token) {
+        return DigestUtils.md5Hex(token + SALT);
+    }
+
     public static boolean verify(String token){
 
         try {

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -36,9 +37,9 @@ public class UserController {
             User user = userService.login(account, password);
             if (user != null) {
                 if (user.getIsUse() == 1) {
-                    String md5Token = DigestUtils.md5Hex(TokenUtils.token(account, password) + SALT);
-                    redisTemplate.opsForValue().set(md5Token, user, 7, TimeUnit.DAYS);
-                    return new CommonResult(200, MessageEnum.SUCCESS, md5Token);
+                    String token = TokenUtils.token(account, password);
+                    redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
+                    return new CommonResult(200, MessageEnum.SUCCESS, token);
                 } else {
                     return new CommonResult(200, MessageEnum.LOGINREFUSE, DataEnum.LOGINREFUSE);
                 }
@@ -56,14 +57,15 @@ public class UserController {
 
 
     @GetMapping(value = "/getCurrentUser", produces = "application/json;charset=utf-8")
-    public CommonResult save(String token) {
-        User currentUser = (User) redisTemplate.opsForValue().get(token);
-        if(currentUser!=null)
-        {
+    public CommonResult save(@RequestHeader("token") String token) {
+        User currentUser = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+        if (currentUser != null) {
             return new CommonResult(200, MessageEnum.SUCCESS, currentUser);
         }
         return new CommonResult(200, MessageEnum.LOGINEXPIRE, currentUser);
     }
+
+
 
 
 }

@@ -791,12 +791,23 @@
 	$("#nav").load("nav.html");
 	$("#sidebar").load("sidebar.html");
 
+	axios.interceptors.request.use(function(config) {
+		var token = $.cookie('token');
+		if (token == undefined || token.trim() == '') {
+			alert('登录失效，请重新登录');
+			window.location.href = "login.html";
+		}
+		config.headers.common['token'] = token;
+		return config;
+	});
+
+
 	var token = $.cookie('token');
 	if (token == undefined || token.trim() == '') {
 		alert('登录失效，请重新登录');
 		window.location.href = "login.html";
 	} else {
-		axios.get('http://localhost/user/getCurrentUser?token=' + token).then((response) => {
+		axios.get('http://localhost/user/getCurrentUser').then((response) => {
 			var result = response.data.message;
 			if (result == 'Success') {
 				var user = response.data.data;
@@ -806,6 +817,4 @@
 			}
 		});
 	}
-
-
 </script>
