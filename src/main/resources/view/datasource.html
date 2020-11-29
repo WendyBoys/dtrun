@@ -363,7 +363,7 @@
 
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal" >确定</button>
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">确定</button>
 								</div>
 							</div>
 						</div>
@@ -378,11 +378,11 @@
 									</button>
 								</div>
 								<div id="deleteMessgae" style="font-size: 20px;font-weight: 900;" class="modal-body">
-							确认要删除吗？
+									确认要删除吗？
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal" id="delete">确定</button>
-									<button type="button" class="btn btn-secondary" data-dismiss="modal" >取消</button>
+									<button type="button" class="btn btn-primary" data-dismiss="modal" id="delete">确定</button>
+									<button type="button" class="btn btn-light" data-dismiss="modal">取消</button>
 								</div>
 							</div>
 						</div>
@@ -422,6 +422,7 @@
 	var index = 1;
 	fentch();
 	var currentdtsid;
+	var deleteId;
 
 	axios.get('http://localhost/user/getCurrentUser').then((response) => {
 		var result = response.data.message;
@@ -472,7 +473,8 @@
 						"<td>" + searchList[i].dtSourceType + "</td>" +
 						"<td>" + searchList[i].createTime + "</td>" +
 						"<td><a href='javascript:testdts(" + searchList[i].id +
-						")' style='color: #007bff;'>测试</a> &nbsp;<a  href='javascript:deletedts(" + searchList[i].id +
+						")' style='color: #007bff;'>测试</a> &nbsp;<a  href='javascript:deletedts(" + searchList[i].id + ',' +
+						searchList[i].dtSourceName +
 						")' style='color: #007bff;'>删除</a></td>" +
 						"</tr>");
 					$table.append($tr);
@@ -488,6 +490,7 @@
 		axios.get('http://localhost/dtsource/findAll').then((response) => {
 			var result = response.data.message;
 			data = response.data.data;
+			index = 1;
 			if (result == 'Success') {
 				for (i = 0; i < data.length; i++) {
 					var $tr = $("<tr>" +
@@ -497,8 +500,9 @@
 						"<td>" + data[i].dtSourceType + "</td>" +
 						"<td>" + data[i].createTime + "</td>" +
 						"<td><a href='javascript:testdts(" + data[i].id +
-						")' style='color: #007bff;'>测试</a> &nbsp;<a href='javascript:deletedts(" + data[i].id +
-						")' style='color: #007bff;'>删除</a></td>" +
+						")' style='color: #007bff;'>测试</a> &nbsp;<a href='javascript:deletedts(" + data[i].id + ',' + '\"\\' +
+						data[i].dtSourceName +
+						"\")' style='color: #007bff;'>删除</a></td>" +
 						"</tr>");
 					$table.append($tr);
 				}
@@ -592,30 +596,35 @@
 		});
 	}
 
-	function deletedts(id) {
-        $('#deleteModal').modal('show');
-        $('#delete').click(function() {
-            axios.delete('http://localhost/dtsource/delete', {
-                data: {
-                    id: id,
-                }
-            }).then((response) => {
-                var result = response.data.message;
-            if (result == 'Success') {
-                $('#resultModal').modal('show');
-                $('#resultMessgae').text('删除成功 └(^o^)┘').css({
-                    color: 'green'
-                });
-                window.location.href = "datasource.html"
-            } else {
-                $('#resultModal').modal('show');
-                $('#resultMessgae').text('删除失败X﹏X').css({
-                    color: 'red'
-                })
-            }
-        });
-        })
+	function deletedts(id, dtsName) {
+		deleteId = id;
+		$('#deleteMessgae').text('确定要删除 ' + dtsName + ' 吗?');
+		$('#deleteModal').modal('show');
+
 	}
+
+
+	$('#delete').click(function() {
+		axios.delete('http://localhost/dtsource/delete', {
+			data: {
+				id: deleteId,
+			}
+		}).then((response) => {
+			var result = response.data.message;
+			if (result == 'Success') {
+				// $('#resultModal').modal('show');
+				// $('#resultMessgae').text('删除成功 └(^o^)┘').css({
+				// 	color: 'green'
+				// }); 后续改为Toast
+				fentch();
+			} else {
+				$('#resultModal').modal('show');
+				$('#resultMessgae').text('删除失败X﹏X').css({
+					color: 'red'
+				})
+			}
+		});
+	})
 
 
 	$('#toCreate').click(function() {
@@ -719,5 +728,4 @@
 			}
 		});
 	})
-
 </script>
