@@ -363,7 +363,26 @@
 
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">确定</button>
+									<button type="button" class="btn btn-secondary" data-dismiss="modal" >确定</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="deleteModalLabel">提示</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">×</span>
+									</button>
+								</div>
+								<div id="deleteMessgae" style="font-size: 20px;font-weight: 900;" class="modal-body">
+							确认要删除吗？
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal" id="delete">确定</button>
+									<button type="button" class="btn btn-secondary" data-dismiss="modal" >取消</button>
 								</div>
 							</div>
 						</div>
@@ -453,7 +472,7 @@
 						"<td>" + searchList[i].dtSourceType + "</td>" +
 						"<td>" + searchList[i].createTime + "</td>" +
 						"<td><a href='javascript:testdts(" + searchList[i].id +
-						")' style='color: #007bff;'>测试</a> &nbsp;<a href='javascript:deletedts(" + searchList[i].id +
+						")' style='color: #007bff;'>测试</a> &nbsp;<a  href='javascript:deletedts(" + searchList[i].id +
 						")' style='color: #007bff;'>删除</a></td>" +
 						"</tr>");
 					$table.append($tr);
@@ -574,27 +593,30 @@
 	}
 
 	function deletedts(id) {
-		//发删除请求
-		axios.delete('http://localhost/dtsource/delete', {
-			data: {
-				id: id,
-			}
-		}).then((response) => {
-			var result = response.data.message;
-			if (result == 'Success') {
-				$('#resultMessgae').text('删除成功 └(^o^)┘').css({
-					color: 'green'
-				});
-				$('#resultModal').modal('show');
-				fentch();
-			} else {
-				$('#resultMessgae').text('删除失败X﹏X').css({
-					color: 'red'
-				})
-				$('#resultModal').modal('show');
-			}
-		});
+        $('#deleteModal').modal('show');
+        $('#delete').click(function() {
+            axios.delete('http://localhost/dtsource/delete', {
+                data: {
+                    id: id,
+                }
+            }).then((response) => {
+                var result = response.data.message;
+            if (result == 'Success') {
+                $('#resultModal').modal('show');
+                $('#resultMessgae').text('删除成功 └(^o^)┘').css({
+                    color: 'green'
+                });
+                window.location.href = "datasource.html"
+            } else {
+                $('#resultModal').modal('show');
+                $('#resultMessgae').text('删除失败X﹏X').css({
+                    color: 'red'
+                })
+            }
+        });
+        })
 	}
+
 
 	$('#toCreate').click(function() {
 		$("#listdts").css('display', 'none');
@@ -697,4 +719,5 @@
 			}
 		});
 	})
+
 </script>
