@@ -2,6 +2,8 @@ package com.xuan.dtrun.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -37,11 +39,21 @@ public class DtSourceController {
 
 
     @PostMapping(value = "/testconnection", produces = "application/json;charset=utf-8")
-    public CommonResult testconnection(@RequestBody CosEntity cosEntity) {
+    public CommonResult testconnection(@RequestBody JSONObject json) {
+        String dataSourceName = json.getString("dataSourceName");
+        String dataSourceType = json.getString("dataSourceType");
+        String secretId = json.getString("secretId");
+        String secretKey = json.getString("secretKey");
+        String region = json.getString("region");
         try {
-            COSClient cosClient = new COSClient(new BasicCOSCredentials(cosEntity.getSecretId(), cosEntity.getSecretKey()),
-                    new ClientConfig(new Region(cosEntity.getRegion())));
+            if ("cos".equals(dataSourceType)){
+            COSClient cosClient = new COSClient(new BasicCOSCredentials(secretId, secretKey),
+                    new ClientConfig(new Region(region)));
             cosClient.listBuckets();
+            }else if ("oos".equals(dataSourceType)){
+                OSS ossClient = new OSSClientBuilder().build(region, secretId, secretKey);
+                ossClient.listBuckets();
+            }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
         } catch (CosServiceException e) {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CONNECTIONFAIL);
