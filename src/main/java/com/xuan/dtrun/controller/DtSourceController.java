@@ -40,22 +40,21 @@ public class DtSourceController {
 
     @PostMapping(value = "/testconnection", produces = "application/json;charset=utf-8")
     public CommonResult testconnection(@RequestBody JSONObject json) {
-        String dataSourceName = json.getString("dataSourceName");
         String dataSourceType = json.getString("dataSourceType");
-        String secretId = json.getString("secretId");
-        String secretKey = json.getString("secretKey");
+        String accessKey = json.getString("accessKey");
+        String accessSecret = json.getString("accessSecret");
         String region = json.getString("region");
         try {
-            if ("cos".equals(dataSourceType)){
-            COSClient cosClient = new COSClient(new BasicCOSCredentials(secretId, secretKey),
-                    new ClientConfig(new Region(region)));
-            cosClient.listBuckets();
-            }else if ("oos".equals(dataSourceType)){
-                OSS ossClient = new OSSClientBuilder().build(region, secretId, secretKey);
+            if ("cos".equals(dataSourceType)) {
+                COSClient cosClient = new COSClient(new BasicCOSCredentials(accessKey, accessSecret),
+                        new ClientConfig(new Region(region)));
+                cosClient.listBuckets();
+            } else if ("oss".equals(dataSourceType)) {
+                OSS ossClient = new OSSClientBuilder().build(region, accessKey, accessSecret);
                 ossClient.listBuckets();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
-        } catch (CosServiceException e) {
+        } catch (Exception e) {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CONNECTIONFAIL);
         }
     }
@@ -88,7 +87,7 @@ public class DtSourceController {
     }
 
     @PostMapping(value = "/create", produces = "application/json;charset=utf-8")
-    public CommonResult create(@RequestBody JSONObject json,@RequestHeader String token) {
+    public CommonResult create(@RequestBody JSONObject json, @RequestHeader String token) {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user == null) {

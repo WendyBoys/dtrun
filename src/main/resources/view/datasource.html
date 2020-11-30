@@ -710,8 +710,9 @@
 			return true;
 		}
 		axios.post('http://localhost/dtsource/testconnection', {
-			secretId: accessKey,
-			secretKey: accessSecret,
+			dataSourceType: dataSourceType,
+			accessKey: accessKey,
+			accessSecret: accessSecret,
 			region: region,
 		}).then((response) => {
 			var result = response.data.message;
