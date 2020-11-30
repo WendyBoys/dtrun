@@ -74,14 +74,18 @@ public class DtSourceController {
     public CommonResult connection(@RequestBody JSONObject idJson) {
         try {
             DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(Integer.parseInt(idJson.getString("id")));
+            String dtSourceType = dtSourceEntity.getDtSourceType();
             JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtSourceJson());
-            if ("cos".equals(dtSourceEntity.getDtSourceType())) {
+            if ("cos".equals(dtSourceType)) {
                 COSClient cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
                         new ClientConfig(new Region(jsonObject.getString("region"))));
                 cosClient.listBuckets();
+            } else if ("oss".equals(dtSourceType)) {
+                OSS ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
+                ossClient.listBuckets();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
-        } catch (CosServiceException e) {
+        } catch (Exception e) {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CONNECTIONFAIL);
         }
     }

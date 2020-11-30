@@ -264,8 +264,8 @@
 									<input type="text" class="form-control" id="dataSourceName" placeholder="请输入数据源名称" required>
 									<div class="valid-feedback">
 									</div>
-									<div class="invalid-feedback">
-										请输入数据源名称
+									<div id="isNumStart" class="invalid-feedback">
+										请输入数据源名称,开头不允许为数字
 									</div>
 									<label for="dataSourceType">数据源类型</label>
 									<select class="custom-select" id="dataSourceType" required>
@@ -597,7 +597,7 @@
 	}
 
 	function deletedts(id, dtsName) {
-		deleteId = id;
+		deleteId = id;		
 		$('#deleteMessgae').text('确定要删除 ' + dtsName + ' 吗?');
 		$('#deleteModal').modal('show');
 
@@ -660,7 +660,8 @@
 		var accessKey = $('#accessKey').val();
 		var accessSecret = $('#accessSecret').val();
 		var region = $('#region').val();
-		if (dataSourceName == undefined || dataSourceName.trim() == '') {
+		if (dataSourceName == undefined || dataSourceName.trim() == '' || !isNaN(Number(dataSourceName.trim().charAt(0)))) {
+			$('#isNumStart').show();
 			return true;
 		} else if (dataSourceType == undefined || dataSourceType.trim() == '') {
 			return true;
@@ -682,6 +683,7 @@
 			if (result == 'Success') {
 				$("#listdts").css('display', '');
 				$("#createdts").css('display', 'none');
+				$('#isNumStart').hide();
 				window.location.href = 'datasource.html'
 			} else {
 				alert(response.data.data);
