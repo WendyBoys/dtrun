@@ -118,9 +118,7 @@ const Show = (props) => {
 
 
     const container = ((
-<div className="layout-wrapper">
-            <Header />
-            <Right />
+
         <div className="content-wrapper">
             <Nav />
 
@@ -187,7 +185,7 @@ const Show = (props) => {
                 </Spin>
             </div>
 </div>
-        </div>
+
     ));
 
     return container

@@ -5,6 +5,7 @@ import Index from './Index';
 import axios from 'axios';
 import cookie from 'react-cookies'
 import Register from './user/Register';
+import Datasource from "./datasource/Datasource";
 import Dashboard from './Dashboard';
 import Create from './datasource/Create';
 import Show from './datasource/Show';
@@ -40,9 +41,7 @@ export default class App extends React.Component {
                 <Route exact={true} path="/" component={Login} />
                 <Route path="/index" component={Index} />
                 <Route path="/dashboard" component={Index} />
-                <Route path="/datasource/create" component={Create} />
-                <Route path="/datasource/show" component={Show} />
-                <Route path="/datasource/update/:id" component={Update} />
+                <Route path="/datasource" component={Datasource} />
             </Switch>
         </div>
 

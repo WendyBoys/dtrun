@@ -97,10 +97,7 @@ export default class Create extends React.Component {
 
 
     render() {
-        return <div className="layout-wrapper">
-            <Header />
-            <Right />
-            <div className="content-wrapper">
+        return <div className="content-wrapper">
 
                 <Nav />
                 <div className="content-body">
@@ -211,6 +208,6 @@ export default class Create extends React.Component {
                 </div>
 
             </div>
-        </div>
+
     }
 }
