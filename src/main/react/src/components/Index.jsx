@@ -5,15 +5,7 @@ import Header from './Header';
 import Right from './Right';
 import Nav from './Nav';
 
-
-
-
-
-
 export default class Index extends React.Component {
-
-
-
     render() {
         return <div>
             <div className="layout-wrapper">
