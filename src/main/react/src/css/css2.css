@@ -7,6 +7,15 @@
   padding-bottom: 40%;
 }
 
+ .login-form-forgot {
+  float: right;
+}
+ .ant-col-rtl .login-form-forgot {
+  float: left;
+}
+ .login-form-button {
+  width: 100%;
+}
 /* vietnamese */
 @font-face {
   font-family: 'Josefin Sans';
