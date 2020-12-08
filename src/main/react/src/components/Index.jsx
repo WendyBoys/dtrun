@@ -6,12 +6,6 @@ import Right from './Right';
 import Nav from './Nav';
 
 
-import 'antd/dist/antd.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import '../css/css2.css';
-import '../css/bundle.css';
-import '../css/prism.css';
-import '../css/app.css';
 
 
 

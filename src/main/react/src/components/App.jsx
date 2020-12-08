@@ -6,10 +6,15 @@ import axios from 'axios';
 import cookie from 'react-cookies'
 import Register from './user/Register';
 import Datasource from "./datasource/Datasource";
-import Dashboard from './Dashboard';
-import Create from './datasource/Create';
-import Show from './datasource/Show';
-import Update from './datasource/Update';
+
+
+
+import 'antd/dist/antd.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import '../css/css2.css';
+import '../css/bundle.css';
+import '../css/prism.css';
+import '../css/app.css';
 export default class App extends React.Component {
 
 
