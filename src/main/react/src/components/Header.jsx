@@ -1,5 +1,35 @@
 import React from 'react';
+
+import {Menu, Dropdown, Button, Space} from 'antd';
+import axios from "axios";
+
+const logout = () => {
+    alert('注销')
+};
+
+const menu = (
+    <Menu>
+        <Menu.Item>
+            <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
+                1st menu item
+            </a>
+        </Menu.Item>
+        <Menu.Item>
+            <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
+                2nd menu item
+            </a>
+        </Menu.Item>
+        <Menu.Item>
+            <a target="_blank" rel="noopener noreferrer" onClick={logout}>
+                注销
+            </a>
+        </Menu.Item>
+    </Menu>
+);
+
+
 export default class Header extends React.Component {
+
 
     render() {
         return <div className="header d-print-none">
@@ -21,7 +51,8 @@ export default class Header extends React.Component {
                                                     <i className="ti-search"></i>
                                                 </button>
                                             </div>
-                                            <input type="text" id="search" className="form-control" placeholder="Search something..." />
+                                            <input type="text" id="search" className="form-control"
+                                                   placeholder="Search something..."/>
                                             <div className="input-group-append">
                                                 <button className="btn header-search-close-btn">
                                                     <i data-feather="x"></i>
@@ -48,7 +79,8 @@ export default class Header extends React.Component {
                             </li>
 
                             <li className="nav-item dropdown">
-                                <a href="#" className="nav-link nav-link-notify" title="Notifications" data-toggle="dropdown">
+                                <a href="#" className="nav-link nav-link-notify" title="Notifications"
+                                   data-toggle="dropdown">
                                     <i className="ti-bell"></i>
                                 </a>
                                 <div className="dropdown-menu dropdown-menu-right dropdown-menu-big">
@@ -61,7 +93,8 @@ export default class Header extends React.Component {
                                                 <a href="#" className="list-group-item d-flex hide-show-toggler">
                                                     <div>
                                                         <figure className="avatar mr-3">
-                                                            <span className="avatar-title bg-secondary-bright text-secondary rounded-circle">
+                                                            <span
+                                                                className="avatar-title bg-secondary-bright text-secondary rounded-circle">
                                                                 <i className="ti-server"></i>
                                                             </span>
                                                         </figure>
@@ -69,7 +102,8 @@ export default class Header extends React.Component {
                                                     <div className="flex-grow-1">
                                                         <p className="mb-0">
                                                             Your storage space is running low!
-                                                        <i title="Mark as unread" data-toggle="tooltip" className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
+                                                            <i title="Mark as unread" data-toggle="tooltip"
+                                                               className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
                                                         </p>
                                                         <span className="text-muted small">4 sec ago</span>
                                                     </div>
@@ -79,14 +113,18 @@ export default class Header extends React.Component {
                                                 <a href="#" className="list-group-item d-flex hide-show-toggler">
                                                     <div>
                                                         <figure className="avatar mr-3">
-                                                            <img src="https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png" className="rounded-circle" alt="avatar" />
+                                                            <img
+                                                                src="https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png"
+                                                                className="rounded-circle" alt="avatar"/>
                                                         </figure>
                                                     </div>
                                                     <div>
                                                         <p className="mb-0">
-                                                            <span className="text-primary">Jonny Richie</span> uploaded new
-                                                        files
-                                                        <i title="Mark as read" data-toggle="tooltip" className="hide-show-toggler-item fa fa-circle-o font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
+                                                            <span className="text-primary">Jonny Richie</span> uploaded
+                                                            new
+                                                            files
+                                                            <i title="Mark as read" data-toggle="tooltip"
+                                                               className="hide-show-toggler-item fa fa-circle-o font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
                                                         </p>
                                                         <span className="text-muted small">20 min ago</span>
                                                     </div>
@@ -99,7 +137,8 @@ export default class Header extends React.Component {
                                                 <a href="#" className="list-group-item d-flex hide-show-toggler">
                                                     <div>
                                                         <figure className="avatar mr-3">
-                                                            <span className="avatar-title bg-info-bright text-info rounded-circle">
+                                                            <span
+                                                                className="avatar-title bg-info-bright text-info rounded-circle">
                                                                 <i className="fa fa-cloud-upload"></i>
                                                             </span>
                                                         </figure>
@@ -107,7 +146,8 @@ export default class Header extends React.Component {
                                                     <div className="flex-grow-1">
                                                         <p className="mb-0">
                                                             Upgrade plan
-                                                        <i title="Mark as unread" data-toggle="tooltip" className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
+                                                            <i title="Mark as unread" data-toggle="tooltip"
+                                                               className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
                                                         </p>
                                                         <span className="text-muted small">45 sec ago</span>
                                                     </div>
@@ -117,7 +157,8 @@ export default class Header extends React.Component {
                                                 <a href="#" className="list-group-item d-flex hide-show-toggler">
                                                     <div>
                                                         <figure className="avatar mr-3">
-                                                            <span className="avatar-title bg-success-bright text-success rounded-circle">
+                                                            <span
+                                                                className="avatar-title bg-success-bright text-success rounded-circle">
                                                                 <i className="ti-share"></i>
                                                             </span>
                                                         </figure>
@@ -125,7 +166,8 @@ export default class Header extends React.Component {
                                                     <div className="flex-grow-1">
                                                         <p className="mb-0">
                                                             A file has been shared
-                                                        <i title="Mark as unread" data-toggle="tooltip" className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
+                                                            <i title="Mark as unread" data-toggle="tooltip"
+                                                               className="hide-show-toggler-item fa fa-check font-size-11 position-absolute right-0 top-0 mr-3 mt-3"></i>
                                                         </p>
                                                         <span className="text-muted small">58 sec ago</span>
                                                     </div>
@@ -150,13 +192,15 @@ export default class Header extends React.Component {
                             </li>
 
                             <li className="nav-item dropdown">
-                                <a href="#" className="nav-link profile-nav-link dropdown-toggle" title="User menu" data-toggle="dropdown">
-                                    <span className="mr-2 d-sm-inline d-none username"></span>
-                                    <figure className="avatar avatar-sm">
-                                        <img src="https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png" className="rounded-circle" alt="avatar" />
-                                    </figure>
-                                </a>
-                            
+                                <Dropdown overlay={menu} placement="topRight">
+                                    <a href="#" className="nav-link profile-nav-link dropdown-toggle" title="User menu">
+                                        <span className="mr-2 d-sm-inline d-none username">超级管理员</span>
+                                        <figure className="avatar avatar-sm">
+                                            <img src="https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png"
+                                                 className="rounded-circle" alt="avatar"/>
+                                        </figure>
+                                    </a>
+                                </Dropdown>
                             </li>
                         </ul>
                     </div>
@@ -175,7 +219,7 @@ export default class Header extends React.Component {
                     </li>
                 </ul>
             </div>
-        </div >
+        </div>
 
 
     }
