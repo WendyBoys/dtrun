@@ -2,7 +2,7 @@ import React from 'react';
 import '../../css/css2.css';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
-import {Form, Input, Button, Checkbox} from 'antd';
+import {Form, Input, Button, Checkbox, notification} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
@@ -25,8 +25,19 @@ export default class Register extends React.Component {
             const result = response.data.message;
             if (result == 'Success') {
                 this.props.history.push('/login')
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '注册成功',
+                    duration: 2,
+                });
             } else {
-                alert('注册失败');
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '注册失败，请稍后重试',
+                    duration: 2,
+                });
             }
         });
 

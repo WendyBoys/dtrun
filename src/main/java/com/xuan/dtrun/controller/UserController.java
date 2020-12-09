@@ -51,6 +51,8 @@ public class UserController {
 
     @PostMapping(value = "/register", produces = "application/json;charset=utf-8")
     public CommonResult save(@RequestBody User user) {
+        user.setIconUrl("https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png");
+        user.setUsername("无名氏");
         userService.save(user);
         return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
     }

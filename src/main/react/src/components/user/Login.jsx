@@ -5,7 +5,7 @@ import axios from 'axios';
 import cookie from 'react-cookies'
 import {Form, Input, Button, Checkbox} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
-
+import {notification} from "antd";
 
 export default class Login extends React.Component {
 
@@ -27,11 +27,21 @@ export default class Login extends React.Component {
             if (result == 'Success') {
                 let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
                 cookie.save('token', token, {expires: inFifteenMinutes})
-                this.props.history.push('/index')
+                this.props.history.push({pathname:'/index'})
             } else if (result == 'LoginRefuse') {
-                alert('账号已被封禁')
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '账号已被封禁',
+                    duration: 2,
+                });
             } else {
-                alert('账号或密码错误')
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '账号或密码错误',
+                    duration: 2,
+                });
             }
 
         });

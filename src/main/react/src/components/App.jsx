@@ -20,8 +20,8 @@ export default class App extends React.Component {
 
 
     componentWillMount() {
-        const currentUrl = window.location.href;
         axios.interceptors.request.use(function (config) {
+            const currentUrl = window.location.href;
             const token = cookie.load('token');
             if (currentUrl.endsWith('/') || currentUrl.endsWith('login') || currentUrl.endsWith('register')) {
 
@@ -37,7 +37,7 @@ export default class App extends React.Component {
         axios.interceptors.response.use(function (response) {
             // Do something with response data
             return response;
-        },error => {
+        }, error => {
             if (error) {
                 notification['error']({
                     message: '通知',
@@ -59,9 +59,10 @@ export default class App extends React.Component {
                 <Route exact={true} path="/" component={Login}/>
                 <Route path="/index" component={Index}/>
                 <Route path="/dashboard" component={Index}/>
-                <Route path="/datasource" component={Datasource}/>
+                <Route path="/datasource" component={Index}/>
             </Switch>
         </div>
 
     }
 }
+

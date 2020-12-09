@@ -1,34 +1,61 @@
 import React from 'react';
-
-import {Menu, Dropdown, Button, Space} from 'antd';
+import cookie from 'react-cookies'
+import {Menu, Dropdown, Button, Space, notification} from 'antd';
 import axios from "axios";
 
-const logout = () => {
-    alert('注销')
-};
-
-const menu = (
-    <Menu>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
-                1st menu item
-            </a>
-        </Menu.Item>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
-                2nd menu item
-            </a>
-        </Menu.Item>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" onClick={logout}>
-                注销
-            </a>
-        </Menu.Item>
-    </Menu>
-);
-
-
 export default class Header extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            username: '',
+            iconUrl: '',
+        }
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost/user/getCurrentUser').then((response) => {
+            var result = response.data.message;
+            if (result == 'Success') {
+                const user = response.data.data;
+                this.setState({username: user.username, iconUrl: user.iconUrl})
+            } else {
+
+            }
+        });
+    }
+
+
+    logout() {
+        cookie.remove('token');
+        this.props.history.push('/login')
+        notification['success']({
+            message: '通知',
+            description:
+                '注销成功',
+            duration: 2,
+        });
+    };
+
+    menu = (
+        <Menu>
+            <Menu.Item>
+                <a target="_blank" rel="noopener noreferrer" href="">
+                    个人中心
+                </a>
+            </Menu.Item>
+            <Menu.Item>
+                <a target="_blank" rel="noopener noreferrer" href="">
+                    修改密码
+                </a>
+            </Menu.Item>
+            <Menu.Item>
+                <a target="_blank" rel="noopener noreferrer" onClick={() => this.logout()}>
+                    注销
+                </a>
+            </Menu.Item>
+        </Menu>
+    );
 
 
     render() {
@@ -192,11 +219,11 @@ export default class Header extends React.Component {
                             </li>
 
                             <li className="nav-item dropdown">
-                                <Dropdown overlay={menu} placement="topRight">
+                                <Dropdown overlay={this.menu} placement="topRight">
                                     <a href="#" className="nav-link profile-nav-link dropdown-toggle" title="User menu">
-                                        <span className="mr-2 d-sm-inline d-none username">超级管理员</span>
+                                        <span className="mr-2 d-sm-inline d-none username">{this.state.username}</span>
                                         <figure className="avatar avatar-sm">
-                                            <img src="https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png"
+                                            <img src={this.state.iconUrl}
                                                  className="rounded-circle" alt="avatar"/>
                                         </figure>
                                     </a>

@@ -8,16 +8,12 @@ import Right from "../Right";
 export default class Index extends React.Component {
 
     render() {
-        return <div>
-            <div className="layout-wrapper">
-                <Header />
-                <Right />
+        return <div>           
                 <Switch>
                     <Route path="/datasource/create" component={Create} />
                     <Route path="/datasource/show" component={Show} />
                     <Route path="/datasource/update/:id" component={Update} />
-                </Switch>
-        </div>
+                </Switch>      
         </div>
     }
 }
