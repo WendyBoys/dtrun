@@ -1,8 +1,6 @@
 import React from 'react';
-import Nav from '../Nav';
+import Nav from '../common/Nav';
 import axios from 'axios';
-import Header from '../Header'
-import Right from '../Right'
 import {Form, Input, Button, Select} from 'antd';
 import {notification} from 'antd';
 
@@ -42,7 +40,7 @@ export default class Update extends React.Component {
 
 
     getDts() {
-        axios.get('http://localhost/dtsource/getDtSourceById?id=' + this.props.match.params.id).then((response) => {
+        axios.get('/dtsource/getDtSourceById?id=' + this.props.match.params.id).then((response) => {
             const result = response.data.message;
             if (result == 'Success') {
                 const data = response.data.data;
@@ -70,7 +68,7 @@ export default class Update extends React.Component {
     test() {
         this.formRef.current.validateFields()
             .then(values => {
-                axios.post('http://localhost/dtsource/testconnection', {
+                axios.post('/dtsource/testconnection', {
                     dataSourceType: values.dtsType,
                     accessKey: values.accessKey,
                     accessSecret: values.accessSecret,
@@ -108,7 +106,7 @@ export default class Update extends React.Component {
 
 
     onFinish = (values) => {
-        axios.post('http://localhost/dtsource/update', {
+        axios.post('/dtsource/update', {
             id: this.props.match.params.id,
             dataSourceName: values.dtsName,
             dataSourceType: values.dtsType,

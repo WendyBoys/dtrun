@@ -18,7 +18,7 @@ export default class Register extends React.Component {
 
 
     onFinish = (values) => {
-        axios.post('http://localhost/user/register', {
+        axios.post('/user/register', {
             account: values.account,
             password: values.password,
         }).then((response) => {
@@ -35,7 +35,7 @@ export default class Register extends React.Component {
                 notification['error']({
                     message: '通知',
                     description:
-                        '注册失败，请稍后重试',
+                        '该账号已存在，请修改账号',
                     duration: 2,
                 });
             }

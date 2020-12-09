@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -53,8 +54,13 @@ public class UserController {
     public CommonResult save(@RequestBody User user) {
         user.setIconUrl("https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png");
         user.setUsername("无名氏");
-        userService.save(user);
-        return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
+        try {
+            userService.save(user);
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
+        } catch (Exception e) {
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.REGISTERFAIL);
+        }
+
     }
 
 
@@ -66,8 +72,6 @@ public class UserController {
         }
         return new CommonResult(200, MessageEnum.LOGINEXPIRE, currentUser);
     }
-
-
 
 
 }

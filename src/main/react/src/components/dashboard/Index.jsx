@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Dashboard from './Dashboard';
-import Datasource from './datasource/Datasource';
-import Header from './Header';
-import Right from './Right';
-import Nav from './Nav';
+import Datasource from '../datasource/Datasource';
+import Header from '../common/Header';
+import Right from '../common/Right';
+import Nav from '../common/Nav';
 
 export default class Index extends React.Component {
     render() {

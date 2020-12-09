@@ -14,7 +14,7 @@ export default class Header extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost/user/getCurrentUser').then((response) => {
+        axios.get('/user/getCurrentUser').then((response) => {
             var result = response.data.message;
             if (result == 'Success') {
                 const user = response.data.data;

@@ -7,5 +7,5 @@ public interface UserDao {
 
 
 
-    void save(User user);
+    int save(User user);
 }

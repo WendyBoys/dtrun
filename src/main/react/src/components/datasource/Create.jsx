@@ -1,10 +1,8 @@
 import React from 'react';
-import Nav from '../Nav';
+import Nav from '../common/Nav';
 import axios from 'axios';
 import { Form, Input, Button, Select } from 'antd';
 import { notification } from 'antd';
-import Header from '../Header'
-import Right from '../Right'
 const { Option } = Select;
 
 const layout = {
@@ -37,7 +35,7 @@ export default class Create extends React.Component {
 
         this.formRef.current.validateFields()
             .then(values => {
-                axios.post('http://localhost/dtsource/testconnection', {
+                axios.post('/dtsource/testconnection', {
                     dataSourceType: values.dtsType,
                     accessKey: values.accessKey,
                     accessSecret: values.accessSecret,
@@ -77,7 +75,7 @@ export default class Create extends React.Component {
 
     onFinish = (values) => {
 
-        axios.post('http://localhost/dtsource/create', {
+        axios.post('/dtsource/create', {
             dataSourceName: values.dtsName,
             dataSourceType: values.dtsType,
             secretId: values.accessKey,
