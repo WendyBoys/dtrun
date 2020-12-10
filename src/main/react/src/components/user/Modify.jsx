@@ -1,8 +1,8 @@
 import React from 'react';
 import Nav from '../common/Nav';
-import {Form, Input, Button, message} from 'antd';
-import axios from "axios";
-import {notification} from "antd/lib/index";
+import {Form, Input, Button} from 'antd';
+import axios from 'axios';
+import {notification} from 'antd';
 
 
 const layout = {
@@ -25,7 +25,7 @@ const tailLayout = {
 export default class Modfiy extends React.Component {
 
     onFinish = (values) => {
-        axios.post('http://localhost/user/modifyPassword', {
+        axios.post('/user/modifyPassword', {
             oldPassword: values.oldPassword,
             newPassword: values.newPassword
         }).then((response) => {
