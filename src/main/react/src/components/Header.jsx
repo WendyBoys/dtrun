@@ -2,7 +2,6 @@ import React from 'react';
 import cookie from 'react-cookies'
 import {Menu, Dropdown, Button, Space, notification} from 'antd';
 import axios from "axios";
-import  Modify from './datasource/Modify'
 export default class Header extends React.Component {
 
     constructor(props) {
