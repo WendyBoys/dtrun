@@ -2,7 +2,7 @@ import React from 'react';
 import cookie from 'react-cookies'
 import {Menu, Dropdown, Button, Space, notification} from 'antd';
 import axios from "axios";
-
+import  Modify from './datasource/Modify'
 export default class Header extends React.Component {
 
     constructor(props) {
@@ -36,6 +36,9 @@ export default class Header extends React.Component {
             duration: 2,
         });
     };
+    modify(){
+        this.props.history.push('/datasource/Modify')
+    }
 
     menu = (
         <Menu>
@@ -45,7 +48,7 @@ export default class Header extends React.Component {
                 </a>
             </Menu.Item>
             <Menu.Item>
-                <a target="_blank" rel="noopener noreferrer" href="">
+                <a target="_blank" rel="noopener noreferrer" onClick={() => this.modify()} >
                     修改密码
                 </a>
             </Menu.Item>

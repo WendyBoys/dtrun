@@ -13,4 +13,10 @@
           insert into  user (account,password,username,createTime,isUse,iconUrl) VALUES (#{account},#{password},#{username},#{createTime},1,#{iconUrl})
     </insert>
 
+   <select id="findUserById" resultType="user">
+       select *  from  user where id=#{id}
+   </select>
+   <update id="modifyPassword">
+      UPDATE user  SET  password =#{newPassword} WHERE id=#{id}
+   </update>
 </mapper>

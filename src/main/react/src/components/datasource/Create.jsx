@@ -120,8 +120,8 @@ export default class Create extends React.Component {
                                         remember: true,
                                     }}
                                     onFinish={this.onFinish}
-
                                 >
+
                                     <Form.Item
                                         label="数据源名称"
                                         name="dtsName"

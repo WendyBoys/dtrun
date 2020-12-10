@@ -5,11 +5,13 @@ import Update from './Update';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Header from "../Header";
 import Right from "../Right";
+import  Modify from "./Modify"
 export default class Index extends React.Component {
 
     render() {
         return <div>           
                 <Switch>
+                    <Route path={"/datasource/modify"} component={Modify}/>
                     <Route path="/datasource/create" component={Create} />
                     <Route path="/datasource/show" component={Show} />
                     <Route path="/datasource/update/:id" component={Update} />

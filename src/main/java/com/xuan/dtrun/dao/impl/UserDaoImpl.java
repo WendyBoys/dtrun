@@ -24,4 +24,16 @@ public class UserDaoImpl implements UserDao {
           user.setCreateTime(new Date());
           userMapper.save(user);
      }
+
+     @Override
+     public User findUserById(int id) {
+          return userMapper.findUserById(id);
+     }
+
+     @Override
+     public void modifyPassword(String newPassword,Integer id) {
+          userMapper.modifyPassword(newPassword,id);
+     }
+
+
 }

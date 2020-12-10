@@ -11,4 +11,8 @@ public interface UserMapper {
     User login(String account, String password);
 
     void save(User user);
+
+    User findUserById(int id);
+
+    void modifyPassword(String newPassword,Integer id);
 }

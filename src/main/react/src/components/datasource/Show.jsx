@@ -48,9 +48,7 @@ const Show = (props) => {
 
 
     useEffect(() => {
-
         fentch();
-
     }, []);
 
 

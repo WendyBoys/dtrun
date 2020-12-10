@@ -20,4 +20,21 @@ public class UserServiceImpl implements UserService {
     public void save(User user) {
         userDao.save(user);
     }
+
+    @Override
+    public void update(String oldPassword, String newPassword) {
+
+    }
+
+    @Override
+    public User findUserById(int id) {
+        return userDao.findUserById(id);
+    }
+
+    @Override
+    public void modifyPassword(String newPassword,Integer id) {
+        userDao.modifyPassword(newPassword,id);
+    }
+
+
 }

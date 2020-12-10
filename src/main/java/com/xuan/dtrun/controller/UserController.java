@@ -67,7 +67,24 @@ public class UserController {
         return new CommonResult(200, MessageEnum.LOGINEXPIRE, currentUser);
     }
 
-
-
+    @PostMapping(value = "/modifyPassword", produces = "application/json;charset=utf-8")
+    public CommonResult save(@RequestBody JSONObject Json, @RequestHeader("token") String token) {
+            String oldPassword = Json.getString("oldPassword");
+            String newPassword = Json.getString("newPassword");
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+            int id = user.getId();
+            User userById = userService.findUserById(id);
+            if (!StringUtils.isEmpty(userById.getPassword())||!StringUtils.isEmpty(oldPassword)) {
+                if (userById.getPassword().equals(oldPassword)) {
+                    userService.modifyPassword(newPassword,id);
+                    return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+                }
+                else
+                {
+                    return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
+                }
+            }
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
+    }
 
 }

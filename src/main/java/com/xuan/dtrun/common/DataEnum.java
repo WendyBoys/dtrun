@@ -12,7 +12,9 @@ public enum DataEnum {
     QUERYSUCCESSFUL("查询成功"),
     QUERYFAILE("查询失败"),
     DELETESUCCESS("删除成功"),
-    DELETEFAIL("删除失败");
+    DELETEFAIL("删除失败"),
+    MODIFYFAIL("修改失败"),
+    MODIFYSUCCESS("修改成功");
     private String mapping;
 
     DataEnum(String mapping) {
