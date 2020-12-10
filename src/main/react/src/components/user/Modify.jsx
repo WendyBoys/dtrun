@@ -1,7 +1,7 @@
 import React from 'react';
-import Nav from '../Nav';
+import Nav from '../common/Nav';
 import {Form, Input, Button, message} from 'antd';
-import axios from "axios/index";
+import axios from "axios";
 import {notification} from "antd/lib/index";
 
 
