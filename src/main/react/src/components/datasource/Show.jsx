@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import Nav from '../Nav'
+import React, { useState, useEffect } from 'react';
+import Nav from '../common/Nav'
 import axios from 'axios';
-import {notification, Modal, Spin} from 'antd';
+import { notification, Modal, Spin } from 'antd';
 
 
 const Show = (props) => {
@@ -15,7 +15,7 @@ const Show = (props) => {
 
     const handleOk = () => {
         setConfirmLoading(true);
-        axios.delete('http://localhost/dtsource/delete', {
+        axios.delete('/dtsource/delete', {
             data: {
                 id: dtsId,
             }
@@ -54,7 +54,7 @@ const Show = (props) => {
 
     const fentch = () => {
         setLoading(true)
-        axios.get('http://localhost/dtsource/findAll').then((response) => {
+        axios.get('/dtsource/findAll').then((response) => {
             var result = response.data.message;
             var data = response.data.data;
             if (result == 'Success') {
@@ -73,7 +73,7 @@ const Show = (props) => {
 
     const testDts = (id) => {
         setLoading(true)
-        axios.post('http://localhost/dtsource/connection', {
+        axios.post('/dtsource/connection', {
             id: id,
         }).then((response) => {
             var result = response.data.message;
@@ -113,14 +113,14 @@ const Show = (props) => {
     const container = ((
 
         <div className="content-wrapper">
-            <Nav/>
+            <Nav />
 
             <div className="content-body">
 
                 <Spin size="large" spinning={loading}>
 
                     <div id="listdts" className="content">
-                        <div className="row" style={{marginBottom: '10px'}}>
+                        <div className="row" style={{ marginBottom: '10px' }}>
                             <div className="col-xl-12 ">
                                 <button className="btn btn-primary pull-right" onClick={() => toCreate()}>创建</button>
                             </div>
@@ -132,32 +132,32 @@ const Show = (props) => {
                             <div className="col-xl-12 components-sidebar">
                                 <table id="table" className="table">
                                     <thead>
-                                    <tr>
-                                        <th scope="col">序号</th>
-                                        <th scope="col">数据源名称</th>
-                                        <th scope="col">数据源类型</th>
-                                        <th scope="col">创建时间</th>
-                                        <th scope="col">操作</th>
-                                    </tr>
+                                        <tr>
+                                            <th scope="col">序号</th>
+                                            <th scope="col">数据源名称</th>
+                                            <th scope="col">数据源类型</th>
+                                            <th scope="col">创建时间</th>
+                                            <th scope="col">操作</th>
+                                        </tr>
                                     </thead>
                                     <tbody id="dtsource">
-                                    {
-                                        list.map((item, index) =>
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td><span
-                                                    style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                                                    onClick={() => updateDts(item.id)}>{item.dtSourceName}</span></td>
-                                                <td>{item.dtSourceType}</td>
-                                                <td>{item.createTime}</td>
-                                                <td><span
-                                                    style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                                                    onClick={() => testDts(item.id)}>测试</span> <span
-                                                    style={{color: '#0062FF', cursor: 'pointer'}}
-                                                    onClick={() => deleteDts(item.id, item.dtSourceName)}>删除</span></td>
-                                            </tr>
-                                        )
-                                    }
+                                        {
+                                            list.map((item, index) =>
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td><span
+                                                        style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }}
+                                                        onClick={() => updateDts(item.id)}>{item.dtSourceName}</span></td>
+                                                    <td>{item.dtSourceType}</td>
+                                                    <td>{item.createTime}</td>
+                                                    <td><span
+                                                        style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }}
+                                                        onClick={() => testDts(item.id)}>测试</span> <span
+                                                            style={{ color: '#0062FF', cursor: 'pointer' }}
+                                                            onClick={() => deleteDts(item.id, item.dtSourceName)}>删除</span></td>
+                                                </tr>
+                                            )
+                                        }
                                     </tbody>
                                 </table>
                             </div>

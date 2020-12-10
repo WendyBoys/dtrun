@@ -1,7 +1,5 @@
 import React from 'react';
-import socket from '../images/socket.svg';
-import axios from 'axios';
-import cookie from 'react-cookies'
+import socket from '../../images/socket.svg';
 export default class Dashboard extends React.Component {
 
 

@@ -18,7 +18,7 @@ export default class Login extends React.Component {
 
 
     onFinish = (values) => {
-        axios.post('http://localhost/user/login', {
+        axios.post('/user/login', {
             account: values.account,
             password: values.password,
         }).then((response) => {
