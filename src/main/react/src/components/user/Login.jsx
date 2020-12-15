@@ -18,33 +18,35 @@ export default class Login extends React.Component {
 
 
     onFinish = (values) => {
-        axios.post('/user/login', {
-            account: values.account,
-            password: values.password,
-        }).then((response) => {
-            var result = response.data.message;
-            var token = response.data.data;
-            if (result == 'Success') {
-                let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
-                cookie.save('token', token, {expires: inFifteenMinutes})
-                this.props.history.push({pathname:'/index'})
-            } else if (result == 'LoginRefuse') {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '账号已被封禁',
-                    duration: 2,
-                });
-            } else {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '账号或密码错误',
-                    duration: 2,
-                });
-            }
 
-        });
+        this.props.history.push({pathname:'/index'})
+        // axios.post('/user/login', {
+        //     account: values.account,
+        //     password: values.password,
+        // }).then((response) => {
+        //     var result = response.data.message;
+        //     var token = response.data.data;
+        //     if (result == 'Success') {
+        //         let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
+        //         cookie.save('token', token, {expires: inFifteenMinutes})
+        //         this.props.history.push({pathname:'/index'})
+        //     } else if (result == 'LoginRefuse') {
+        //         notification['error']({
+        //             message: '通知',
+        //             description:
+        //                 '账号已被封禁',
+        //             duration: 2,
+        //         });
+        //     } else {
+        //         notification['error']({
+        //             message: '通知',
+        //             description:
+        //                 '账号或密码错误',
+        //             duration: 2,
+        //         });
+        //     }
+
+        // });
 
     };
 

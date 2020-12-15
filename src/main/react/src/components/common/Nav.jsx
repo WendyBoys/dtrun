@@ -28,7 +28,7 @@ export default class Nav extends React.Component {
 
                 </li>
                 <li>
-                    <NavLink to="/movetask/show">
+                    <NavLink to="/movetask/create">
                         <i className="nav-link-icon ti-file"></i>
                         <span className="nav-link-label">迁移任务管理</span>
                     </NavLink>

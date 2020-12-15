@@ -4,6 +4,7 @@ import Dashboard from './Dashboard';
 import Datasource from '../datasource/Datasource';
 import Header from '../common/Header';
 import Right from '../common/Right';
+import MoveTask from '../movetask/MoveTask';
 import Nav from '../common/Nav';
 
 export default class Index extends React.Component {
@@ -16,9 +17,9 @@ export default class Index extends React.Component {
                 <Switch>
                     <Route path="/dashboard" component={Dashboard} />
                     <Route path="/datasource" component={Datasource} />
+                    <Route path="/movetask" component={MoveTask} />
                     <Redirect to="/dashboard"/>                
-                </Switch>
-               
+                </Switch>              
             </div>
         </div>
     }

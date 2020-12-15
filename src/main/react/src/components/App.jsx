@@ -5,7 +5,6 @@ import Index from './dashboard/Index';
 import axios from 'axios';
 import cookie from 'react-cookies'
 import Register from './user/Register';
-import Datasource from "./datasource/Datasource";
 
 
 import 'antd/dist/antd.css';
@@ -65,6 +64,7 @@ export default class App extends React.Component {
                 <Route path="/index" component={Index}/>
                 <Route path="/dashboard" component={Index}/>
                 <Route path="/datasource" component={Index}/>
+                <Route path="/movetask" component={Index}/>
             </Switch>
         </div>
 
