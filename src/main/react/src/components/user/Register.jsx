@@ -1,9 +1,8 @@
 import React from 'react';
-import '../../css/css2.css';
+import {Button, Col, Form, Input, notification, Row} from 'antd';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
-import {Form, Input, Button, Checkbox, notification} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
 
@@ -45,47 +44,41 @@ export default class Register extends React.Component {
 
     render() {
         return (
+            <>
+                <Row style={{ marginBottom: '5%', paddingTop: '20px', minHeight: '200px' }}>
+                    <Col span={6}></Col>
+                    <Col span={12}><img src={socket} alt="" width="100%" height="200px" /></Col>
+                    <Col span={6}></Col>
+                </Row>
 
-            <div className="container-fluid">
-                <div className="row" style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6"><img src={socket} alt="" width="100%" height="200px"/></div>
-                    <div className="col-xl-3">
-                        <div>
-
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6">
+                <Row>
+                    <Col span={6}></Col>
+                    <Col span={12}>
                         <div>
                             <Form
                                 name="normal_login"
                                 className="login-form"
-                                initialValues={{remember: true}}
+                                initialValues={{ remember: true }}
                                 onFinish={this.onFinish}
                             >
                                 <Form.Item
                                     name="account"
-                                    rules={[{required: true, message: 'Please input your Username!'}]}
+                                    rules={[{ required: true, message: '请输入账号' }]}
                                 >
-                                    <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                                           placeholder="Username"/>
+                                    <Input prefix={<UserOutlined className="site-form-item-icon" />}
+                                        placeholder="账号" />
                                 </Form.Item>
                                 <Form.Item
                                     name="password"
-                                    rules={[{required: true, message: 'Please input your Password!'}]}
+                                    rules={[{ required: true, message: '请输入密码' }]}
                                 >
                                     <Input.Password
-                                        prefix={<LockOutlined className="site-form-item-icon"/>}
+                                        prefix={<LockOutlined className="site-form-item-icon" />}
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="密码"
                                     />
                                 </Form.Item>
                                 <Form.Item>
-
-
                                     <NavLink className="login-form-forgot" to="/login">
                                         已有账号？去登录
                                     </NavLink>
@@ -93,18 +86,17 @@ export default class Register extends React.Component {
 
                                 <Form.Item>
                                     <Button type="primary" htmlType="submit" className="login-form-button"
-                                            style={{marginBottom: '20px'}}>
+                                        style={{ marginBottom: '20px' }}>
                                         立即注册
                                     </Button>
                                 </Form.Item>
                             </Form>
                         </div>
-                    </div>
-                    <div className="col-xl-3"></div>
-                </div>
-
-
-            </div>);
+                    </Col>
+                    <Col span={6}></Col>
+                </Row>
+            </>
+        );
 
 
     }
