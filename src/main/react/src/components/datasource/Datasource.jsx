@@ -3,9 +3,7 @@ import Show from './Show';
 import Create from './Create';
 import Update from './Update';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Header from "../Header";
-import Right from "../Right";
-import  Modify from "./Modify"
+import  Modify from "../user/Modify"
 export default class Index extends React.Component {
 
     render() {

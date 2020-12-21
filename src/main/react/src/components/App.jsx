@@ -1,7 +1,7 @@
 import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import Login from './user/Login';
-import Index from './Index';
+import Index from './dashboard/Index';
 import axios from 'axios';
 import cookie from 'react-cookies'
 import Register from './user/Register';
@@ -20,6 +20,7 @@ export default class App extends React.Component {
 
 
     componentWillMount() {
+        const url='http://127.0.0.1:8080';
         axios.interceptors.request.use(function (config) {
             const currentUrl = window.location.href;
             const token = cookie.load('token');
@@ -31,6 +32,10 @@ export default class App extends React.Component {
                 }
             }
             config.headers.common['token'] = token;
+            config.headers.common['Access-Control-Max-Age'] = 86400;
+            if (config.url.indexOf(url) === -1) {
+                config.url=url+config.url;
+            }
             return config;
         });
 

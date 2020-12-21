@@ -1,7 +1,6 @@
 package com.xuan.dtrun.dao.impl;
 
 import com.xuan.dtrun.dao.UserDao;
-import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +11,19 @@ import java.util.Date;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-     @Autowired
-     private UserMapper userMapper;
+    @Autowired
+    private UserMapper userMapper;
 
-     @Override
-     public User login(String account, String password) {
-          return userMapper.login(account, password);
-     }
+    @Override
+    public User login(String account, String password) {
+        return userMapper.login(account, password);
+    }
 
-     @Override
-     public void save(User user) {
-          user.setCreateTime(new Date());
-          userMapper.save(user);
-     }
+    @Override
+    public int save(User user) {
+        user.setCreateTime(new Date());
+        return userMapper.save(user);
+    }
 
      @Override
      public User findUserById(int id) {
@@ -35,17 +34,5 @@ public class UserDaoImpl implements UserDao {
      public void modifyPassword(String newPassword,Integer id) {
           userMapper.modifyPassword(newPassword,id);
      }
-
-     @Override
-     public RegisterCode findRegisterCode(Integer registerCode) {
-          return userMapper.findRegisterCode(registerCode);
-     }
-
-     @Override
-     public void setRegisterCode(Integer i, Integer id) {
-          userMapper.setRegisterCode(i,id);
-     }
-
-
 
 }
