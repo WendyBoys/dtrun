@@ -2,14 +2,13 @@ package com.xuan.dtrun.controller;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
+import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.UserService;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.utils.TokenUtils;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -51,10 +50,24 @@ public class UserController {
 
     @PostMapping(value = "/register", produces = "application/json;charset=utf-8")
     public CommonResult save(@RequestBody User user) {
-        user.setIconUrl("https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png");
-        user.setUsername("无名氏");
-        userService.save(user);
-        return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
+        try {
+            Integer registerCode =user.getRegisterCode();
+            RegisterCode registercode= userService.findRegisterCode(registerCode);
+            Integer isUse = registercode.getIsUse();
+            Integer value = registercode.getValue();
+            if (registerCode==value ||  isUse==1) {
+                user.setIconUrl("https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png");
+                user.setUsername("无名氏");
+                userService.save(user);
+                userService.setRegisterCode(0,registercode.getId());
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);
+            }else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.REGISTERFAIL);
+            }
+        }catch (Exception e){
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.REGISTERMISS);
+        }
+
     }
 
 

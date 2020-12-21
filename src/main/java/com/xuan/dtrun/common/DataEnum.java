@@ -5,6 +5,8 @@ public enum DataEnum {
     LOGINREFUSE("账号已被封禁"),
     LOGINEXPIRE("登录过期，请重新登录"),
     REGISTERSUCCESS("注册成功"),
+    REGISTERFAIL("注册失败"),
+    REGISTERMISS("注册码无效"),
     CONNECTIOSUCCESS("数据源连接成功"),
     CONNECTIONFAIL("数据源连接失败，请检查您的数据源参数"),
     CREATESUCCESS("创建成功"),

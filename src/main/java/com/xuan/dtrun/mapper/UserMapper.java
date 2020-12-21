@@ -1,5 +1,6 @@
 package com.xuan.dtrun.mapper;
 
+import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,8 @@ public interface UserMapper {
     User findUserById(int id);
 
     void modifyPassword(String newPassword,Integer id);
+
+    RegisterCode findRegisterCode(Integer registerCode);
+
+    void setRegisterCode(Integer i, Integer id);
 }

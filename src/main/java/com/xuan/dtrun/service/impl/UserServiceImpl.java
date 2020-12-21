@@ -1,6 +1,7 @@
 package com.xuan.dtrun.service.impl;
 
 import com.xuan.dtrun.dao.UserDao;
+import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,17 @@ public class UserServiceImpl implements UserService {
     public void modifyPassword(String newPassword,Integer id) {
         userDao.modifyPassword(newPassword,id);
     }
+
+    @Override
+    public RegisterCode findRegisterCode(Integer registerCode) {
+        return userDao.findRegisterCode(registerCode);
+    }
+
+    @Override
+    public void setRegisterCode(Integer i, Integer id) {
+        userDao.setRegisterCode(i,id);
+    }
+
 
 
 }

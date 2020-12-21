@@ -92,6 +92,7 @@ export default class Login extends React.Component {
                                         placeholder="Password"
                                     />
                                 </Form.Item>
+
                                 <Form.Item>
                                     <Form.Item name="remember" valuePropName="checked" noStyle>
                                         <Checkbox>记住我</Checkbox>

@@ -1,5 +1,6 @@
 package com.xuan.dtrun.service;
 
+import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,4 +16,8 @@ public interface UserService {
     User findUserById(int id);
 
     void modifyPassword(String newPassword,Integer id);
+
+    RegisterCode findRegisterCode(Integer registerCode);
+
+    void setRegisterCode(Integer i,Integer id);
 }

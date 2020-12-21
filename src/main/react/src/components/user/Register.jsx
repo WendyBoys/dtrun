@@ -3,7 +3,8 @@ import '../../css/css2.css';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
 import {Form, Input, Button, Checkbox, notification} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
+import {UserOutlined, LockOutlined,AuditOutlined} from '@ant-design/icons';
+import { createFromIconfontCN } from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
 
@@ -21,6 +22,7 @@ export default class Register extends React.Component {
         axios.post('http://localhost/user/register', {
             account: values.account,
             password: values.password,
+            registerCode:values.registerCode,
         }).then((response) => {
             const result = response.data.message;
             if (result == 'Success') {
@@ -82,6 +84,14 @@ export default class Register extends React.Component {
                                         type="password"
                                         placeholder="Password"
                                     />
+                                </Form.Item>
+                                <Form.Item   //<AuditOutlined />
+                                    name="registerCode"
+                                    rules={[{required: true, message: 'Please input your Registration code!'}]}
+                                >
+                                    <Input
+                                        prefix={<AuditOutlined />}
+                                        placeholder="Registration code"/>
                                 </Form.Item>
                                 <Form.Item>
 
