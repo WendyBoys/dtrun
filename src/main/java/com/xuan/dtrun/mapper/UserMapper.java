@@ -15,9 +15,9 @@ public interface UserMapper {
 
     User findUserById(int id);
 
-    void modifyPassword(String newPassword,Integer id);
+    void modifyPassword(String newPassword, Integer id);
 
-    RegisterCode findRegisterCode(Integer registerCode);
+    RegisterCode verifyRegisterCode(String registerCode);
 
-    void setRegisterCode(Integer i, Integer id);
+    void updateRegisterCodeStatus(int i, Integer id);
 }

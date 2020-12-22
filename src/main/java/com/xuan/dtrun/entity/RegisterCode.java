@@ -2,8 +2,17 @@ package com.xuan.dtrun.entity;
 
 public class RegisterCode {
      private Integer id;
-     private Integer value;
+     private String value;
      private Integer isUse;
+
+     public RegisterCode() {
+     }
+
+     public RegisterCode(Integer id, String value, Integer isUse) {
+          this.id = id;
+          this.value = value;
+          this.isUse = isUse;
+     }
 
      public Integer getId() {
           return id;
@@ -13,11 +22,11 @@ public class RegisterCode {
           this.id = id;
      }
 
-     public Integer getValue() {
+     public String getValue() {
           return value;
      }
 
-     public void setValue(Integer value) {
+     public void setValue(String value) {
           this.value = value;
      }
 

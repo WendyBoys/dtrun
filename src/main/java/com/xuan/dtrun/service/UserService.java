@@ -17,7 +17,10 @@ public interface UserService {
 
     void modifyPassword(String newPassword,Integer id);
 
-    RegisterCode findRegisterCode(Integer registerCode);
 
-    void setRegisterCode(Integer i,Integer id);
+    RegisterCode verifyRegisterCode(String registerCode);
+
+    void updateRegisterCodeStatus(int i, Integer id);
+
+
 }

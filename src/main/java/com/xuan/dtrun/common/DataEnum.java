@@ -6,6 +6,7 @@ public enum DataEnum {
     LOGINEXPIRE("登录过期，请重新登录"),
     REGISTERSUCCESS("注册成功"),
     REGISTERFAIL("注册失败"),
+    REGISTERCODEINALID("无效注册码"),
     CONNECTIOSUCCESS("数据源连接成功"),
     CONNECTIONFAIL("数据源连接失败，请检查您的数据源参数"),
     CREATESUCCESS("创建成功"),

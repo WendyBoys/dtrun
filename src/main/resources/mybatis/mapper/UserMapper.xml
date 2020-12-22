@@ -19,10 +19,11 @@
    <update id="modifyPassword">
       UPDATE user  SET  password =#{newPassword} WHERE id=#{id}
    </update>
-    <select id="findRegisterCode" resultType="registerCode">
+    <select id="verifyRegisterCode" resultType="registerCode">
         SELECT * FROM registercode WHERE VALUE =#{registercode}
     </select>
-    <update id="setRegisterCode">
+    <update id="updateRegisterCodeStatus">
         UPDATE  registercode SET  isUse=#{i} WHERE id =#{id}
     </update>
+
 </mapper>

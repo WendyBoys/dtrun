@@ -38,13 +38,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegisterCode findRegisterCode(Integer registerCode) {
-        return userDao.findRegisterCode(registerCode);
+    public RegisterCode verifyRegisterCode(String registerCode) {
+        return userDao.verifyRegisterCode(registerCode);
     }
 
     @Override
-    public void setRegisterCode(Integer i, Integer id) {
-        userDao.setRegisterCode(i,id);
+    public void updateRegisterCodeStatus(int i, Integer id) {
+        userDao.updateRegisterCodeStatus(i,id);
     }
 
 

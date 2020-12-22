@@ -25,6 +25,7 @@ export default class Register extends React.Component {
             registerCode:values.registerCode,
         }).then((response) => {
             const result = response.data.message;
+            const resultData=response.data.data;
             if (result == 'Success') {
                 this.props.history.push('/login')
                 notification['success']({
@@ -33,7 +34,14 @@ export default class Register extends React.Component {
                         '注册成功',
                     duration: 2,
                 });
-            } else {
+            } else if (resultData=='无效注册码'){
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '无效注册码',
+                    duration: 2,
+                });
+            }else  {
                 notification['error']({
                     message: '通知',
                     description:

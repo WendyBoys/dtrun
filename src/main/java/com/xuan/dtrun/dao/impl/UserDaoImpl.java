@@ -1,6 +1,7 @@
 package com.xuan.dtrun.dao.impl;
 
 import com.xuan.dtrun.dao.UserDao;
+import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,16 @@ public class UserDaoImpl implements UserDao {
      public void modifyPassword(String newPassword,Integer id) {
           userMapper.modifyPassword(newPassword,id);
      }
+
+     @Override
+     public RegisterCode verifyRegisterCode(String registerCode) {
+          return userMapper.verifyRegisterCode(registerCode);
+     }
+
+     @Override
+     public void updateRegisterCodeStatus(int i, Integer id) {
+          userMapper.updateRegisterCodeStatus(i,id);
+     }
+
 
 }
