@@ -19,8 +19,8 @@ export default class App extends React.Component {
 
 
     componentWillMount() {
-        const url='http://127.0.0.1:8080';
-       // const url='https://api.dtrun.cn';
+        //const url='http://127.0.0.1:8080';
+        const url='https://api.dtrun.cn';
         axios.interceptors.request.use(function (config) {
             const currentUrl = window.location.href;
             const token = cookie.load('token');
