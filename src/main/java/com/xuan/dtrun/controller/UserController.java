@@ -34,7 +34,6 @@ public class UserController {
     @Value("${user.userName}")
     private String userName;
 
-    public static final String SALT = "DTRUN";
 
     @PostMapping(value = "/login", produces = "application/json;charset=utf-8")
     public CommonResult login(@RequestBody JSONObject json) {
