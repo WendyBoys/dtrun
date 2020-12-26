@@ -1,7 +1,7 @@
 package com.xuan.dtrun.service.impl;
 
-import com.xuan.dtrun.dao.DtSourceDao;
 import com.xuan.dtrun.entity.DtSourceEntity;
+import com.xuan.dtrun.mapper.DtSourceMapper;
 import com.xuan.dtrun.service.DtSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,31 +12,31 @@ import java.util.List;
 public class DtSourceServiceImpl implements DtSourceService {
 
     @Autowired
-    private DtSourceDao dtSourceDao;
+    private DtSourceMapper dtSourceMapper;
 
     @Override
     public void create(DtSourceEntity dtSourceEntity) {
-        dtSourceDao.create(dtSourceEntity);
+        dtSourceMapper.create(dtSourceEntity);
     }
 
     @Override
     public DtSourceEntity getDtSourceById(int id) {
-        return dtSourceDao.getDtSourceById(id);
+        return dtSourceMapper.getDtSourceById(id);
     }
 
     @Override
     public List<DtSourceEntity> findAll(int userId) {
-        return dtSourceDao.findAll(userId);
+        return dtSourceMapper.findAll(userId);
     }
 
     @Override
     public void delete(Integer id) {
-        dtSourceDao.delete(id);
+        dtSourceMapper.delete(id);
     }
 
     @Override
     public void update(DtSourceEntity dtSourceEntity) {
-        dtSourceDao.update(dtSourceEntity);
+        dtSourceMapper.update(dtSourceEntity);
     }
 
 

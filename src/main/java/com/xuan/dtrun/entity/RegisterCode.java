@@ -2,15 +2,15 @@ package com.xuan.dtrun.entity;
 
 public class RegisterCode {
      private Integer id;
-     private String value;
+     private String registerCode;
      private Integer isUse;
 
      public RegisterCode() {
      }
 
-     public RegisterCode(Integer id, String value, Integer isUse) {
+     public RegisterCode(Integer id, String registerCode, Integer isUse) {
           this.id = id;
-          this.value = value;
+          this.registerCode = registerCode;
           this.isUse = isUse;
      }
 
@@ -22,12 +22,12 @@ public class RegisterCode {
           this.id = id;
      }
 
-     public String getValue() {
-          return value;
+     public String getRegisterCode() {
+          return registerCode;
      }
 
-     public void setValue(String value) {
-          this.value = value;
+     public void setRegisterCode(String registerCode) {
+          this.registerCode = registerCode;
      }
 
      public Integer getIsUse() {

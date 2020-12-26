@@ -5,25 +5,32 @@
 <mapper namespace="com.xuan.dtrun.mapper.UserMapper">
 
 
-    <select id="login"   resultType="user">
-        select id,username,iconUrl,isUse from user where account=#{account} and password=#{password}
+    <select id="login" resultType="user">
+       SELECT id,username,iconUrl,isUse FROM user WHERE account=#{account} AND password= #{password}
     </select>
 
-    <insert id="save"  parameterType="user">
-          insert into  user (account,password,username,createTime,isUse,iconUrl) VALUES (#{account},#{password},#{username},#{createTime},1,#{iconUrl})
+    <insert id="register" parameterType="user">
+       INSERT INTO user (account,password,username,createTime,isUse,iconUrl,registerCode) VALUES (#{account},#{password},#{username},#{createTime},1,#{iconUrl},#{registerCode})
     </insert>
 
-   <select id="findUserById" resultType="user">
-       select *  from  user where id=#{id}
-   </select>
-   <update id="modifyPassword">
-      UPDATE user  SET  password =#{newPassword} WHERE id=#{id}
-   </update>
-    <select id="verifyRegisterCode" resultType="registerCode">
-        SELECT * FROM registercode WHERE VALUE =#{registercode}
+    <select id="isRegister" resultType="int">
+       SELECT count(1) FROM user WHERE account = #{account}
     </select>
+
+    <select id="findUserById" resultType="user">
+       SELECT * FROM user WHERE id= #{id}
+    </select>
+
+    <update id="modifyPassword">
+      UPDATE user SET password = #{newPassword} WHERE id=#{id}
+    </update>
+
+    <select id="verifyRegisterCode" resultType="registerCode">
+        SELECT * FROM registercode WHERE registerCode = #{registercode}
+    </select>
+
     <update id="updateRegisterCodeStatus">
-        UPDATE  registercode SET  isUse=#{i} WHERE id =#{id}
+        UPDATE  registercode SET isUse= 0 WHERE id = #{id}
     </update>
 
 </mapper>

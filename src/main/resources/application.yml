@@ -7,7 +7,7 @@ spring:
   datasource:
     username: root
     password: 199951
-    url: jdbc:mysql://47.102.196.34:3306/dtrun?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://182.254.133.18:3306/dtrun?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initialSize: 5
@@ -32,7 +32,10 @@ spring:
 server:
   port: 8080
 
-
 mybatis:
   config-location: classpath:mybatis/mybatisConfig.xml
   mapper-locations: classpath:mybatis/mapper/*.xml
+
+user:
+  iconUrl: https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png
+  userName: 无名氏

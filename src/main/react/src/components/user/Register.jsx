@@ -2,9 +2,8 @@ import React from 'react';
 import '../../css/css2.css';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
-import {Form, Input, Button, Checkbox, notification} from 'antd';
-import {UserOutlined, LockOutlined,AuditOutlined} from '@ant-design/icons';
-import { createFromIconfontCN } from '@ant-design/icons';
+import {Button, Form, Input, notification} from 'antd';
+import {AuditOutlined, LockOutlined, UserOutlined} from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
 
@@ -22,33 +21,18 @@ export default class Register extends React.Component {
         axios.post('/user/register', {
             account: values.account,
             password: values.password,
-            registerCode:values.registerCode,
+            registerCode: values.registerCode,
         }).then((response) => {
             const result = response.data.message;
-            const resultData=response.data.data;
             if (result == 'Success') {
                 this.props.history.push('/login')
-                notification['success']({
-                    message: '通知',
-                    description:
-                        '注册成功',
-                    duration: 2,
-                });
-            } else if (resultData=='无效注册码'){
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '无效注册码',
-                    duration: 2,
-                });
-            }else  {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '该账号已存在，请修改账号',
-                    duration: 2,
-                });
             }
+            notification[result == 'Success' ? 'success' : 'error']({
+                message: '通知',
+                description:
+                response.data.data,
+                duration: 2,
+            });
         });
 
     };
@@ -98,7 +82,7 @@ export default class Register extends React.Component {
                                     rules={[{required: true, message: 'Please input your Registration code!'}]}
                                 >
                                     <Input
-                                        prefix={<AuditOutlined />}
+                                        prefix={<AuditOutlined/>}
                                         placeholder="Registration code"/>
                                 </Form.Item>
                                 <Form.Item>
@@ -120,7 +104,7 @@ export default class Register extends React.Component {
                     </div>
                     <div className="col-xl-3"></div>
                 </div>
-
+            
 
             </div>);
 
