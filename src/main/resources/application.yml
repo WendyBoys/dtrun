@@ -32,7 +32,10 @@ spring:
 server:
   port: 8080
 
-
 mybatis:
   config-location: classpath:mybatis/mybatisConfig.xml
   mapper-locations: classpath:mybatis/mapper/*.xml
+
+user:
+  iconUrl: https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png
+  userName: 无名氏

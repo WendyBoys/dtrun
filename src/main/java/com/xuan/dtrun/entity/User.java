@@ -12,11 +12,12 @@ public class User implements Serializable {
     private String iconUrl;
     private Date createTime;
     private int isUse;
+    private String registerCode;
 
     public User() {
     }
 
-    public User(Integer id, String account, String password, String username, String iconUrl, Date createTime, int isUse) {
+    public User(Integer id, String account, String password, String username, String iconUrl, Date createTime, int isUse, String registerCode) {
         this.id = id;
         this.account = account;
         this.password = password;
@@ -24,6 +25,7 @@ public class User implements Serializable {
         this.iconUrl = iconUrl;
         this.createTime = createTime;
         this.isUse = isUse;
+        this.registerCode = registerCode;
     }
 
     public Integer getId() {
@@ -80,5 +82,13 @@ public class User implements Serializable {
 
     public void setIsUse(int isUse) {
         this.isUse = isUse;
+    }
+
+    public String getRegisterCode() {
+        return registerCode;
+    }
+
+    public void setRegisterCode(String registerCode) {
+        this.registerCode = registerCode;
     }
 }

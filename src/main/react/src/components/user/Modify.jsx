@@ -1,8 +1,8 @@
 import React from 'react';
 import Nav from '../common/Nav';
-import {Form, Input, Button} from 'antd';
-import axios from 'axios';
-import {notification} from 'antd';
+import {Button, Form, Input} from 'antd';
+import axios from "axios/index";
+import {notification} from "antd/lib/index";
 
 
 const layout = {
