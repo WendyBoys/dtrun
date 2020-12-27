@@ -25,8 +25,8 @@ export default class Login extends React.Component {
             var token = response.data.data;
             if (result == 'Success') {
                 let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
-                cookie.save('token', token, { expires: inFifteenMinutes })
-                this.props.history.push({ pathname: '/index' })
+                cookie.save('token', token, {expires: inFifteenMinutes})
+                this.props.history.push({pathname: '/index'})
             } else if (result == 'LoginRefuse') {
                 notification['error']({
                     message: '通知',
@@ -55,9 +55,9 @@ export default class Login extends React.Component {
         return (
 
             <div className="container-fluid">
-                <div className="row" style={{ marginBottom: '5%', paddingTop: '20px', minHeight: '200px' }}>
+                <div className="row" style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
                     <div className="col-xl-3"></div>
-                    <div className="col-xl-6"><img src={socket} alt="" width="100%" height="200px" /></div>
+                    <div className="col-xl-6"><img src={socket} alt="" width="100%" height="200px"/></div>
                     <div className="col-xl-3">
                         <div>
 
@@ -71,22 +71,22 @@ export default class Login extends React.Component {
                             <Form
                                 name="normal_login"
                                 className="login-form"
-                                initialValues={{ remember: true }}
+                                initialValues={{remember: true}}
                                 onFinish={this.onFinish}
                             >
                                 <Form.Item
                                     name="account"
-                                    rules={[{ required: true, message: 'Please input your Username!' }]}
+                                    rules={[{required: true, message: 'Please input your Username!'}]}
                                 >
-                                    <Input prefix={<UserOutlined className="site-form-item-icon" />}
-                                        placeholder="Username" />
+                                    <Input prefix={<UserOutlined className="site-form-item-icon"/>}
+                                           placeholder="Username"/>
                                 </Form.Item>
                                 <Form.Item
                                     name="password"
-                                    rules={[{ required: true, message: 'Please input your Password!' }]}
+                                    rules={[{required: true, message: 'Please input your Password!'}]}
                                 >
                                     <Input.Password
-                                        prefix={<LockOutlined className="site-form-item-icon" />}
+                                        prefix={<LockOutlined className="site-form-item-icon"/>}
                                         type="password"
                                         placeholder="Password"
                                     />
@@ -104,11 +104,11 @@ export default class Login extends React.Component {
 
                                 <Form.Item>
                                     <Button type="primary" htmlType="submit" className="login-form-button"
-                                        style={{ marginBottom: '20px' }}>
+                                            style={{marginBottom: '20px'}}>
                                         登录
                                     </Button>
                                     <Button type="primary" htmlType="button" className="login-form-button"
-                                        onClick={() => this.register()}>
+                                            onClick={() => this.register()}>
                                         立即注册
                                     </Button>
                                 </Form.Item>
@@ -117,9 +117,10 @@ export default class Login extends React.Component {
                     </div>
                     <div className="col-xl-3"></div>
                 </div>
-                <div className="row" style={{ textAlign: 'center' ,marginTop:'100px'}}>
+                <div className="row" style={{textAlign: 'center'}}>
                     <div className="col-xl-3"></div>
-                    <div className="col-xl-6"> <a href="http://beian.miit.gov.cn">豫ICP备2020036555号</a> </div>
+                    <div className="col-xl-6" style={{position: 'fixed', left: '25%', bottom: '10px'}}><a
+                        href="http://beian.miit.gov.cn">豫ICP备2020036555号</a></div>
                     <div className="col-xl-3"></div>
                 </div>
 
