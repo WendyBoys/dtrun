@@ -1,0 +1,54 @@
+#components-layout-demo-top-side-2 .logo {
+    float: left;
+    width: 120px;
+    height: 31px;
+    margin: 16px 24px 16px 0;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.ant-row-rtl #components-layout-demo-top-side-2 .logo {
+    float: right;
+    margin: 16px 0 16px 24px;
+}
+
+.site-layout-background {
+    background: #fff;
+}
+
+.steps-content {
+    margin-top: 16px;
+    border-radius: 2px;
+    width: 100%;
+    min-height: 100%;
+    padding-top: 20px;
+}
+
+.steps-action {
+    margin-top: 24px;
+}
+
+.ant-steps {
+    margin-top: 20px!important;
+}
+
+.ant-form-item-explain.ant-form-item-explain-error {
+    color: red;
+    margin: 4px 0;
+}
+
+.ant-spin-nested-loading>div>.ant-spin {
+    padding-bottom: 40%;
+}
+
+.login-form-forgot {
+    float: right;
+}
+
+.ant-col-rtl .login-form-forgot {
+    float: left;
+}
+
+.login-form-button {
+    width: 100%;
+}
+

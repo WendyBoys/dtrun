@@ -1,8 +1,7 @@
 import React from 'react';
-import '../../css/css2.css';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
-import {Button, Form, Input, notification} from 'antd';
+import {Button, Col, Form, Input, notification, Row} from 'antd';
 import {AuditOutlined, LockOutlined, UserOutlined} from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
@@ -39,21 +38,15 @@ export default class Register extends React.Component {
 
     render() {
         return (
-
-            <div className="container-fluid">
-                <div className="row" style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6"><img src={socket} alt="" width="100%" height="200px"/></div>
-                    <div className="col-xl-3">
-                        <div>
-
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6">
-                        <div>
+            <div >
+                <Row  style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
+                    <Col span={6}></Col>
+                    <Col span={12}><img src={socket} alt="" width="100%" height="200px"/></Col>
+                    <Col span={6}></Col>
+                </Row>
+                <Row >
+                    <Col span={6}></Col>
+                    <Col span={12}>
                             <Form
                                 name="normal_login"
                                 className="login-form"
@@ -62,28 +55,28 @@ export default class Register extends React.Component {
                             >
                                 <Form.Item
                                     name="account"
-                                    rules={[{required: true, message: 'Please input your Username!'}]}
+                                    rules={[{required: true, message: '请输入账号'}]}
                                 >
                                     <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                                           placeholder="Username"/>
+                                           placeholder="账号"/>
                                 </Form.Item>
                                 <Form.Item
                                     name="password"
-                                    rules={[{required: true, message: 'Please input your Password!'}]}
+                                    rules={[{required: true, message: '请输入密码'}]}
                                 >
                                     <Input.Password
                                         prefix={<LockOutlined className="site-form-item-icon"/>}
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="密码"
                                     />
                                 </Form.Item>
-                                <Form.Item   //<AuditOutlined />
+                                <Form.Item 
                                     name="registerCode"
-                                    rules={[{required: true, message: 'Please input your Registration code!'}]}
+                                    rules={[{required: true, message: '请输入注册码'}]}
                                 >
                                     <Input
                                         prefix={<AuditOutlined/>}
-                                        placeholder="Registration code"/>
+                                        placeholder="注册码"/>
                                 </Form.Item>
                                 <Form.Item>
 
@@ -100,12 +93,9 @@ export default class Register extends React.Component {
                                     </Button>
                                 </Form.Item>
                             </Form>
-                        </div>
-                    </div>
-                    <div className="col-xl-3"></div>
-                </div>
-            
-
+                    </Col>
+                    <Col span={6}></Col>
+                </Row>       
             </div>);
 
 

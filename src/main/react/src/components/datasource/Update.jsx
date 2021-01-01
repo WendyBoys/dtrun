@@ -1,17 +1,15 @@
 import React from 'react';
-import Nav from '../common/Nav';
 import axios from 'axios';
-import {Form, Input, Button, Select} from 'antd';
-import {notification} from 'antd';
+import {Button, Col, Form, Input, notification, Row, Select} from 'antd';
 
-const {Option} = Select;
+const { Option } = Select;
 
 const layout = {
     labelCol: {
         span: 3,
     },
     wrapperCol: {
-        span: 16,
+        span: 12,
     },
 };
 
@@ -137,115 +135,103 @@ export default class Update extends React.Component {
 
 
     render() {
-        return <div className="content-wrapper">
-            <Nav/>
-            <div className="content-body">
+        return <div style={{padding:'10px'}}>
+            <h2>修改数据源</h2>
+            <Row >
+                <Col span={24}>
 
-                <div id="createdts" className="content">
-                    <div className="page-header d-flex justify-content-between">
-                        <h2>修改数据源</h2>
+                    <Form
+                        {...layout}
+                        ref={this.formRef}
+                        name="basic"
+                        initialValues={{
+                            remember: true,
+                        }}
+                        onFinish={this.onFinish}
 
-                    </div>
+                    >
+                        <Form.Item
+                            label="数据源名称"
+                            name="dtsName"
 
-                    <div className="row">
-
-                        <div className="col-xl-12 components-sidebar">
-
-                            <Form
-                                {...layout}
-                                ref={this.formRef}
-                                name="basic"
-                                initialValues={{
-                                    remember: true,
-                                }}
-                                onFinish={this.onFinish}
-
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入数据源名称',
+                                },
+                            ]}
+                        >
+                            <Input placeholder="请输入数据源名称" />
+                        </Form.Item>
+                        <Form.Item name="dtsType" label="数据源类型" rules={[{ required: true, message: '请选择数据源类型' }]}>
+                            <Select
+                                placeholder="请选择数据源类型"
+                                onChange={this.onGenderChange}
+                                allowClear
                             >
-                                <Form.Item
-                                    label="数据源名称"
-                                    name="dtsName"
+                                <Option value="cos">COS</Option>
+                                <Option value="oss">OSS</Option>
+                                <Option value="obs">OBS</Option>
+                                <Option value="bos">BOS</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            label="AccessKey"
+                            name="accessKey"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入AccessKey',
+                                },
+                            ]}
+                        >
+                            <Input placeholder="请输入AccessKey" />
+                        </Form.Item>
 
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: '请输入数据源名称',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="请输入数据源名称"/>
-                                </Form.Item>
-                                <Form.Item name="dtsType" label="数据源类型" rules={[{required: true, message: '请选择数据源类型'}]}>
-                                    <Select
-                                        placeholder="请选择数据源类型"
-                                        onChange={this.onGenderChange}
-                                        allowClear
-                                    >
-                                        <Option value="cos">COS</Option>
-                                        <Option value="oss">OSS</Option>
-                                        <Option value="obs">OBS</Option>
-                                        <Option value="bos">BOS</Option>
-                                    </Select>
-                                </Form.Item>
-                                <Form.Item
-                                    label="AccessKey"
-                                    name="accessKey"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: '请输入AccessKey',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="请输入AccessKey"/>
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="AccessSecret"
-                                    name="accessSecret"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: '请输入AccessSecret',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="请输入AccessSecret"/>
-                                </Form.Item>
+                        <Form.Item
+                            label="AccessSecret"
+                            name="accessSecret"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入AccessSecret',
+                                },
+                            ]}
+                        >
+                            <Input placeholder="请输入AccessSecret" />
+                        </Form.Item>
 
 
-                                <Form.Item
-                                    label="地域"
-                                    name="region"
-                                    rules={[
-                                        {
+                        <Form.Item
+                            label="地域"
+                            name="region"
+                            rules={[
+                                {
 
-                                            message: '请输入地域',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="请输入地域"/>
-                                </Form.Item>
+                                    message: '请输入地域',
+                                },
+                            ]}
+                        >
+                            <Input placeholder="请输入地域" />
+                        </Form.Item>
 
-                                <Form.Item {...tailLayout}>
-                                    <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
-                                        确定
+                        <Form.Item {...tailLayout}>
+                            <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                                确定
                                     </Button>
-                                    <Button htmlType="button" onClick={() => this.test()} style={{marginRight: '10px'}}>
-                                        测试
+                            <Button htmlType="button" onClick={() => this.test()} style={{ marginRight: '10px' }}>
+                                测试
                                     </Button>
-                                    <Button htmlType="button" onClick={() => this.quit()}>
-                                        取消
+                            <Button htmlType="button" onClick={() => this.quit()}>
+                                取消
                                     </Button>
-                                </Form.Item>
-                            </Form>
-                        </div>
+                        </Form.Item>
+                    </Form>
+                </Col>
 
-                    </div>
-                </div>
-
-
-            </div>
+            </Row>
         </div>
+
 
 
     }

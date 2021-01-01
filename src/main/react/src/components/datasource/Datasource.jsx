@@ -2,8 +2,9 @@ import React from 'react';
 import Show from './Show';
 import Create from './Create';
 import Update from './Update';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import  Modify from "../user/Modify"
+import {Route, Switch} from 'react-router-dom';
+import Modify from "../user/Modify"
+
 export default class Index extends React.Component {
 
     render() {

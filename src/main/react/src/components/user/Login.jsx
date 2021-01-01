@@ -1,9 +1,8 @@
 import React from 'react';
-import '../../css/css2.css';
 import socket from '../../images/socket.svg';
 import axios from 'axios';
 import cookie from 'react-cookies'
-import {Button, Checkbox, Form, Input, notification} from 'antd';
+import {Button, Checkbox, Col, Form, Input, notification, Row} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 
 export default class Login extends React.Component {
@@ -53,20 +52,19 @@ export default class Login extends React.Component {
 
     render() {
         return (
-
-            <div className="container-fluid">
-                <div className="row" style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6"><img src={socket} alt="" width="100%" height="200px"/></div>
-                    <div className="col-xl-3">
+            <div>
+                <Row style={{marginBottom: '5%', paddingTop: '20px', minHeight: '200px'}}>
+                    <Col span={6}></Col>
+                    <Col span={12}><img src={socket} alt="" width="100%" height="200px"/></Col>
+                    <Col span={6}>
                         <div>
 
                         </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={6}></Col>
+                    <Col span={12}>
                         <div>
                             <Form
                                 name="normal_login"
@@ -76,19 +74,19 @@ export default class Login extends React.Component {
                             >
                                 <Form.Item
                                     name="account"
-                                    rules={[{required: true, message: 'Please input your Username!'}]}
+                                    rules={[{required: true, message: '请输入账号'}]}
                                 >
                                     <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                                           placeholder="Username"/>
+                                           placeholder="账号"/>
                                 </Form.Item>
                                 <Form.Item
                                     name="password"
-                                    rules={[{required: true, message: 'Please input your Password!'}]}
+                                    rules={[{required: true, message: '请输入密码'}]}
                                 >
                                     <Input.Password
                                         prefix={<LockOutlined className="site-form-item-icon"/>}
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="密码"
                                     />
                                 </Form.Item>
 
@@ -114,15 +112,15 @@ export default class Login extends React.Component {
                                 </Form.Item>
                             </Form>
                         </div>
-                    </div>
-                    <div className="col-xl-3"></div>
-                </div>
-                <div className="row" style={{textAlign: 'center'}}>
-                    <div className="col-xl-3"></div>
-                    <div className="col-xl-6" style={{position: 'fixed', left: '25%', bottom: '10px'}}><a
-                        href="http://beian.miit.gov.cn">豫ICP备2020036555号</a></div>
-                    <div className="col-xl-3"></div>
-                </div>
+                    </Col>
+                    <Col span={6}></Col>
+                </Row>
+                <Row  style={{textAlign: 'center'}}>
+                    <Col span={6}></Col>
+                    <Col span={12} style={{position: 'absolute',left:'45%', bottom: '10px'}}><a
+                        href="http://beian.miit.gov.cn">豫ICP备2020036555号</a></Col>
+                    <Col span={6}></Col>
+                </Row>
 
 
             </div>);

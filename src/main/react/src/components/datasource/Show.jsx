@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import Nav from '../common/Nav'
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { notification, Modal, Spin } from 'antd';
+import {Button, Modal, notification, Space, Spin, Table} from 'antd';
 
 
 const Show = (props) => {
     const [list, setList] = useState([]);
-    const [dtsId, setDtsId] = useState(-1);
+    const [dtsId, setDtsId] = useState([]);
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
 
     const handleOk = () => {
@@ -32,8 +32,6 @@ const Show = (props) => {
                         '删除失败！',
                     duration: 1,
                 });
-
-
             }
 
 
@@ -99,9 +97,15 @@ const Show = (props) => {
 
 
     const deleteDts = (id, dtSourceName) => {
-        setDtsId(id);
-        setModalText('您确定要删除数据源 ' + dtSourceName + ' 吗?');
+        const selecteLength = selectedRowKeys.length;
+        if (selecteLength === 0) {
+            setModalText('您确定要删除数据源 ' + dtSourceName + ' 吗?');
+        } else {
+            setModalText('您确定要删除选中的' + selecteLength + '项数据源吗?');
+        }
         setVisible(true);
+        setDtsId(selectedRowKeys);
+
     }
 
 
@@ -110,77 +114,84 @@ const Show = (props) => {
     }
 
 
-    const container = ((
 
-        <div className="content-wrapper">
-            <Nav />
+    const columns = [
+        {
+            title: '数据源名称',
+            dataIndex: 'name',
+            render: (text, record) => <span style={{ color: '#0062FF', cursor: 'pointer' }} onClick={()=>updateDts(record.key)}>{text}</span>,
+        },
+        {
+            title: '数据源类型',
+            dataIndex: 'type',
+        },
+        {
+            title: '创建时间',
+            dataIndex: 'createTime',
+        },
+        {
+            title: '操作',
+            dataIndex: 'option',
+            render: (text, record) => (
+                <Space size="middle">
+                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => testDts(record.key)}>测试</span>
+                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => deleteDts(record.key, record.name)}>删除</span>
+                </Space>
+            )
+        },
+    ];
 
-            <div className="content-body">
+    const data = [];
+    for (let i = 0; i < 62; i++) {
+        data.push({
+            key: i,
+            name: `Edward King ${i}`,
+            age: 32,
+            address: `London, Park Lane no. ${i}`,
+        });
+    }
 
-                <Spin size="large" spinning={loading}>
+    const onSelectChange = selectedRowKeys => {
+        setSelectedRowKeys(selectedRowKeys)
+    };
 
-                    <div id="listdts" className="content">
-                        <div className="row" style={{ marginBottom: '10px' }}>
-                            <div className="col-xl-12 ">
-                                <button className="btn btn-primary pull-right" onClick={() => toCreate()}>创建</button>
-                            </div>
-                        </div>
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+    };
 
+    return ((
+        <Spin size="large" spinning={loading}>
+            <div style={{height:'50px',paddingTop:'10px'}}><Button type="primary" onClick={() => toCreate()} style={{background:'#00b4ed',position:'absolute',right:'5%' ,zIndex:'999',borderRadius:'5px'}}>创建</Button></div>
+            <div style={{ height: '10px', background: '#f0f2f5' }}></div>
+            <div style={{ padding: '10px', background: '#ffffff' }}>
+                <div>
+                    <Table rowSelection={rowSelection} bordered
+                        columns={columns} dataSource={data}
+                        pagination={{
+                           
+                            defaultPageSize: 10,
+                            pageSizeOptions: [10, 20, 50, 100]
+                        }}
+                    />
+                </div>
 
-                        <div className="row">
-
-                            <div className="col-xl-12 components-sidebar">
-                                <table id="table" className="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">序号</th>
-                                            <th scope="col">数据源名称</th>
-                                            <th scope="col">数据源类型</th>
-                                            <th scope="col">创建时间</th>
-                                            <th scope="col">操作</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="dtsource">
-                                        {
-                                            list.map((item, index) =>
-                                                <tr key={index}>
-                                                    <td>{index + 1}</td>
-                                                    <td><span
-                                                        style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }}
-                                                        onClick={() => updateDts(item.id)}>{item.dtSourceName}</span></td>
-                                                    <td>{item.dtSourceType}</td>
-                                                    <td>{item.createTime}</td>
-                                                    <td><span
-                                                        style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }}
-                                                        onClick={() => testDts(item.id)}>测试</span> <span
-                                                            style={{ color: '#0062FF', cursor: 'pointer' }}
-                                                            onClick={() => deleteDts(item.id, item.dtSourceName)}>删除</span></td>
-                                                </tr>
-                                            )
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <Modal
-                            title="删除数据源"
-                            okText="确定"
-                            cancelText="取消"
-                            visible={visible}
-                            onOk={handleOk}
-                            confirmLoading={confirmLoading}
-                            onCancel={handleCancel}
-                        >
-                            <p>{modalText}</p>
-                        </Modal>
-                    </div>
-                </Spin>
+                <Modal
+                    title="删除数据源"
+                    okText="确定"
+                    cancelText="取消"
+                    visible={visible}
+                    onOk={handleOk}
+                    confirmLoading={confirmLoading}
+                    onCancel={handleCancel}
+                >
+                    <p>{modalText}</p>
+                </Modal>
             </div>
-        </div>
+        </Spin>
 
     ));
 
-    return container
 }
 
 

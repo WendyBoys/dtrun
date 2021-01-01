@@ -1,7 +1,8 @@
 import React from 'react';
 import cookie from 'react-cookies'
-import {Menu, Dropdown, Button, Space, notification} from 'antd';
+import {Dropdown, Menu, notification} from 'antd';
 import axios from "axios";
+
 export default class Header extends React.Component {
 
     constructor(props) {

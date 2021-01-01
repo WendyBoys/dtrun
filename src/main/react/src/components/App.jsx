@@ -8,11 +8,7 @@ import Register from './user/Register';
 
 
 import 'antd/dist/antd.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import '../css/css2.css';
-import '../css/bundle.css';
-import '../css/prism.css';
-import '../css/app.css';
+import '../css/css.css';
 import {notification} from "antd";
 
 export default class App extends React.Component {
@@ -20,7 +16,7 @@ export default class App extends React.Component {
 
     componentWillMount() {
         //const url='http://127.0.0.1:8080';
-        const url='https://api.dtrun.cn';
+        const url = 'https://api.dtrun.cn';
         axios.interceptors.request.use(function (config) {
             const currentUrl = window.location.href;
             const token = cookie.load('token');
@@ -34,7 +30,7 @@ export default class App extends React.Component {
             config.headers.common['token'] = token;
             config.headers.common['Access-Control-Max-Age'] = 86400;
             if (config.url.indexOf(url) === -1) {
-                config.url=url+config.url;
+                config.url = url + config.url;
             }
             return config;
         });
@@ -57,17 +53,15 @@ export default class App extends React.Component {
 
 
     render() {
-        return <div>
-            <Switch>
-                <Route path="/register" component={Register}/>
-                <Route path="/login" component={Login}/>
-                <Route exact={true} path="/" component={Login}/>
-                <Route path="/index" component={Index}/>
-                <Route path="/dashboard" component={Index}/>
-                <Route path="/datasource" component={Index}/>
-                <Route path="/movetask" component={Index}/>
-            </Switch>
-        </div>
+        return <Switch>
+            <Route path="/register" component={Register} />
+            <Route path="/login" component={Login} />
+            <Route exact={true} path="/" component={Index} />
+            <Route path="/index" component={Index} />
+            <Route path="/dashboard" component={Index} />
+            <Route path="/datasource" component={Index} />
+            <Route path="/movetask" component={Index} />
+        </Switch>
 
     }
 }
