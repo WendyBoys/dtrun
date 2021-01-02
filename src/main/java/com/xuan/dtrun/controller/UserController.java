@@ -71,7 +71,7 @@ public class UserController {
                     //输入的账号未被注册
                     if (isRegister != 1) {
                         user.setIconUrl(iconUrl);
-                        user.setUsername(userName);
+                        user.setUserName(userName);
                         user.setRegisterCode(code);
                         userService.register(user);
                         userService.updateRegisterCodeStatus(registercode.getId());

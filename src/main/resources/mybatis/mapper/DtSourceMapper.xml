@@ -33,6 +33,9 @@
     </update>
 
     <delete id="delete">
-       DELETE FROM dtsource WHERE id=#{id}
+        DELETE FROM dtsource WHERE id in
+        <foreach collection="array" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
     </delete>
 </mapper>

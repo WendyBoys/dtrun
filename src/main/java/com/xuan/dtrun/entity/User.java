@@ -8,7 +8,7 @@ public class User implements Serializable {
     private Integer id;
     private String account;
     private String password;
-    private String username;
+    private String userName;
     private String iconUrl;
     private Date createTime;
     private int isUse;
@@ -17,11 +17,11 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Integer id, String account, String password, String username, String iconUrl, Date createTime, int isUse, String registerCode) {
+    public User(Integer id, String account, String password, String userName, String iconUrl, Date createTime, int isUse, String registerCode) {
         this.id = id;
         this.account = account;
         this.password = password;
-        this.username = username;
+        this.userName = userName;
         this.iconUrl = iconUrl;
         this.createTime = createTime;
         this.isUse = isUse;
@@ -52,12 +52,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getIconUrl() {

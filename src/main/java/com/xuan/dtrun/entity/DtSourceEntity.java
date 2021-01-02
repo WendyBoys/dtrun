@@ -11,6 +11,8 @@ public class DtSourceEntity implements Serializable {
     private String createTime;
     private User user;
     private int uid;
+    private int key;
+
 
     public DtSourceEntity() {
     }
@@ -79,5 +81,13 @@ public class DtSourceEntity implements Serializable {
 
     public void setUid(int uid) {
         this.uid = uid;
+    }
+
+    public int getKey() {
+        return key;
+    }
+
+    public void setKey(int key) {
+        this.key = key;
     }
 }

@@ -12,7 +12,7 @@ public interface DtSourceService {
 
     List<DtSourceEntity> findAll(int userId);
 
-     void delete(Integer id);
+     void delete(Object[] ids);
 
      void update(DtSourceEntity dtSourceEntity);
 }

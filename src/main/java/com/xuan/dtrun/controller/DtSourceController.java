@@ -7,12 +7,10 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
-import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.region.Region;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
-import com.xuan.dtrun.entity.CosEntity;
 import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
@@ -167,8 +165,8 @@ public class DtSourceController {
     @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public CommonResult delete(@RequestBody JSONObject json) {
         try {
-            String id = json.getString("id");
-            dtSourceService.delete(Integer.parseInt(id));
+            Object[] ids = json.getJSONArray("id").toArray();
+            dtSourceService.delete(ids);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

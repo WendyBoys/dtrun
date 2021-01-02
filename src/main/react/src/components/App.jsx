@@ -56,7 +56,7 @@ export default class App extends React.Component {
         return <Switch>
             <Route path="/register" component={Register} />
             <Route path="/login" component={Login} />
-            <Route exact={true} path="/" component={Index} />
+            <Route exact={true} path="/" component={Login} />
             <Route path="/index" component={Index} />
             <Route path="/dashboard" component={Index} />
             <Route path="/datasource" component={Index} />

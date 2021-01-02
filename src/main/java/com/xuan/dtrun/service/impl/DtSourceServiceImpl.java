@@ -26,12 +26,16 @@ public class DtSourceServiceImpl implements DtSourceService {
 
     @Override
     public List<DtSourceEntity> findAll(int userId) {
-        return dtSourceMapper.findAll(userId);
+        List<DtSourceEntity> dtSourceEntityList = dtSourceMapper.findAll(userId);
+        dtSourceEntityList.forEach(dtSourceEntity -> {
+            dtSourceEntity.setKey(dtSourceEntity.getId());
+        });
+        return dtSourceEntityList;
     }
 
     @Override
-    public void delete(Integer id) {
-        dtSourceMapper.delete(id);
+    public void delete(Object[] ids) {
+        dtSourceMapper.delete(ids);
     }
 
     @Override

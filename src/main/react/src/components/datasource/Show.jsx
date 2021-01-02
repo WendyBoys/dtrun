@@ -13,33 +13,6 @@ const Show = (props) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
 
-    const handleOk = () => {
-        setConfirmLoading(true);
-        axios.delete('/dtsource/delete', {
-            data: {
-                id: dtsId,
-            }
-        }).then((response) => {
-            var result = response.data.message;
-            if (result == 'Success') {
-                setVisible(false);
-                setConfirmLoading(false);
-                fentch();
-            } else {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '删除失败！',
-                    duration: 1,
-                });
-            }
-
-
-        });
-
-
-    };
-
     const handleCancel = () => {
         setVisible(false);
     };
@@ -59,7 +32,7 @@ const Show = (props) => {
                 setList(data);
                 setLoading(false)
             } else {
-
+                setLoading(false)
             }
         });
     }
@@ -100,13 +73,37 @@ const Show = (props) => {
         const selecteLength = selectedRowKeys.length;
         if (selecteLength === 0) {
             setModalText('您确定要删除数据源 ' + dtSourceName + ' 吗?');
+            setDtsId(id);
         } else {
             setModalText('您确定要删除选中的' + selecteLength + '项数据源吗?');
+            setDtsId(selectedRowKeys);
         }
         setVisible(true);
-        setDtsId(selectedRowKeys);
 
     }
+
+    const handleOk = () => {
+        setConfirmLoading(true);
+        axios.delete('/dtsource/delete', {
+            data: {
+                id: dtsId,
+            }
+        }).then((response) => {
+            var result = response.data.message;
+            if (result == 'Success') {
+                setVisible(false);
+                setConfirmLoading(false);
+                fentch();
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '删除失败！',
+                    duration: 1,
+                });
+            }
+        });
+    };
 
 
     const updateDts = (id) => {
@@ -118,12 +115,12 @@ const Show = (props) => {
     const columns = [
         {
             title: '数据源名称',
-            dataIndex: 'name',
-            render: (text, record) => <span style={{ color: '#0062FF', cursor: 'pointer' }} onClick={()=>updateDts(record.key)}>{text}</span>,
+            dataIndex: 'dtSourceName',
+            render: (text, record) => <span style={{ color: '#0062FF', cursor: 'pointer' }} onClick={() => updateDts(record.id)}>{text}</span>,
         },
         {
             title: '数据源类型',
-            dataIndex: 'type',
+            dataIndex: 'dtSourceType',
         },
         {
             title: '创建时间',
@@ -134,25 +131,16 @@ const Show = (props) => {
             dataIndex: 'option',
             render: (text, record) => (
                 <Space size="middle">
-                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => testDts(record.key)}>测试</span>
-                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => deleteDts(record.key, record.name)}>删除</span>
+                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => testDts(record.id)}>测试</span>
+                    <span style={{ color: '#0062FF', cursor: 'pointer', marginRight: '10px' }} onClick={() => deleteDts(record.id, record.dtSourceName)}>删除</span>
                 </Space>
             )
         },
     ];
 
-    const data = [];
-    for (let i = 0; i < 62; i++) {
-        data.push({
-            key: i,
-            name: `Edward King ${i}`,
-            age: 32,
-            address: `London, Park Lane no. ${i}`,
-        });
-    }
-
     const onSelectChange = selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys)
+        console.log(selectedRowKeys)
     };
 
     const rowSelection = {
@@ -162,14 +150,14 @@ const Show = (props) => {
 
     return ((
         <Spin size="large" spinning={loading}>
-            <div style={{height:'50px',paddingTop:'10px'}}><Button type="primary" onClick={() => toCreate()} style={{background:'#00b4ed',position:'absolute',right:'5%' ,zIndex:'999',borderRadius:'5px'}}>创建</Button></div>
+            <div style={{ height: '50px', paddingTop: '10px' }}><Button type="primary" onClick={() => toCreate()} style={{ background: '#00b4ed', position: 'absolute', right: '11px', zIndex: '999', borderRadius: '5px' }}>创建</Button></div>
             <div style={{ height: '10px', background: '#f0f2f5' }}></div>
             <div style={{ padding: '10px', background: '#ffffff' }}>
                 <div>
                     <Table rowSelection={rowSelection} bordered
-                        columns={columns} dataSource={data}
+                        columns={columns}
+                        dataSource={list}
                         pagination={{
-                           
                             defaultPageSize: 10,
                             pageSizeOptions: [10, 20, 50, 100]
                         }}
