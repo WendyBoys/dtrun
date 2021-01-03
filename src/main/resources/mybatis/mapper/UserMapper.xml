@@ -33,4 +33,9 @@
         UPDATE  registercode SET isUse= 0 WHERE id = #{id}
     </update>
 
+    <update id="modifyIcon">
+        UPDATE  user SET iconUrl= #{iconUrl} WHERE id = #{id}
+    </update>
+
+
 </mapper>

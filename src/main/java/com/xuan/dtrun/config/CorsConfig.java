@@ -10,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.File;
+
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -31,15 +33,16 @@ public class CorsConfig implements WebMvcConfigurer {
 
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/view/**").addResourceLocations("classpath:/view/");
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new TokenInterceptor())
+                .excludePathPatterns("/user/login", "/user/register", "/", "/login","/icon/**")
+                .addPathPatterns("/**");
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor())
-                .excludePathPatterns("/user/login","/user/register", "/", "/login", "/view/**")
-                .addPathPatterns("/**");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String iconpath = new File("file:/" + System.getProperty("user.dir")).getParent() + "/icon/";
+        registry.addResourceHandler("/icon/**").addResourceLocations(iconpath);
     }
 
 }

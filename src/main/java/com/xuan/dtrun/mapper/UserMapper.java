@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface UserMapper {
 
-    User login(@Param("account")String account, @Param("password")String password);
+    User login(@Param("account") String account, @Param("password") String password);
 
     int register(User user);
 
@@ -23,4 +23,6 @@ public interface UserMapper {
     RegisterCode verifyRegisterCode(String registerCode);
 
     void updateRegisterCodeStatus(Integer id);
+
+    void modifyIcon(@Param("id") Integer id, @Param("iconUrl") String iconUrl);
 }

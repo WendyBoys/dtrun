@@ -1,4 +1,4 @@
-import {Button, Checkbox, Form, Input, Select, Steps, Tooltip} from 'antd';
+import {Button, Checkbox, Form, Input, Popover, Select, Steps, Tooltip} from 'antd';
 import React, {useState} from 'react';
 import {DiffTwoTone} from '@ant-design/icons';
 
@@ -171,14 +171,27 @@ const Create = () => {
     ];
 
 
+    const customDot = (dot, { status, index }) => (
+        <Popover
+          content={
+            <span>
+              step {index}
+            </span>
+          }
+        >
+          {dot}
+        </Popover>
+      );
+
+      
     return <div >
-        <Steps progressDot current={current}>
+        <Steps progressDot={customDot} current={current}>
             {steps.map(item => (
-                <Step key={item.title} title={item.title} />
+                <Step key={item.title} title={item.title}  />
             ))}
         </Steps>
         <div className="steps-content">{steps[current].content}
-            <div className="steps-action" style={{ marginLeft: '17%' }}>
+            <div className="steps-action" >
             </div>
         </div>
     </div>

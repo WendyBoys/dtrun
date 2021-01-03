@@ -5,7 +5,8 @@ import Datasource from '../datasource/Datasource';
 import MoveTask from '../movetask/MoveTask';
 import axios from "axios";
 import cookie from 'react-cookies'
-import {Avatar, Button, Drawer, Form, Image, Input, Layout, Menu, notification, Row} from 'antd';
+import ImgCrop from 'antd-img-crop';
+import {Avatar, Button, Drawer, Form, Image, Input, Layout, Menu, message, notification, Row, Spin, Upload} from 'antd';
 import {
     EditOutlined,
     LaptopOutlined,
@@ -30,6 +31,10 @@ const layout = {
         span: 15,
     },
 };
+const token = cookie.load('token');
+const head = { token: token }
+
+
 
 export default class Index extends React.Component {
 
@@ -42,7 +47,8 @@ export default class Index extends React.Component {
             mainDrawerWidth: 250,
             messageDrawer: false,
             passwordDrawer: false,
-            placement: 'right'
+            placement: 'right',
+            loading: false,
         };
     }
 
@@ -144,8 +150,39 @@ export default class Index extends React.Component {
         });
     };
 
+
+    beforeUpload(file) {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            message.error('仅支持JPG和PNG文件');
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('图片大小不得大于2MB');
+        }
+        return isJpgOrPng && isLt2M;
+    }
+
+
+    handleChange = info => {
+        if (info.file.status === 'uploading') {
+            this.setState({ loading: true });
+            return;
+        }
+        if (info.file.status === 'done') {
+            const response = info.fileList[0].response;
+            if (response.message === 'Success') {
+                this.setState({ iconUrl: response.data });
+                this.setState({ loading: false });
+                message.success('修改头像成功');
+            } else {
+                message.error('修改头像失败');
+            }
+        }
+    };
+
     render() {
-        const { userName, iconUrl, placement, mainDrawer, mainDrawerWidth } = this.state;
+        const { userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading } = this.state;
         return <div style={{ height: '100%' }}>
             <Drawer
                 title={'欢迎回来，' + userName}
@@ -156,12 +193,28 @@ export default class Index extends React.Component {
                 key={placement}
                 width={mainDrawerWidth}
             >
-                <Image
-                    style={{ borderRadius: '100%', width: '100%' }}
-                    width="202px"
-                    height="202px"
-                    src={iconUrl}
-                />
+                <Spin spinning={loading}>
+                    <Image
+                        style={{ borderRadius: '100%', width: '100%',cursor:'pointer' }}
+                        width="202px"
+                        height="202px"
+                        src={iconUrl}
+                    />
+                </Spin>
+                <div style={{textAlign:'center',margin:'10px 0 0 0'}}>
+                <ImgCrop rotate>
+                    <Upload
+                        headers={head}
+                        showUploadList={false}
+                        action="https://api.dtrun.cn/user/icon"
+                        beforeUpload={this.beforeUpload}
+                        onChange={this.handleChange}
+                    >
+                       <Button  icon={<UploadOutlined />}>更换头像</Button>
+                        
+                    </Upload>
+                </ImgCrop>
+                </div>
                 <Menu
                     mode="inline"
                 >

@@ -31,6 +31,11 @@
     margin-top: 20px!important;
 }
 
+/* 迁移任务步骤条1蓝点错位 */
+.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot{
+    background: none!important;
+}
+
 .ant-form-item-explain.ant-form-item-explain-error {
     color: red;
     margin: 4px 0;
@@ -51,4 +56,7 @@
 .login-form-button {
     width: 100%;
 }
+
+
+
 

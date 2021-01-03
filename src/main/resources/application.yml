@@ -2,7 +2,7 @@ spring:
   redis:
     host: 182.254.133.18
     password: XUAN.199951
-    timeout: 15s
+    timeout: 5s
     port: 6379
   datasource:
     username: root
@@ -28,9 +28,12 @@ spring:
   druid:
     username: xiaoxiaoxuan
     password: 199951
-
+  servlet:
+    multipart:
+      max-file-size: 10MB
 server:
   port: 8080
+  max-http-header-size: 10MB
 
 mybatis:
   config-location: classpath:mybatis/mybatisConfig.xml
@@ -39,3 +42,5 @@ mybatis:
 user:
   iconUrl: https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png
   userName: 无名氏
+  #本地开发时用 http://127.0.0.1:8080/icon/
+  iconUrlPrefix: https://api.dtrun.cn/icon/

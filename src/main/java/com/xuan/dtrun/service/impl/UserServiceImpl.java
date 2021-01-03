@@ -50,5 +50,10 @@ public class UserServiceImpl implements UserService {
         userMapper.updateRegisterCodeStatus(id);
     }
 
+    @Override
+    public void modifyIcon(Integer id,String iconUrl) {
+        userMapper.modifyIcon(id,iconUrl);
+    }
+
 
 }

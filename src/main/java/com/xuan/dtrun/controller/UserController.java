@@ -15,7 +15,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -33,6 +37,9 @@ public class UserController {
 
     @Value("${user.userName}")
     private String userName;
+
+    @Value("${user.iconUrlPrefix}")
+    private String iconUrlPrefix;
 
 
     @PostMapping(value = "/login", produces = "application/json;charset=utf-8")
@@ -126,5 +133,33 @@ public class UserController {
         } else {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
         }
+    }
+
+    @RequestMapping("/icon")
+    public CommonResult icon(MultipartFile[] file, @RequestHeader("token") String token) throws IOException {
+        String md5Token = TokenUtils.md5Token(token);
+        User currentUser = (User) redisTemplate.opsForValue().get(md5Token);
+        if (currentUser != null) {
+            String path = new File(System.getProperty("user.dir")).getParent() + "/icon/";
+            File filemkdir = new File(path);
+            if (!filemkdir.exists()) {
+                filemkdir.mkdirs();
+            }
+            String fileName = file[0].getOriginalFilename();
+            String[] split = fileName.split("\\.");
+            String fileType = "." + split[split.length - 1];
+            String newFileName = UUID.randomUUID().toString().replace("-", "") + fileType;
+            File localfile = new File(path + newFileName);
+            file[0].transferTo(localfile);
+            String iconUrl = iconUrlPrefix + newFileName;
+            userService.modifyIcon(currentUser.getId(), iconUrl);
+            currentUser.setIconUrl(iconUrl);
+            redisTemplate.opsForValue().set(md5Token, currentUser, 7, TimeUnit.DAYS);
+            return new CommonResult(200, MessageEnum.SUCCESS, iconUrl);
+        } else {
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
+        }
+
+
     }
 }

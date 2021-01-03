@@ -20,5 +20,6 @@ public interface UserService {
 
     void updateRegisterCodeStatus(Integer id);
 
+    void modifyIcon(Integer id,String iconUrl);
 
 }

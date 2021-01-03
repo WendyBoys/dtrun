@@ -90,6 +90,7 @@
 
 
     <build>
+        <finalName>dtrun</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
