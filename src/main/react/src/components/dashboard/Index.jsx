@@ -49,6 +49,7 @@ export default class Index extends React.Component {
             passwordDrawer: false,
             placement: 'right',
             loading: false,
+            index: 0,
         };
     }
 
@@ -170,7 +171,7 @@ export default class Index extends React.Component {
             return;
         }
         if (info.file.status === 'done') {
-            const response = info.fileList[0].response;
+            const response = info.fileList[this.state.index].response;
             if (response.message === 'Success') {
                 this.setState({ iconUrl: response.data });
                 this.setState({ loading: false });
@@ -178,11 +179,12 @@ export default class Index extends React.Component {
             } else {
                 message.error('修改头像失败');
             }
+            this.setState({ index: this.state.index + 1 });
         }
     };
 
     render() {
-        const { userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading } = this.state;
+        const { userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading, fileList } = this.state;
         return <div style={{ height: '100%' }}>
             <Drawer
                 title={'欢迎回来，' + userName}
@@ -195,25 +197,30 @@ export default class Index extends React.Component {
             >
                 <Spin spinning={loading}>
                     <Image
-                        style={{ borderRadius: '100%', width: '100%',cursor:'pointer' }}
+                        style={{ borderRadius: '100%', width: '100%', cursor: 'pointer' }}
                         width="202px"
                         height="202px"
                         src={iconUrl}
                     />
                 </Spin>
-                <div style={{textAlign:'center',margin:'10px 0 0 0'}}>
-                <ImgCrop rotate>
-                    <Upload
-                        headers={head}
-                        showUploadList={false}
-                        action="https://api.dtrun.cn/user/icon"
-                        beforeUpload={this.beforeUpload}
-                        onChange={this.handleChange}
+                <div style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
+                    <ImgCrop
+                        rotate
+                        modalTitle="编辑图片"
+                        modalOk="确定"
+                        modalCancel="取消"
                     >
-                       <Button  icon={<UploadOutlined />}>更换头像</Button>
-                        
-                    </Upload>
-                </ImgCrop>
+                        <Upload
+                            headers={head}
+                            showUploadList={false}
+                            action="https://api.dtrun.cn/user/icon"
+                            beforeUpload={this.beforeUpload}
+                            onChange={this.handleChange}
+                        >
+                            <Button icon={<UploadOutlined />}>更换头像</Button>
+
+                        </Upload>
+                    </ImgCrop>
                 </div>
                 <Menu
                     mode="inline"
