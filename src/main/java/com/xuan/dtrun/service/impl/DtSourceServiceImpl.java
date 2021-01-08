@@ -43,5 +43,10 @@ public class DtSourceServiceImpl implements DtSourceService {
         dtSourceMapper.update(dtSourceEntity);
     }
 
+    @Override
+    public List<DtSourceEntity> getAllDtSourceNameById(int userId) {
+        return dtSourceMapper.getAllDtSourceNameById(userId);
+    }
+
 
 }

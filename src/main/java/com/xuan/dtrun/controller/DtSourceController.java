@@ -7,6 +7,8 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.model.Bucket;
+import com.qcloud.cos.model.CannedAccessControlList;
 import com.qcloud.cos.region.Region;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.common.DataEnum;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -47,9 +50,11 @@ public class DtSourceController {
                 COSClient cosClient = new COSClient(new BasicCOSCredentials(accessKey, accessSecret),
                         new ClientConfig(new Region(region)));
                 cosClient.listBuckets();
+                cosClient.shutdown();
             } else if ("oss".equals(dataSourceType)) {
                 OSS ossClient = new OSSClientBuilder().build(region, accessKey, accessSecret);
                 ossClient.listBuckets();
+                ossClient.shutdown();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
         } catch (Exception e) {
@@ -58,7 +63,7 @@ public class DtSourceController {
     }
 
     @GetMapping(value = "/getDtSourceById", produces = "application/json;charset=utf-8")
-    public CommonResult connection(int id) {
+    public CommonResult getDtSourceById(int id) {
         try {
             DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(id);
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntity);
@@ -78,9 +83,11 @@ public class DtSourceController {
                 COSClient cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
                         new ClientConfig(new Region(jsonObject.getString("region"))));
                 cosClient.listBuckets();
+                cosClient.shutdown();
             } else if ("oss".equals(dtSourceType)) {
                 OSS ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
                 ossClient.listBuckets();
+                ossClient.shutdown();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CONNECTIOSUCCESS);
         } catch (Exception e) {
@@ -162,6 +169,18 @@ public class DtSourceController {
 
     }
 
+    @GetMapping(value = "/getAllDtSourceNameById", produces = "application/json;charset=utf-8")
+    public CommonResult getAllDtSourceNameById(@RequestHeader("token") String token) {
+        try {
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+            List<DtSourceEntity> dtSourceEntityList = dtSourceService.getAllDtSourceNameById(user.getId());
+            return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+    }
+
     @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public CommonResult delete(@RequestBody JSONObject json) {
         try {
@@ -175,4 +194,77 @@ public class DtSourceController {
     }
 
 
+    @GetMapping(value = "/getBucketLists", produces = "application/json;charset=utf-8")
+    public CommonResult getBucketLists(int id) {
+        COSClient cosClient = null;
+        OSS ossClient = null;
+        try {
+            List<String> buckets=null;
+            DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(id);
+            if (dtSourceEntity != null) {
+                String dtSourceType = dtSourceEntity.getDtSourceType();
+                JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtSourceJson());
+                if ("cos".equals(dtSourceType)) {
+                     cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
+                            new ClientConfig(new Region(jsonObject.getString("region"))));
+                    buckets = cosClient.listBuckets().stream().map(Bucket::getName).collect(Collectors.toList());
+                    cosClient.shutdown();
+
+                } else if ("oss".equals(dtSourceType)) {
+                    ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
+                    buckets = ossClient.listBuckets().stream().map(com.aliyun.oss.model.Bucket::getName).collect(Collectors.toList());
+                }
+            }
+            return new CommonResult(200, MessageEnum.SUCCESS, buckets);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }finally {
+            if (cosClient != null) {
+                cosClient.shutdown();
+            }
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
+        }
+    }
+
+    @PostMapping(value = "/createBucket", produces = "application/json;charset=utf-8")
+    public CommonResult createBucket(@RequestBody JSONObject json) {
+        COSClient cosClient = null;
+        OSS ossClient = null;
+        try {
+            int desId = Integer.parseInt(json.getString("desId"));
+            String newBucketName = json.getString("newBucketName");
+            DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(desId);
+            if (dtSourceEntity != null) {
+                String dtSourceType = dtSourceEntity.getDtSourceType();
+                JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtSourceJson());
+                if ("cos".equals(dtSourceType)) {
+                    cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
+                            new ClientConfig(new Region(jsonObject.getString("region"))));
+                    com.qcloud.cos.model.CreateBucketRequest createBucketRequest = new com.qcloud.cos.model.CreateBucketRequest(newBucketName);
+                    // 设置 bucket 的权限为 Private(私有读写), 其他可选有公有读私有写, 公有读写
+                    createBucketRequest.setCannedAcl(CannedAccessControlList.Private);
+                    cosClient.createBucket(createBucketRequest);
+                } else if ("oss".equals(dtSourceType)) {
+                    ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
+                    com.aliyun.oss.model.CreateBucketRequest createBucketRequest = new com.aliyun.oss.model.CreateBucketRequest(newBucketName);
+                    createBucketRequest.setCannedACL(com.aliyun.oss.model.CannedAccessControlList.Private);
+                    ossClient.createBucket(createBucketRequest);
+                }
+            }
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+        } finally {
+            if (cosClient != null) {
+                cosClient.shutdown();
+            }
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
+        }
+    }
 }

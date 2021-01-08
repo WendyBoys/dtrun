@@ -35,7 +35,6 @@ const token = cookie.load('token');
 const head = { token: token }
 
 
-
 export default class Index extends React.Component {
 
     constructor(props) {
@@ -333,8 +332,8 @@ export default class Index extends React.Component {
                                 <NavLink to="/movetask"> 迁移任务管理</NavLink>
                             </Menu.Item>
                             <SubMenu key="sub2" icon={<LaptopOutlined />} title="subnav 2">
-                                <Menu.Item key="5">option5</Menu.Item>
-                                <Menu.Item key="6">option6</Menu.Item>
+                                <Menu.Item key="5">option25</Menu.Item>
+                                <Menu.Item key="6">opti123on6</Menu.Item>
                                 <Menu.Item key="7">option7</Menu.Item>
                                 <Menu.Item key="8">option8</Menu.Item>
                             </SubMenu>

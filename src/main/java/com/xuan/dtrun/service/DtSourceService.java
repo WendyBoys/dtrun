@@ -15,4 +15,6 @@ public interface DtSourceService {
      void delete(Object[] ids);
 
      void update(DtSourceEntity dtSourceEntity);
+
+    List<DtSourceEntity> getAllDtSourceNameById(int userId);
 }

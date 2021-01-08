@@ -104,7 +104,7 @@ public class UserController {
 
 
     @GetMapping(value = "/getCurrentUser", produces = "application/json;charset=utf-8")
-    public CommonResult save(@RequestHeader("token") String token) {
+    public CommonResult getCurrentUser(@RequestHeader("token") String token) {
         User currentUser = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
         if (currentUser != null) {
             return new CommonResult(200, MessageEnum.SUCCESS, currentUser);

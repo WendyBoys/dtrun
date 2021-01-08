@@ -18,4 +18,6 @@ public interface DtSourceMapper {
      void delete(Object[] ids);
 
      void update(DtSourceEntity dtSourceEntity);
+
+     List<DtSourceEntity> getAllDtSourceNameById(int userId);
 }

@@ -140,7 +140,6 @@ const Show = (props) => {
 
     const onSelectChange = selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys)
-        console.log(selectedRowKeys)
     };
 
     const rowSelection = {

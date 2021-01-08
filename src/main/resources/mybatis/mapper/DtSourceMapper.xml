@@ -24,6 +24,10 @@
        SELECT dtSourceName,dtSourceType,dtSourceJson FROM dtsource  WHERE  id=#{id}
     </select>
 
+    <select id="getAllDtSourceNameById" resultType="DtSourceEntity">
+       SELECT id,dtSourceName FROM dtsource  WHERE  uid=#{id}
+    </select>
+
     <select id="findAll" resultMap="DtsourceMap">
        SELECT dts.id,dts.dtSourceName,dts.dtSourceType,dts.dtSourceJson,dts.createTime FROM dtsource dts LEFT JOIN user u ON dts.uid = u.id  WHERE  u.id=#{id}
     </select>
