@@ -100,7 +100,7 @@ public class DtSourceController {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user == null) {
-                return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
             }
             String dataSourceName = json.getString("dataSourceName");
             String dataSourceType = json.getString("dataSourceType");

@@ -129,7 +129,7 @@ const Create = () => {
     }
 
     const srcOnFinish = values => {
-        setData({...data, 'src': values, 'allmove': checked})
+        setData({...data, 'src': values, 'allMove': checked})
         setCurrent(current + 1);
     };
 
@@ -141,6 +141,32 @@ const Create = () => {
     const OnFinish = values => {
         const body = {...data, 'option': values}
         console.log(body)
+        axios.post('/movetask/create', {
+            srcId: body.src.srcId,
+            srcBucket: body.src.srcBucket,
+            desId: body.des.desId,
+            desBucket: body.des.desBucket,
+            allMove: body.allMove,
+            taskName: body.option.taskName,
+        })
+            .then((response) => {
+                var result = response.data.message;
+                if (result == 'Success') {
+                    notification['success']({
+                        message: '通知',
+                        description:
+                            '创建迁移任务成功',
+                        duration: 2,
+                    });
+                } else {
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '创建迁移任务失败，请检查配置',
+                        duration: 2,
+                    });
+                }
+            });
     };
 
 
@@ -155,7 +181,7 @@ const Create = () => {
             >
                 <Form.Item
                     label="数据源"
-                    name="src"
+                    name="srcId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
                     <Select
@@ -223,7 +249,7 @@ const Create = () => {
             >
                 <Form.Item
                     label="数据源"
-                    name="des"
+                    name="desId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
                     <Select
@@ -310,7 +336,7 @@ const Create = () => {
             >
                 <Form.Item
                     label="任务名称"
-                    name="taskname"
+                    name="taskName"
                     rules={[{required: true, message: '请选择Bucket'}]}
                 >
                     <Input placeholder="请输入任务名称"/>
