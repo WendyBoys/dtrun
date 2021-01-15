@@ -24,8 +24,8 @@ public class OssUpload {
 
         String endpoint = "http://oss-cn-beijing.aliyuncs.com";
 // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
-        String accessKeyId = "LTAI4G4B6jMY1a3u3dDJtRTt";
-        String accessKeySecret = "A0dAiVUADG9mkVmBcaYMHI9B0YceVb";
+        String accessKeyId = "123";
+        String accessKeySecret = "A01231b";
         String bucketName = "xuangege";
 // <yourObjectName>表示上传文件到OSS时需要指定包含文件后缀在内的完整路径，例如abc/efg/123.jpg。
         String objectName = "tomcat.zip";
