@@ -17,7 +17,7 @@
 
 
     <insert id="create">
-       insert into  dtsource (dtSourceName,dtSourceType,dtSourceJson,createTime,uid) VALUES (#{dtSourceName},#{dtSourceType},#{dtSourceJson},#{createTime},#{user.id})
+       INSERT INTO  dtsource (dtSourceName,dtSourceType,dtSourceJson,createTime,uid) VALUES (#{dtSourceName},#{dtSourceType},#{dtSourceJson},#{createTime},#{user.id})
     </insert>
 
     <select id="getDtSourceById" resultType="DtSourceEntity">
@@ -33,11 +33,11 @@
     </select>
 
     <update id="update">
-       update dtsource set dtSourceName=#{dtSourceName},dtSourceType=#{dtSourceType},dtSourceJson=#{dtSourceJson} WHERE id=#{id}
+       UPDATE dtsource SET=#{dtSourceName},dtSourceType=#{dtSourceType},dtSourceJson=#{dtSourceJson} WHERE id=#{id}
     </update>
 
     <delete id="delete">
-        DELETE FROM dtsource WHERE id in
+        DELETE FROM dtsource WHERE id IN
         <foreach collection="array" open="(" separator="," close=")" item="id">
             #{id}
         </foreach>

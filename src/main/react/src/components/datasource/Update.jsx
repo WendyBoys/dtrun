@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import {Button, Col, Form, Input, notification, Row, Select} from 'antd';
 
-const { Option } = Select;
+const {Option} = Select;
 
 const layout = {
     labelCol: {
@@ -24,23 +24,13 @@ export default class Update extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {}
-
-
     }
 
 
     componentWillMount() {
-
-        this.getDts()
-
-    }
-
-
-    getDts() {
         axios.get('/dtsource/getDtSourceById?id=' + this.props.match.params.id).then((response) => {
             const result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 const data = response.data.data;
                 const dtSourceJson = JSON.parse(data.dtSourceJson);
                 this.formRef.current.setFieldsValue(
@@ -63,6 +53,7 @@ export default class Update extends React.Component {
         });
     }
 
+
     test() {
         this.formRef.current.validateFields()
             .then(values => {
@@ -73,7 +64,7 @@ export default class Update extends React.Component {
                     region: values.region,
                 }).then((response) => {
                     var result = response.data.message;
-                    if (result == 'Success') {
+                    if (result === 'Success') {
                         notification['success']({
                             message: '通知',
                             description:
@@ -113,7 +104,7 @@ export default class Update extends React.Component {
             region: values.region,
         }).then((response) => {
             var result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 notification['success']({
                     message: '通知',
                     description:
@@ -135,9 +126,9 @@ export default class Update extends React.Component {
 
 
     render() {
-        return <div style={{padding:'10px'}}>
+        return <div style={{padding: '10px'}}>
             <h2>修改数据源</h2>
-            <Row >
+            <Row>
                 <Col span={24}>
 
                     <Form
@@ -161,9 +152,9 @@ export default class Update extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入数据源名称" />
+                            <Input placeholder="请输入数据源名称"/>
                         </Form.Item>
-                        <Form.Item name="dtsType" label="数据源类型" rules={[{ required: true, message: '请选择数据源类型' }]}>
+                        <Form.Item name="dtsType" label="数据源类型" rules={[{required: true, message: '请选择数据源类型'}]}>
                             <Select
                                 placeholder="请选择数据源类型"
                                 onChange={this.onGenderChange}
@@ -185,7 +176,7 @@ export default class Update extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessKey" />
+                            <Input placeholder="请输入AccessKey"/>
                         </Form.Item>
 
                         <Form.Item
@@ -198,7 +189,7 @@ export default class Update extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessSecret" />
+                            <Input placeholder="请输入AccessSecret"/>
                         </Form.Item>
 
 
@@ -212,26 +203,25 @@ export default class Update extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入地域" />
+                            <Input placeholder="请输入地域"/>
                         </Form.Item>
 
                         <Form.Item {...tailLayout}>
-                            <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                            <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
                                 确定
-                                    </Button>
-                            <Button htmlType="button" onClick={() => this.test()} style={{ marginRight: '10px' }}>
+                            </Button>
+                            <Button htmlType="button" onClick={() => this.test()} style={{marginRight: '10px'}}>
                                 测试
-                                    </Button>
+                            </Button>
                             <Button htmlType="button" onClick={() => this.quit()}>
                                 取消
-                                    </Button>
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Col>
 
             </Row>
         </div>
-
 
 
     }

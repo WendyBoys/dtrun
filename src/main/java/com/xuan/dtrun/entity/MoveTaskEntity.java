@@ -11,6 +11,16 @@ public class MoveTaskEntity implements Serializable {
     private String createTime;
     private String finishTime;
     private Integer uid;
+    private Integer key;
+
+    public MoveTaskEntity() {
+    }
+
+    public MoveTaskEntity(Integer id,String taskName, String taskJson) {
+        this.id=id;
+        this.taskName = taskName;
+        this.taskJson = taskJson;
+    }
 
     public MoveTaskEntity(String taskName, String taskJson, String status, String createTime, Integer uid) {
         this.taskName = taskName;
@@ -19,6 +29,7 @@ public class MoveTaskEntity implements Serializable {
         this.createTime = createTime;
         this.uid = uid;
     }
+
 
     public Integer getId() {
         return id;
@@ -77,10 +88,18 @@ public class MoveTaskEntity implements Serializable {
     }
 
     public String getFinishTime() {
-        return finishTime ;
+        return finishTime;
     }
 
     public void setFinishTime(String finishTime) {
         this.finishTime = finishTime;
+    }
+
+    public Integer getKey() {
+        return key;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
     }
 }

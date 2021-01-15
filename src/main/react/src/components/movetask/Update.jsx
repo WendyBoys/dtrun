@@ -15,7 +15,7 @@ const layout = {
 };
 
 
-const Create = (props) => {
+const Update = (props) => {
     const [loading, setLoading] = useState(false);
     const [current, setCurrent] = useState(0);
     const [data, setData] = useState({});
@@ -39,6 +39,28 @@ const Create = (props) => {
                         message: '通知',
                         description:
                             '获取数据源列表失败，请检查数据源配置',
+                        duration: 2,
+                    });
+                }
+                setLoading(false)
+            });
+        axios.get('/movetask/getMoveTaskById?id=' + props.match.params.id)
+            .then((response) => {
+                const result = response.data.message;
+                const data = response.data.data;
+                if (result === 'Success') {
+                    const taskJson = JSON.parse(data.taskJson);
+                    form.setFieldsValue({srcBucket: taskJson.srcBucket})
+                    form.setFieldsValue({desBucket: taskJson.desBucket})
+                    setChecked(taskJson.allMove !== 'false')
+                    form.setFieldsValue({srcId: parseInt(taskJson.srcId)})
+                    form.setFieldsValue({desId: parseInt(taskJson.desId)})
+                    form.setFieldsValue({taskName: data.taskName})
+                } else {
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '获取迁移任务失败，请检查配置',
                         duration: 2,
                     });
                 }
@@ -145,8 +167,8 @@ const Create = (props) => {
 
     const OnFinish = values => {
         const body = {...data, 'option': values}
-        console.log(body)
-        axios.post('/movetask/create', {
+        axios.post('/movetask/update', {
+            id: props.match.params.id,
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,
             desId: body.des.desId,
@@ -155,12 +177,12 @@ const Create = (props) => {
             taskName: body.option.taskName,
         })
             .then((response) => {
-                var result = response.data.message;
+                const result = response.data.message;
                 if (result === 'Success') {
                     notification['success']({
                         message: '通知',
                         description:
-                            '创建迁移任务成功',
+                            '修改迁移任务成功',
                         duration: 2,
                     });
                     props.history.push('/movetask/show');
@@ -168,7 +190,7 @@ const Create = (props) => {
                     notification['error']({
                         message: '通知',
                         description:
-                            '创建迁移任务失败，请检查配置',
+                            '修改迁移任务失败，请检查配置',
                         duration: 2,
                     });
                 }
@@ -186,7 +208,7 @@ const Create = (props) => {
                 onFinish={srcOnFinish}
             >
                 <Form.Item
-                    label="数据源"
+                    label="起始"
                     name="srcId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
@@ -257,7 +279,7 @@ const Create = (props) => {
                 onFinish={desOnFinish}
             >
                 <Form.Item
-                    label="数据源"
+                    label="目的数据源"
                     name="desId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
@@ -390,4 +412,4 @@ const Create = (props) => {
 }
 
 
-export default Create;
+export default Update;

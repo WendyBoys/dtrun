@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,6 +28,32 @@ public class MoveTaskController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+
+    @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
+    public CommonResult findAll(@RequestHeader("token") String token) {
+        try {
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+            List<MoveTaskEntity> moveTaskEntityList = moveTaskService.findAll(user.getId());
+            return new CommonResult(200, MessageEnum.SUCCESS, moveTaskEntityList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+    }
+
+
+    @GetMapping(value = "/getMoveTaskById", produces = "application/json;charset=utf-8")
+    public CommonResult getMoveTaskById(int id) {
+        try {
+            MoveTaskEntity moveTaskEntity = moveTaskService.getMoveTaskById(id);
+            return new CommonResult(200, MessageEnum.SUCCESS, moveTaskEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+    }
+
 
     @PostMapping(value = "/create")
     public CommonResult create(@RequestBody JSONObject jsonObject, @RequestHeader("token") String token) {
@@ -58,4 +85,41 @@ public class MoveTaskController {
         }
     }
 
+    @PostMapping(value = "/update")
+    public CommonResult update(@RequestBody JSONObject jsonObject) {
+        try {
+            int id = Integer.parseInt(jsonObject.getString("id"));
+            String srcId = jsonObject.getString("srcId");
+            String srcBucket = jsonObject.getString("srcBucket");
+            String desId = jsonObject.getString("desId");
+            String desBucket = jsonObject.getString("desBucket");
+            String allMove = jsonObject.getString("allMove");
+            String taskName = jsonObject.getString("taskName");
+            Map map = new HashMap<>();
+            map.put("srcId", srcId);
+            map.put("srcBucket", srcBucket);
+            map.put("desId", desId);
+            map.put("desBucket", desBucket);
+            map.put("allMove", allMove);
+            String taskJson = new JSONObject(map).toJSONString();
+            MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
+            moveTaskService.update(moveTaskEntity);
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
+        }
+    }
+
+    @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
+    public CommonResult delete(@RequestBody JSONObject json) {
+        try {
+            Object[] ids = json.getJSONArray("id").toArray();
+            moveTaskService.delete(ids);
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
+        }
+    }
 }

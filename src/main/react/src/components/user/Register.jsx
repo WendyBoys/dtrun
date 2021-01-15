@@ -23,10 +23,10 @@ export default class Register extends React.Component {
             registerCode: values.registerCode,
         }).then((response) => {
             const result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 this.props.history.push('/login')
             }
-            notification[result == 'Success' ? 'success' : 'error']({
+            notification[result === 'Success' ? 'success' : 'error']({
                 message: '通知',
                 description:
                 response.data.data,

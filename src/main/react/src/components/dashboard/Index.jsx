@@ -8,15 +8,19 @@ import cookie from 'react-cookies'
 import ImgCrop from 'antd-img-crop';
 import {Avatar, Button, Drawer, Form, Image, Input, Layout, Menu, message, notification, Row, Spin, Upload} from 'antd';
 import {
+    ContactsOutlined,
     EditOutlined,
+    FolderOpenOutlined,
     LaptopOutlined,
     NotificationOutlined,
+    SettingOutlined,
+    SplitCellsOutlined,
     UploadOutlined,
-    UserSwitchOutlined
+    UserSwitchOutlined,
 } from '@ant-design/icons';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const {SubMenu} = Menu;
+const {Header, Content, Sider} = Layout;
 const tailLayout = {
     wrapperCol: {
         offset: 5,
@@ -32,7 +36,7 @@ const layout = {
     },
 };
 const token = cookie.load('token');
-const head = { token: token }
+const head = {token: token}
 
 
 export default class Index extends React.Component {
@@ -56,9 +60,9 @@ export default class Index extends React.Component {
     componentDidMount() {
         axios.get('/user/getCurrentUser').then((response) => {
             var result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 const user = response.data.data;
-                this.setState({ userName: user.userName, iconUrl: user.iconUrl })
+                this.setState({userName: user.userName, iconUrl: user.iconUrl})
             } else {
 
             }
@@ -83,7 +87,7 @@ export default class Index extends React.Component {
             newPassword: values.newPassword
         }).then((response) => {
             var result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 this.setState({
                     passwordDrawer: false,
                     mainDrawerWidth: 250,
@@ -127,7 +131,7 @@ export default class Index extends React.Component {
     showMessageDrawer = () => {
         this.setState({
             messageDrawer: true,
-            mainDrawerWidth: 500,
+            mainDrawerWidth: 470,
         });
     };
     onMessageDrawerClose = () => {
@@ -140,7 +144,7 @@ export default class Index extends React.Component {
     showPasswordDrawer = () => {
         this.setState({
             passwordDrawer: true,
-            mainDrawerWidth: 500,
+            mainDrawerWidth: 470,
         });
     };
     onPasswordDrawerClose = () => {
@@ -166,25 +170,25 @@ export default class Index extends React.Component {
 
     handleChange = info => {
         if (info.file.status === 'uploading') {
-            this.setState({ loading: true });
+            this.setState({loading: true});
             return;
         }
         if (info.file.status === 'done') {
             const response = info.fileList[this.state.index].response;
             if (response.message === 'Success') {
-                this.setState({ iconUrl: response.data });
-                this.setState({ loading: false });
+                this.setState({iconUrl: response.data});
+                this.setState({loading: false});
                 message.success('修改头像成功');
             } else {
                 message.error('修改头像失败');
             }
-            this.setState({ index: this.state.index + 1 });
+            this.setState({index: this.state.index + 1});
         }
     };
 
     render() {
-        const { userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading, fileList } = this.state;
-        return <div style={{ height: '100%' }}>
+        const {userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading, fileList} = this.state;
+        return <div style={{height: '100%'}}>
             <Drawer
                 title={'欢迎回来，' + userName}
                 placement={placement}
@@ -196,13 +200,13 @@ export default class Index extends React.Component {
             >
                 <Spin spinning={loading}>
                     <Image
-                        style={{ borderRadius: '100%', width: '100%', cursor: 'pointer' }}
+                        style={{borderRadius: '100%', width: '100%', cursor: 'pointer'}}
                         width="202px"
                         height="202px"
                         src={iconUrl}
                     />
                 </Spin>
-                <div style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
+                <div style={{marginLeft: '47px', marginTop: '10px'}}>
                     <ImgCrop
                         rotate
                         modalTitle="编辑图片"
@@ -216,7 +220,7 @@ export default class Index extends React.Component {
                             beforeUpload={this.beforeUpload}
                             onChange={this.handleChange}
                         >
-                            <Button icon={<UploadOutlined />}>更换头像</Button>
+                            <Button icon={<UploadOutlined/>}>更换头像</Button>
 
                         </Upload>
                     </ImgCrop>
@@ -224,15 +228,17 @@ export default class Index extends React.Component {
                 <Menu
                     mode="inline"
                 >
-                    <Menu.Item key="1" onClick={this.showMessageDrawer} icon={<UserSwitchOutlined />}>
+                    <Menu.Item key="1" onClick={this.showMessageDrawer} icon={<UserSwitchOutlined/>}>
                         个人中心
                     </Menu.Item>
-                    <Menu.Item key="2" onClick={this.showPasswordDrawer} icon={<EditOutlined />}>
+                    <Menu.Item key="2" onClick={this.showPasswordDrawer} icon={<EditOutlined/>}>
                         修改密码</Menu.Item>
-                    <Menu.Item key="3" onClick={() => this.logout()} icon={<UploadOutlined style={{ transform: 'rotate(90deg)' }} />}>
+                    <Menu.Item key="3" onClick={() => this.logout()}
+                               icon={<UploadOutlined style={{transform: 'rotate(90deg)'}}/>}>
                         注销
                     </Menu.Item>
                 </Menu>
+
 
                 <Drawer
                     title="个人中心"
@@ -242,7 +248,7 @@ export default class Index extends React.Component {
                     visible={this.state.messageDrawer}
                 >
                     个人中心
-          </Drawer>
+                </Drawer>
 
                 <Drawer
                     title="修改密码"
@@ -268,7 +274,7 @@ export default class Index extends React.Component {
                         >
 
                             <Input type='text'
-                                placeholder="请输入旧密码" />
+                                   placeholder="请输入旧密码"/>
                         </Form.Item>
                         <Form.Item
                             label="新密码"
@@ -283,30 +289,37 @@ export default class Index extends React.Component {
                         >
 
                             <input placeholder="请输新密码" type="text" id="basic_dtsName"
-                                class="ant-input" value="" />
+                                   class="ant-input" value=""/>
                         </Form.Item>
 
                         <Form.Item {...tailLayout}>
-                            <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}
+                            <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}
                             >
                                 确定
-                                </Button>
+                            </Button>
 
                             <Button htmlType="button" onClick={() => this.quit()}>
                                 取消
-                                </Button>
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Drawer>
 
             </Drawer>
-            <Layout style={{ height: '100%' }}>
-                <Header className="header" style={{ position: 'relative', left: '0', padding: '0', background: '#12202e' }}>
+            <Layout style={{height: '100%'}}>
+                <Header className="header"
+                        style={{position: 'relative', left: '0', padding: '0', background: '#12202e'}}>
                     <Row>
-                        <span style={{ color: '#ffffff', textAlign: 'center', width: '200px', fontSize: '20px' }}>DTRUN迁移系统</span>
-                        <div onClick={this.showMainDrawer} style={{ position: 'absolute', right: '45px', cursor: 'pointer' }}>
-                            <Avatar size={45} src={iconUrl} />
-                            <span style={{ marginLeft: '5px', color: '#ffffff', fontSize: '15px' }}>{userName}</span>
+                        <span style={{
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            width: '200px',
+                            fontSize: '20px'
+                        }}>DTRUN迁移系统</span>
+                        <div onClick={this.showMainDrawer}
+                             style={{position: 'absolute', right: '45px', cursor: 'pointer'}}>
+                            <Avatar size={45} src={iconUrl}/>
+                            <span style={{marginLeft: '5px', color: '#ffffff', fontSize: '15px'}}>{userName}</span>
                         </div>
                     </Row>
 
@@ -321,31 +334,32 @@ export default class Index extends React.Component {
                         <Menu
                             mode="inline"
                             // defaultSelectedKeys={['1']}
-                            style={{ height: '100%', borderRight: 0 }}
+                            style={{height: '100%', borderRight: 0}}
                         >
-                            <Menu.Item key="1" icon={<LaptopOutlined />}>
+                            <Menu.Item key="1" icon={<LaptopOutlined/>}>
                                 <NavLink to="/dashboard">运维大盘</NavLink>
                             </Menu.Item>
-                            <Menu.Item key="2" icon={<LaptopOutlined />}>
+                            <Menu.Item key="2" icon={<FolderOpenOutlined/>}>
                                 <NavLink to="/datasource/show">数据源管理</NavLink></Menu.Item>
-                            <Menu.Item key="3" icon={<LaptopOutlined />}>
-                                <NavLink to="/movetask"> 迁移任务管理</NavLink>
+                            <Menu.Item key="3" icon={<SplitCellsOutlined/>}>
+                                <NavLink to="/movetask">迁移任务管理</NavLink>
                             </Menu.Item>
-                            <SubMenu key="sub2" icon={<LaptopOutlined />} title="subnav 2">
-                                <Menu.Item key="5">option25</Menu.Item>
-                                <Menu.Item key="6">opti123on6</Menu.Item>
-                                <Menu.Item key="7">option7</Menu.Item>
-                                <Menu.Item key="8">option8</Menu.Item>
+                            <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
+                                <Menu.Item key="5">系统日志</Menu.Item>
+                                <Menu.Item key="6">未知模块</Menu.Item>
+                                <Menu.Item key="7">未知模块</Menu.Item>
+                                <Menu.Item key="8">未知模块</Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub3" icon={<NotificationOutlined />} title="subnav 3">
-                                <Menu.Item key="9">option9</Menu.Item>
-                                <Menu.Item key="10">option10</Menu.Item>
-                                <Menu.Item key="11">option11</Menu.Item>
-                                <Menu.Item key="12">option12</Menu.Item>
+                            <SubMenu key="9" icon={<NotificationOutlined/>} title="推送配置">
+                                <Menu.Item key="10">邮件配置</Menu.Item>
+                                <Menu.Item key="11">联系人配置</Menu.Item>
                             </SubMenu>
+                            <Menu.Item key="12" icon={<ContactsOutlined/>}>
+                                <NavLink to="/movetask">关于我们</NavLink>
+                            </Menu.Item>
                         </Menu>
                     </Sider>
-                    <Layout style={{ padding: '0 14px 14px 14px', height: '100%' }}>
+                    <Layout style={{padding: '0 14px 14px 14px', height: '100%'}}>
 
                         <Content
                             className="site-layout-background"
@@ -355,10 +369,10 @@ export default class Index extends React.Component {
                             }}
                         >
                             <Switch>
-                                <Route path="/dashboard" component={Dashboard} />
-                                <Route path="/datasource" component={Datasource} />
-                                <Route path="/movetask" component={MoveTask} />
-                                <Redirect to="/dashboard" />
+                                <Route path="/dashboard" component={Dashboard}/>
+                                <Route path="/datasource" component={Datasource}/>
+                                <Route path="/movetask" component={MoveTask}/>
+                                <Redirect to="/dashboard"/>
                             </Switch>
                         </Content>
                     </Layout>

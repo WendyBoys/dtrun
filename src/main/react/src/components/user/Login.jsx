@@ -22,11 +22,11 @@ export default class Login extends React.Component {
         }).then((response) => {
             var result = response.data.message;
             var token = response.data.data;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
                 cookie.save('token', token, {expires: inFifteenMinutes})
                 this.props.history.push({pathname: '/index'})
-            } else if (result == 'LoginRefuse') {
+            } else if (result === 'LoginRefuse') {
                 notification['error']({
                     message: '通知',
                     description:

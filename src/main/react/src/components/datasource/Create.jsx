@@ -35,7 +35,7 @@ export default class Create extends React.Component {
                     region: values.region,
                 }).then((response) => {
                     var result = response.data.message;
-                    if (result == 'Success') {
+                    if (result === 'Success') {
                         notification['success']({
                             message: '通知',
                             description:
@@ -76,7 +76,7 @@ export default class Create extends React.Component {
             region: values.region,
         }).then((response) => {
             var result = response.data.message;
-            if (result == 'Success') {
+            if (result === 'Success') {
                 this.props.history.push('/datasource/show');
             } else {
 

@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import {Button, Modal, notification, Space, Spin, Table} from 'antd';
+import {Button, Modal, notification, Space, Spin, Table, Tag} from 'antd';
+import {CheckCircleOutlined, CloseCircleOutlined, FlagFilled, SyncOutlined} from '@ant-design/icons';
 
 
 const Show = (props) => {
     const [list, setList] = useState([]);
-    const [dtsId, setDtsId] = useState([]);
+    const [taskId, setTaskId] = useState([]);
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -25,7 +26,7 @@ const Show = (props) => {
 
     const fentch = () => {
         setLoading(true)
-        axios.get('/dtsource/findAll').then((response) => {
+        axios.get('/movetask/findAll').then((response) => {
             var result = response.data.message;
             var data = response.data.data;
             if (result === 'Success') {
@@ -39,56 +40,29 @@ const Show = (props) => {
 
 
     const toCreate = () => {
-        props.history.push('/datasource/create')
-    }
-
-    const testDts = (id) => {
-        setLoading(true)
-        axios.post('/dtsource/connection', {
-            id: id,
-        }).then((response) => {
-            var result = response.data.message;
-            if (result === 'Success') {
-                setLoading(false)
-                notification['success']({
-                    message: '通知',
-                    description:
-                        '测试成功',
-                    duration: 1,
-                });
-            } else {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '测试失败，请检查您的参数设置',
-                    duration: 1,
-                });
-            }
-            setLoading(false)
-        });
+        props.history.push('/movetask/create');
     }
 
 
-    const deleteDts = (id, dtSourceName) => {
+    const deleteTask = (id, taskName) => {
         const selecteLength = selectedRowKeys.length;
         if (selecteLength <= 1) {
-            setModalText('您确定要删除数据源 ' + dtSourceName + ' 吗?');
-            const idArray = [];
+            setModalText('您确定要删除迁移任务 ' + taskName + ' 吗?');
+            const idArray=[];
             idArray.push(id)
-            setDtsId(idArray);
+            setTaskId(idArray);
         } else {
-            setModalText('您确定要删除选中的' + selecteLength + '项数据源吗?');
-            setDtsId(selectedRowKeys);
+            setModalText('您确定要删除选中的' + selecteLength + '项迁移任务吗?');
+            setTaskId(selectedRowKeys);
         }
         setVisible(true);
-
     }
 
     const handleOk = () => {
         setConfirmLoading(true);
-        axios.delete('/dtsource/delete', {
+        axios.delete('/movetask/delete', {
             data: {
-                id: dtsId,
+                id: taskId,
             }
         }).then((response) => {
             var result = response.data.message;
@@ -96,11 +70,17 @@ const Show = (props) => {
                 setVisible(false);
                 setConfirmLoading(false);
                 fentch();
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '删除成功',
+                    duration: 1,
+                });
             } else {
                 notification['error']({
                     message: '通知',
                     description:
-                        '删除失败！',
+                        '删除失败',
                     duration: 1,
                 });
             }
@@ -108,37 +88,76 @@ const Show = (props) => {
     };
 
 
-    const updateDts = (id) => {
-        props.history.push('/datasource/update/' + id)
+    const updateTask = (id) => {
+        props.history.push('/movetask/update/' + id)
     }
 
 
     const columns = [
         {
-            title: '数据源名称',
-            dataIndex: 'dtSourceName',
+            title: '迁移任务名称',
+            dataIndex: 'taskName',
             render: (text, record) => <span style={{color: '#0062FF', cursor: 'pointer'}}
-                                            onClick={() => updateDts(record.id)}>{text}</span>,
-        },
-        {
-            title: '数据源类型',
-            dataIndex: 'dtSourceType',
+                                            onClick={() => updateTask(record.id)}>{text}</span>,
         },
         {
             title: '创建时间',
             dataIndex: 'createTime',
         },
         {
+            title: '更新时间',
+            dataIndex: 'updateTime',
+        },
+        {
+            title: '当前状态',
+            dataIndex: 'status',
+            render: (text, record) => {
+                if (text === 'READY') {
+                    return (
+                        <Tag icon={<FlagFilled/>} color="cyan">
+                            准备就绪
+                        </Tag>
+                    )
+                } else if (text === 'FINISH') {
+                    return (
+                        <Tag icon={<CheckCircleOutlined/>} color="success">
+                            已完成
+                        </Tag>
+                    )
+                } else if (text === 'RUNNING') {
+                    return (
+                        <Tag icon={<SyncOutlined spin/>} color="processing">
+                            运行中
+                        </Tag>
+                    )
+                } else {
+                    return (
+                        <Tag icon={<CloseCircleOutlined/>} color="error">
+                            执行失败
+                        </Tag>
+                    )
+                }
+            }
+        },
+        {
+            title: '执行次数',
+            dataIndex: 'runCount',
+        },
+        {
             title: '操作',
             dataIndex: 'option',
-            render: (text, record) => (
-                <Space size="middle">
-                    <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                          onClick={() => testDts(record.id)}>测试</span>
-                    <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                          onClick={() => deleteDts(record.id, record.dtSourceName)}>删除</span>
-                </Space>
-            )
+            render: (text, record) => {
+                return (
+                    <Space size="middle">
+                        {record.status === 'RUNNING' ?
+                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>取消</span> :
+                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>启动</span>}
+                        <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>查看结果</span>
+                        <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
+                              onClick={() => deleteTask(record.id, record.taskName)}>删除</span>
+                    </Space>
+                )
+            }
         },
     ];
 
@@ -161,8 +180,7 @@ const Show = (props) => {
                             right: '83px',
                             zIndex: '999',
                             borderRadius: '5px'
-                        }}
-                >刷新</Button>
+                        }}>刷新</Button>
                 <Button type="primary" onClick={() => toCreate()}
                         style={{
                             background: '#00b4ed',
@@ -170,12 +188,13 @@ const Show = (props) => {
                             right: '11px',
                             zIndex: '999',
                             borderRadius: '5px'
-                        }}
-                >创建</Button></div>
+                        }}>创建</Button>
+            </div>
             <div style={{height: '10px', background: '#f0f2f5'}}></div>
             <div style={{padding: '10px', background: '#ffffff'}}>
                 <div>
-                    <Table rowSelection={rowSelection} bordered
+                    <Table rowSelection={rowSelection}
+                           bordered
                            columns={columns}
                            dataSource={list}
                            pagination={{
@@ -187,7 +206,7 @@ const Show = (props) => {
                 </div>
 
                 <Modal
-                    title="删除数据源"
+                    title="删除迁移任务"
                     okText="确定"
                     cancelText="取消"
                     visible={visible}
