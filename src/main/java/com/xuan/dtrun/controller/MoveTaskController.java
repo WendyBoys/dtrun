@@ -122,4 +122,17 @@ public class MoveTaskController {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
         }
     }
+
+
+    @PostMapping(value = "/run", produces = "application/json;charset=utf-8")
+    public CommonResult run(@RequestBody JSONObject json) {
+        try {
+            Object[] ids = json.getJSONArray("id").toArray();
+            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById((Integer) ids[0]);
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
+        }
+    }
 }

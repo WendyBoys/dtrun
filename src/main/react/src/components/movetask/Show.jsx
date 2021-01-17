@@ -7,16 +7,12 @@ import {CheckCircleOutlined, CloseCircleOutlined, FlagFilled, SyncOutlined} from
 const Show = (props) => {
     const [list, setList] = useState([]);
     const [taskId, setTaskId] = useState([]);
-    const [visible, setVisible] = useState(false);
+    const [visibleDelete, setVisibleDelete] = useState(false);
+    const [visibleRunTask, setVisibleRunTask] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-
-    const handleCancel = () => {
-        setVisible(false);
-    };
 
 
     useEffect(() => {
@@ -43,22 +39,40 @@ const Show = (props) => {
         props.history.push('/movetask/create');
     }
 
+    const toUpdate = (id) => {
+        props.history.push('/movetask/update/' + id)
+    }
+
 
     const deleteTask = (id, taskName) => {
         const selecteLength = selectedRowKeys.length;
         if (selecteLength <= 1) {
             setModalText('您确定要删除迁移任务 ' + taskName + ' 吗?');
-            const idArray=[];
+            const idArray = [];
             idArray.push(id)
             setTaskId(idArray);
         } else {
             setModalText('您确定要删除选中的' + selecteLength + '项迁移任务吗?');
             setTaskId(selectedRowKeys);
         }
-        setVisible(true);
+        setVisibleDelete(true);
     }
 
-    const handleOk = () => {
+    const runTask = (id, taskName) => {
+        const selecteLength = selectedRowKeys.length;
+        if (selecteLength <= 1) {
+            setModalText('您确定要启动迁移任务 ' + taskName + ' 吗?');
+            const idArray = [];
+            idArray.push(id)
+            setTaskId(idArray);
+        } else {
+            setModalText('您确定要启动选中的' + selecteLength + '项迁移任务吗?');
+            setTaskId(selectedRowKeys);
+        }
+        setVisibleRunTask(true);
+    }
+
+    const handleDeteleOk = () => {
         setConfirmLoading(true);
         axios.delete('/movetask/delete', {
             data: {
@@ -67,8 +81,9 @@ const Show = (props) => {
         }).then((response) => {
             var result = response.data.message;
             if (result === 'Success') {
-                setVisible(false);
+                setVisibleDelete(false);
                 setConfirmLoading(false);
+                setSelectedRowKeys([])
                 fentch();
                 notification['success']({
                     message: '通知',
@@ -88,9 +103,41 @@ const Show = (props) => {
     };
 
 
-    const updateTask = (id) => {
-        props.history.push('/movetask/update/' + id)
-    }
+    const handleRunTaskOk = () => {
+        setConfirmLoading(true);
+        axios.post('/movetask/run', {
+            id: taskId,
+        }).then((response) => {
+            var result = response.data.message;
+            if (result === 'Success') {
+                setVisibleRunTask(false);
+                setConfirmLoading(false);
+                setSelectedRowKeys([])
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '启动成功',
+                    duration: 1,
+                });
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '启动失败',
+                    duration: 1,
+                });
+            }
+        });
+    };
+
+
+    const handleCancel = () => {
+        setVisibleDelete(false);
+    };
+
+    const handleCancelRunTask = () => {
+        setVisibleRunTask(false);
+    };
 
 
     const columns = [
@@ -98,7 +145,7 @@ const Show = (props) => {
             title: '迁移任务名称',
             dataIndex: 'taskName',
             render: (text, record) => <span style={{color: '#0062FF', cursor: 'pointer'}}
-                                            onClick={() => updateTask(record.id)}>{text}</span>,
+                                            onClick={() => toUpdate(record.id)}>{text}</span>,
         },
         {
             title: '创建时间',
@@ -151,7 +198,8 @@ const Show = (props) => {
                     <Space size="middle">
                         {record.status === 'RUNNING' ?
                             <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>取消</span> :
-                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>启动</span>}
+                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
+                                  onClick={() => runTask(record.id, record.taskName)}>启动</span>}
                         <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>查看结果</span>
                         <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
                               onClick={() => deleteTask(record.id, record.taskName)}>删除</span>
@@ -160,6 +208,7 @@ const Show = (props) => {
             }
         },
     ];
+
 
     const onSelectChange = selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys)
@@ -209,10 +258,22 @@ const Show = (props) => {
                     title="删除迁移任务"
                     okText="确定"
                     cancelText="取消"
-                    visible={visible}
-                    onOk={handleOk}
+                    visible={visibleDelete}
+                    onOk={handleDeteleOk}
                     confirmLoading={confirmLoading}
                     onCancel={handleCancel}
+                >
+                    <p>{modalText}</p>
+                </Modal>
+
+                <Modal
+                    title="启动迁移任务"
+                    okText="确定"
+                    cancelText="取消"
+                    visible={visibleRunTask}
+                    onOk={handleRunTaskOk}
+                    confirmLoading={confirmLoading}
+                    onCancel={handleCancelRunTask}
                 >
                     <p>{modalText}</p>
                 </Modal>
