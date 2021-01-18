@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import {deletes, findAll, run} from './service';
 import {Button, Modal, notification, Space, Spin, Table, Tag} from 'antd';
 import {CheckCircleOutlined, CloseCircleOutlined, FlagFilled, SyncOutlined} from '@ant-design/icons';
 
@@ -22,9 +22,9 @@ const Show = (props) => {
 
     const fentch = () => {
         setLoading(true)
-        axios.get('/movetask/findAll').then((response) => {
-            var result = response.data.message;
-            var data = response.data.data;
+        findAll().then((response) => {
+            const result = response.data.message;
+            const data = response.data.data;
             if (result === 'Success') {
                 setList(data);
                 setLoading(false)
@@ -74,12 +74,12 @@ const Show = (props) => {
 
     const handleDeteleOk = () => {
         setConfirmLoading(true);
-        axios.delete('/movetask/delete', {
+        deletes({
             data: {
                 id: taskId,
             }
         }).then((response) => {
-            var result = response.data.message;
+            const result = response.data.message;
             if (result === 'Success') {
                 setVisibleDelete(false);
                 setConfirmLoading(false);
@@ -105,10 +105,10 @@ const Show = (props) => {
 
     const handleRunTaskOk = () => {
         setConfirmLoading(true);
-        axios.post('/movetask/run', {
+        run({
             id: taskId,
         }).then((response) => {
-            var result = response.data.message;
+            const result = response.data.message;
             if (result === 'Success') {
                 setVisibleRunTask(false);
                 setConfirmLoading(false);

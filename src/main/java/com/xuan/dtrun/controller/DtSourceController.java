@@ -169,11 +169,11 @@ public class DtSourceController {
 
     }
 
-    @GetMapping(value = "/getAllDtSourceNameById", produces = "application/json;charset=utf-8")
-    public CommonResult getAllDtSourceNameById(@RequestHeader("token") String token) {
+    @GetMapping(value = "/getAllDtSourceName", produces = "application/json;charset=utf-8")
+    public CommonResult getAllDtSourceName(@RequestHeader("token") String token) {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
-            List<DtSourceEntity> dtSourceEntityList = dtSourceService.getAllDtSourceNameById(user.getId());
+            List<DtSourceEntity> dtSourceEntityList = dtSourceService.getAllDtSourceName(user.getId());
             return new CommonResult(200, MessageEnum.SUCCESS, dtSourceEntityList);
         } catch (Exception e) {
             e.printStackTrace();

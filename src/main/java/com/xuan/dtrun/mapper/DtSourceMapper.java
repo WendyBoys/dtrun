@@ -19,5 +19,5 @@ public interface DtSourceMapper {
 
      void update(DtSourceEntity dtSourceEntity);
 
-     List<DtSourceEntity> getAllDtSourceNameById(int userId);
+     List<DtSourceEntity> getAllDtSourceName(int userId);
 }

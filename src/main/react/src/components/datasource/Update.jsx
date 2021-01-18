@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import {getDtSourceById, testconnection, updateDataSource} from './service';
 import {Button, Col, Form, Input, notification, Row, Select} from 'antd';
 
 const {Option} = Select;
@@ -26,9 +26,10 @@ export default class Update extends React.Component {
         super(props);
     }
 
-
     componentWillMount() {
-        axios.get('/dtsource/getDtSourceById?id=' + this.props.match.params.id).then((response) => {
+        getDtSourceById({
+            id: this.props.match.params.id,
+        }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
                 const data = response.data.data;
@@ -57,13 +58,13 @@ export default class Update extends React.Component {
     test() {
         this.formRef.current.validateFields()
             .then(values => {
-                axios.post('/dtsource/testconnection', {
+                testconnection({
                     dataSourceType: values.dtsType,
                     accessKey: values.accessKey,
                     accessSecret: values.accessSecret,
                     region: values.region,
                 }).then((response) => {
-                    var result = response.data.message;
+                    const result = response.data.message;
                     if (result === 'Success') {
                         notification['success']({
                             message: '通知',
@@ -80,11 +81,7 @@ export default class Update extends React.Component {
                         });
                     }
                 });
-            })
-            .catch(errorInfo => {
-
             });
-
     }
 
 
@@ -95,7 +92,7 @@ export default class Update extends React.Component {
 
 
     onFinish = (values) => {
-        axios.post('/dtsource/update', {
+        updateDataSource({
             id: this.props.match.params.id,
             dataSourceName: values.dtsName,
             dataSourceType: values.dtsType,

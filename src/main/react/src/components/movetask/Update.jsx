@@ -1,7 +1,8 @@
 import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
+import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
+import {getMoveTaskById, updateMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
-import axios from "axios";
 
 const {Step} = Steps;
 const {Option} = Select;
@@ -29,43 +30,43 @@ const Update = (props) => {
     const [form] = Form.useForm();
     useEffect(() => {
         setLoading(true)
-        axios.get('/dtsource/getAllDtSourceNameById')
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setDtsList(response.data.data)
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取数据源列表失败，请检查数据源配置',
-                        duration: 2,
-                    });
-                }
-                setLoading(false)
-            });
-        axios.get('/movetask/getMoveTaskById?id=' + props.match.params.id)
-            .then((response) => {
-                const result = response.data.message;
-                const data = response.data.data;
-                if (result === 'Success') {
-                    const taskJson = JSON.parse(data.taskJson);
-                    form.setFieldsValue({srcBucket: taskJson.srcBucket})
-                    form.setFieldsValue({desBucket: taskJson.desBucket})
-                    setChecked(taskJson.allMove !== 'false')
-                    form.setFieldsValue({srcId: parseInt(taskJson.srcId)})
-                    form.setFieldsValue({desId: parseInt(taskJson.desId)})
-                    form.setFieldsValue({taskName: data.taskName})
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取迁移任务失败，请检查配置',
-                        duration: 2,
-                    });
-                }
-                setLoading(false)
-            });
+        getAllDtSourceName().then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setDtsList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取数据源列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+            setLoading(false)
+        });
+        getMoveTaskById({
+            id: props.match.params.id
+        }).then((response) => {
+            const result = response.data.message;
+            const data = response.data.data;
+            if (result === 'Success') {
+                const taskJson = JSON.parse(data.taskJson);
+                form.setFieldsValue({srcBucket: taskJson.srcBucket})
+                form.setFieldsValue({desBucket: taskJson.desBucket})
+                setChecked(taskJson.allMove !== 'false')
+                form.setFieldsValue({srcId: parseInt(taskJson.srcId)})
+                form.setFieldsValue({desId: parseInt(taskJson.desId)})
+                form.setFieldsValue({taskName: data.taskName})
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取迁移任务失败，请检查配置',
+                    duration: 2,
+                });
+            }
+            setLoading(false)
+        });
     }, []);
 
     const prev = () => {
@@ -79,71 +80,72 @@ const Update = (props) => {
     const srcChange = (id) => {
         form.setFieldsValue({srcBucket: undefined})
         setSrcBucketList([])
-        axios.get('/dtsource/getBucketLists?id=' + id)
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setSrcBucketList(response.data.data)
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取Bucket列表失败，请检查数据源配置',
-                        duration: 2,
-                    });
-                }
+        getBucketLists({
+            id: id,
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setSrcBucketList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
 
-            });
+        });
     }
 
     const desChange = (id) => {
         form.setFieldsValue({desBucket: undefined})
         setDesBucketList([])
-        axios.get('/dtsource/getBucketLists?id=' + id)
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setDesBucketList(response.data.data)
-                    setShowAddBucket(true)
-                } else {
-                    setShowAddBucket(false)
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取Bucket列表失败，请检查数据源配置',
-                        duration: 2,
-                    });
-                }
-            });
+        getBucketLists({
+            id: id
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setDesBucketList(response.data.data)
+                setShowAddBucket(true)
+            } else {
+                setShowAddBucket(false)
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+        });
     }
 
     const addItem = () => {
         const desId = form.getFieldValue('des');
         //发请求创建新的Bucket
-        axios.post('/dtsource/createBucket', {
+        createBucket({
             desId: desId,
             newBucketName: newBucketName,
-        })
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setNewBucketName([])
-                    notification['success']({
-                        message: '通知',
-                        description:
-                            '创建Bucket成功',
-                        duration: 2,
-                    });
-                    // setDesBucketList(response.data.data)
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '创建Bucket列表失败，请检查配置',
-                        duration: 2,
-                    });
-                }
-            });
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setNewBucketName([])
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '创建Bucket成功',
+                    duration: 2,
+                });
+                // setDesBucketList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '创建Bucket列表失败，请检查配置',
+                    duration: 2,
+                });
+            }
+        });
     }
 
     const quit = () => {
@@ -167,7 +169,7 @@ const Update = (props) => {
 
     const OnFinish = values => {
         const body = {...data, 'option': values}
-        axios.post('/movetask/update', {
+        updateMoveTask({
             id: props.match.params.id,
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,
@@ -175,26 +177,25 @@ const Update = (props) => {
             desBucket: body.des.desBucket,
             allMove: body.allMove,
             taskName: body.option.taskName,
-        })
-            .then((response) => {
-                const result = response.data.message;
-                if (result === 'Success') {
-                    notification['success']({
-                        message: '通知',
-                        description:
-                            '修改迁移任务成功',
-                        duration: 2,
-                    });
-                    props.history.push('/movetask/show');
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '修改迁移任务失败，请检查配置',
-                        duration: 2,
-                    });
-                }
-            });
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '修改迁移任务成功',
+                    duration: 2,
+                });
+                props.history.push('/movetask/show');
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '修改迁移任务失败，请检查配置',
+                    duration: 2,
+                });
+            }
+        });
     };
 
 
@@ -303,7 +304,6 @@ const Update = (props) => {
                         }
                     </Select>
                 </Form.Item>
-
 
                 <Form.Item
                     name="desBucket"

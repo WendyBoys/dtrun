@@ -1,9 +1,9 @@
 import React from 'react';
 import socket from '../../images/socket.svg';
-import axios from 'axios';
 import cookie from 'react-cookies'
 import {Button, Checkbox, Col, Form, Input, notification, Row} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import {login} from './service'
 
 export default class Login extends React.Component {
 
@@ -14,14 +14,13 @@ export default class Login extends React.Component {
         }
     }
 
-
     onFinish = (values) => {
-        axios.post('/user/login', {
+        login({
             account: values.account,
             password: values.password,
-        }).then((response) => {
-            var result = response.data.message;
-            var token = response.data.data;
+        }).then(response => {
+            const result = response.data.message;
+            const token = response.data.data;
             if (result === 'Success') {
                 let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
                 cookie.save('token', token, {expires: inFifteenMinutes})
@@ -41,9 +40,7 @@ export default class Login extends React.Component {
                     duration: 2,
                 });
             }
-
-        });
-
+        })
     };
 
     register() {
@@ -115,9 +112,9 @@ export default class Login extends React.Component {
                     </Col>
                     <Col span={6}></Col>
                 </Row>
-                <Row  style={{textAlign: 'center'}}>
+                <Row style={{textAlign: 'center'}}>
                     <Col span={6}></Col>
-                    <Col span={12} style={{position: 'absolute',left:'45%', bottom: '10px'}}><a
+                    <Col span={12} style={{position: 'absolute', left: '45%', bottom: '10px'}}><a
                         href="http://beian.miit.gov.cn">豫ICP备2020036555号</a></Col>
                     <Col span={6}></Col>
                 </Row>

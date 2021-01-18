@@ -1,7 +1,8 @@
 import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
+import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
+import {createMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
-import axios from "axios";
 
 const {Step} = Steps;
 const {Option} = Select;
@@ -29,9 +30,9 @@ const Create = (props) => {
     const [form] = Form.useForm();
     useEffect(() => {
         setLoading(true)
-        axios.get('/dtsource/getAllDtSourceNameById')
+        getAllDtSourceName()
             .then((response) => {
-                var result = response.data.message;
+                const result = response.data.message;
                 if (result === 'Success') {
                     setDtsList(response.data.data)
                 } else {
@@ -57,71 +58,68 @@ const Create = (props) => {
     const srcChange = (id) => {
         form.setFieldsValue({srcBucket: undefined})
         setSrcBucketList([])
-        axios.get('/dtsource/getBucketLists?id=' + id)
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setSrcBucketList(response.data.data)
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取Bucket列表失败，请检查数据源配置',
-                        duration: 2,
-                    });
-                }
-
-            });
+        getBucketLists({
+            id: id
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setSrcBucketList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+        });
     }
 
     const desChange = (id) => {
         form.setFieldsValue({desBucket: undefined})
         setDesBucketList([])
-        axios.get('/dtsource/getBucketLists?id=' + id)
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setDesBucketList(response.data.data)
-                    setShowAddBucket(true)
-                } else {
-                    setShowAddBucket(false)
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '获取Bucket列表失败，请检查数据源配置',
-                        duration: 2,
-                    });
-                }
-            });
+        getBucketLists({
+            id: id
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setDesBucketList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+        });
     }
 
     const addItem = () => {
         const desId = form.getFieldValue('des');
-        //发请求创建新的Bucket
-        axios.post('/dtsource/createBucket', {
+        createBucket({
             desId: desId,
             newBucketName: newBucketName,
-        })
-            .then((response) => {
-                var result = response.data.message;
-                if (result === 'Success') {
-                    setNewBucketName([])
-                    notification['success']({
-                        message: '通知',
-                        description:
-                            '创建Bucket成功',
-                        duration: 2,
-                    });
-                    // setDesBucketList(response.data.data)
-                } else {
-                    notification['error']({
-                        message: '通知',
-                        description:
-                            '创建Bucket列表失败，请检查配置',
-                        duration: 2,
-                    });
-                }
-            });
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setNewBucketName([])
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '创建Bucket成功',
+                    duration: 2,
+                });
+                // setDesBucketList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '创建Bucket列表失败，请检查配置',
+                    duration: 2,
+                });
+            }
+        });
     }
 
     const quit = () => {
@@ -145,8 +143,7 @@ const Create = (props) => {
 
     const OnFinish = values => {
         const body = {...data, 'option': values}
-        console.log(body)
-        axios.post('/movetask/create', {
+        createMoveTask({
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,
             desId: body.des.desId,
@@ -155,7 +152,7 @@ const Create = (props) => {
             taskName: body.option.taskName,
         })
             .then((response) => {
-                var result = response.data.message;
+                const result = response.data.message;
                 if (result === 'Success') {
                     notification['success']({
                         message: '通知',

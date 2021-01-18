@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import {connection, deletes, findAll} from './service';
 import {Button, Modal, notification, Space, Spin, Table} from 'antd';
 
 
@@ -25,9 +25,9 @@ const Show = (props) => {
 
     const fentch = () => {
         setLoading(true)
-        axios.get('/dtsource/findAll').then((response) => {
-            var result = response.data.message;
-            var data = response.data.data;
+        findAll().then((response) => {
+            const result = response.data.message;
+            const data = response.data.data;
             if (result === 'Success') {
                 setList(data);
                 setLoading(false)
@@ -44,7 +44,7 @@ const Show = (props) => {
 
     const testDts = (id) => {
         setLoading(true)
-        axios.post('/dtsource/connection', {
+        connection({
             id: id,
         }).then((response) => {
             var result = response.data.message;
@@ -86,21 +86,27 @@ const Show = (props) => {
 
     const handleOk = () => {
         setConfirmLoading(true);
-        axios.delete('/dtsource/delete', {
+        deletes({
             data: {
                 id: dtsId,
             }
         }).then((response) => {
-            var result = response.data.message;
+            const result = response.data.message;
             if (result === 'Success') {
                 setVisible(false);
                 setConfirmLoading(false);
                 fentch();
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '删除成功',
+                    duration: 1,
+                });
             } else {
                 notification['error']({
                     message: '通知',
                     description:
-                        '删除失败！',
+                        '删除失败',
                     duration: 1,
                 });
             }

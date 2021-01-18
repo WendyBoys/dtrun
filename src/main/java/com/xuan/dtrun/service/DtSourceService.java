@@ -16,5 +16,5 @@ public interface DtSourceService {
 
      void update(DtSourceEntity dtSourceEntity);
 
-    List<DtSourceEntity> getAllDtSourceNameById(int userId);
+    List<DtSourceEntity> getAllDtSourceName(int userId);
 }

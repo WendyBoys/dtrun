@@ -1,8 +1,8 @@
 import React from 'react';
-import axios from 'axios';
+import {createDataSource, testconnection} from './service';
 import {Button, Col, Form, Input, notification, Row, Select} from 'antd';
 
-const { Option } = Select;
+const {Option} = Select;
 
 const layout = {
     labelCol: {
@@ -21,6 +21,7 @@ const tailLayout = {
 };
 export default class Create extends React.Component {
     formRef = React.createRef();
+
     constructor(props) {
         super(props);
     }
@@ -28,13 +29,13 @@ export default class Create extends React.Component {
     test() {
         this.formRef.current.validateFields()
             .then(values => {
-                axios.post('/dtsource/testconnection', {
+                testconnection({
                     dataSourceType: values.dtsType,
                     accessKey: values.accessKey,
                     accessSecret: values.accessSecret,
                     region: values.region,
                 }).then((response) => {
-                    var result = response.data.message;
+                    const result = response.data.message;
                     if (result === 'Success') {
                         notification['success']({
                             message: '通知',
@@ -58,24 +59,19 @@ export default class Create extends React.Component {
 
     }
 
-
     quit() {
         this.props.history.goBack();
-
     }
 
-
-
     onFinish = (values) => {
-
-        axios.post('/dtsource/create', {
+        createDataSource({
             dataSourceName: values.dtsName,
             dataSourceType: values.dtsType,
             secretId: values.accessKey,
             secretKey: values.accessSecret,
             region: values.region,
         }).then((response) => {
-            var result = response.data.message;
+            const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/datasource/show');
             } else {
@@ -85,7 +81,7 @@ export default class Create extends React.Component {
     };
 
     render() {
-        return <div style={{padding:'10px'}}>
+        return <div style={{padding: '10px'}}>
             <h2>创建数据源</h2>
             <Row>
                 <Col span={24}>
@@ -108,10 +104,10 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入数据源名称" />
+                            <Input placeholder="请输入数据源名称"/>
                         </Form.Item>
 
-                        <Form.Item name="dtsType" label="数据源类型" rules={[{ required: true, message: '请选择数据源类型' }]}>
+                        <Form.Item name="dtsType" label="数据源类型" rules={[{required: true, message: '请选择数据源类型'}]}>
                             <Select
                                 placeholder="请选择数据源类型"
                                 onChange={this.onGenderChange}
@@ -134,7 +130,7 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessKey" />
+                            <Input placeholder="请输入AccessKey"/>
                         </Form.Item>
 
                         <Form.Item
@@ -147,7 +143,7 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessSecret" />
+                            <Input placeholder="请输入AccessSecret"/>
                         </Form.Item>
 
                         <Form.Item
@@ -160,23 +156,23 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入地域" />
+                            <Input placeholder="请输入地域"/>
                         </Form.Item>
 
                         <Form.Item {...tailLayout}>
-                            <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                            <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
                                 确定
-                                    </Button>
-                            <Button htmlType="button" onClick={() => this.test()} style={{ marginRight: '10px' }}>
+                            </Button>
+                            <Button htmlType="button" onClick={() => this.test()} style={{marginRight: '10px'}}>
                                 测试
-                                    </Button>
+                            </Button>
                             <Button htmlType="button" onClick={() => this.quit()}>
                                 取消
-                                    </Button>
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Col>
-            
+
             </Row>
         </div>
 
