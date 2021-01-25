@@ -2,7 +2,7 @@ import axios from 'axios'
 import cookie from 'react-cookies'
 
 const HTTP = axios.create({
-    baseURL: "http://127.0.0.1:8080",
+    baseURL: "http://127.0.0.1:8082/api",
     headers: {'token': cookie.load('token')}
 });
 
@@ -49,7 +49,9 @@ export function request(url, method, param) {
                     reject(error)
                 })
         } else if (method === 'put') {
-            HTTP.put(url, param)
+            HTTP.put(url, param, {
+                headers: {'token': cookie.load('token')}
+            })
                 .then(response => {
                     resolve(response);
                 }, err => {
@@ -59,7 +61,6 @@ export function request(url, method, param) {
                     reject(error)
                 })
         }
-
     })
 }
 

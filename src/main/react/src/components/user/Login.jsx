@@ -23,7 +23,7 @@ export default class Login extends React.Component {
             const token = response.data.data;
             if (result === 'Success') {
                 let inFifteenMinutes = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
-                cookie.save('token', token, {expires: inFifteenMinutes})
+                cookie.save('token', token, {path: '/', expires: inFifteenMinutes})
                 this.props.history.push({pathname: '/index'})
             } else if (result === 'LoginRefuse') {
                 notification['error']({

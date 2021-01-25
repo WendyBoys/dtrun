@@ -139,12 +139,11 @@ public class DtSourceController {
             String region = json.getString("region");
             DtSourceEntity dtSourceEntity = new DtSourceEntity();
             dtSourceEntity.setDtSourceName(dataSourceName);
-            Map map = new HashMap<>();
-            map.put("dataSourceType", dataSourceType);
-            map.put("accessKey", secretId);
-            map.put("accessSecret", secretKey);
-            map.put("region", region);
-            JSONObject jsonObject = new JSONObject(map);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("dataSourceType", dataSourceType);
+            jsonObject.put("accessKey", secretId);
+            jsonObject.put("accessSecret", secretKey);
+            jsonObject.put("region", region);
             dtSourceEntity.setId(Integer.parseInt(id));
             dtSourceEntity.setDtSourceType(dataSourceType);
             dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
@@ -199,13 +198,13 @@ public class DtSourceController {
         COSClient cosClient = null;
         OSS ossClient = null;
         try {
-            List<String> buckets=null;
+            List<String> buckets = null;
             DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(id);
             if (dtSourceEntity != null) {
                 String dtSourceType = dtSourceEntity.getDtSourceType();
                 JSONObject jsonObject = JSON.parseObject(dtSourceEntity.getDtSourceJson());
                 if ("cos".equals(dtSourceType)) {
-                     cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
+                    cosClient = new COSClient(new BasicCOSCredentials(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret")),
                             new ClientConfig(new Region(jsonObject.getString("region"))));
                     buckets = cosClient.listBuckets().stream().map(Bucket::getName).collect(Collectors.toList());
                     cosClient.shutdown();
@@ -219,7 +218,7 @@ public class DtSourceController {
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
-        }finally {
+        } finally {
             if (cosClient != null) {
                 cosClient.shutdown();
             }

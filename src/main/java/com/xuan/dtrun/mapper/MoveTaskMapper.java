@@ -18,4 +18,6 @@ public interface MoveTaskMapper {
     void update(MoveTaskEntity moveTaskEntity);
 
     void delete(Object[] ids);
+
+    void updateStatus(Integer id,String status);
 }

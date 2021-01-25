@@ -15,4 +15,6 @@ public interface MoveTaskService {
     void update(MoveTaskEntity moveTaskEntity);
 
     void delete(Object[] ids);
+
+    void updateStatus(Integer id,String status);
 }

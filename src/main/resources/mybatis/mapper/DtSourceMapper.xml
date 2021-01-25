@@ -24,7 +24,7 @@
        SELECT dtSourceName,dtSourceType,dtSourceJson FROM dtsource  WHERE  id=#{id}
     </select>
 
-    <select id="getAllDtSourceNameById" resultType="DtSourceEntity">
+    <select id="getAllDtSourceName" resultType="DtSourceEntity">
        SELECT id,dtSourceName FROM dtsource  WHERE  uid=#{id}
     </select>
 
@@ -33,7 +33,7 @@
     </select>
 
     <update id="update">
-       UPDATE dtsource SET=#{dtSourceName},dtSourceType=#{dtSourceType},dtSourceJson=#{dtSourceJson} WHERE id=#{id}
+       UPDATE dtsource SET dtSourceName=#{dtSourceName},dtSourceType=#{dtSourceType},dtSourceJson=#{dtSourceJson} WHERE id=#{id}
     </update>
 
     <delete id="delete">

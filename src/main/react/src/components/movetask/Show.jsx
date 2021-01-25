@@ -1,14 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {deletes, findAll, run} from './service';
-import {Button, Modal, notification, Space, Spin, Table, Tag} from 'antd';
-import {CheckCircleOutlined, CloseCircleOutlined, FlagFilled, SyncOutlined} from '@ant-design/icons';
+import {deletes, findAll, quit, run} from './service';
+import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag} from 'antd';
+import {
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    DisconnectOutlined,
+    FlagFilled,
+    SyncOutlined
+} from '@ant-design/icons';
 
 
 const Show = (props) => {
     const [list, setList] = useState([]);
     const [taskId, setTaskId] = useState([]);
     const [visibleDelete, setVisibleDelete] = useState(false);
-    const [visibleRunTask, setVisibleRunTask] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
@@ -39,12 +44,20 @@ const Show = (props) => {
         props.history.push('/movetask/create');
     }
 
-    const toUpdate = (id) => {
+    const toUpdate = (id, status) => {
+        if (status === 'RUNNING') {
+            message.error("正在运行中的任务无法编辑");
+            return;
+        }
         props.history.push('/movetask/update/' + id)
     }
 
 
-    const deleteTask = (id, taskName) => {
+    const deleteTask = (id, status, taskName) => {
+        if (status === 'RUNNING') {
+            message.error("正在运行中的任务无法删除")
+            return;
+        }
         const selecteLength = selectedRowKeys.length;
         if (selecteLength <= 1) {
             setModalText('您确定要删除迁移任务 ' + taskName + ' 吗?');
@@ -58,19 +71,6 @@ const Show = (props) => {
         setVisibleDelete(true);
     }
 
-    const runTask = (id, taskName) => {
-        const selecteLength = selectedRowKeys.length;
-        if (selecteLength <= 1) {
-            setModalText('您确定要启动迁移任务 ' + taskName + ' 吗?');
-            const idArray = [];
-            idArray.push(id)
-            setTaskId(idArray);
-        } else {
-            setModalText('您确定要启动选中的' + selecteLength + '项迁移任务吗?');
-            setTaskId(selectedRowKeys);
-        }
-        setVisibleRunTask(true);
-    }
 
     const handleDeteleOk = () => {
         setConfirmLoading(true);
@@ -103,49 +103,52 @@ const Show = (props) => {
     };
 
 
-    const handleRunTaskOk = () => {
-        setConfirmLoading(true);
-        run({
-            id: taskId,
-        }).then((response) => {
-            const result = response.data.message;
-            if (result === 'Success') {
-                setVisibleRunTask(false);
-                setConfirmLoading(false);
-                setSelectedRowKeys([])
-                notification['success']({
-                    message: '通知',
-                    description:
-                        '启动成功',
-                    duration: 1,
-                });
-            } else {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '启动失败',
-                    duration: 1,
-                });
-            }
-        });
-    };
-
-
     const handleCancel = () => {
         setVisibleDelete(false);
     };
 
-    const handleCancelRunTask = () => {
-        setVisibleRunTask(false);
-    };
+
+    const confirm = (id) => {
+        setConfirmLoading(true);
+        run({
+            id: id,
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setConfirmLoading(false);
+                setSelectedRowKeys([])
+                fentch();
+                message.success('启动成功');
+            } else {
+                message.error('启动失败');
+            }
+        });
+    }
+
+    const cancel = (id) => {
+        setConfirmLoading(true);
+        quit({
+            id: id,
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setConfirmLoading(false);
+                setSelectedRowKeys([]);
+                fentch();
+                message.success('取消成功');
+            } else {
+                message.error('取消失败');
+            }
+        });
+    }
 
 
     const columns = [
         {
             title: '迁移任务名称',
             dataIndex: 'taskName',
-            render: (text, record) => <span style={{color: '#0062FF', cursor: 'pointer'}}
-                                            onClick={() => toUpdate(record.id)}>{text}</span>,
+            render: (text, record) => <span style={{color: '#0062FF', cursor: 'pointer', disable: 'true'}}
+                                            onClick={() => toUpdate(record.id, record.status)}>{text}</span>,
         },
         {
             title: '创建时间',
@@ -177,6 +180,12 @@ const Show = (props) => {
                             运行中
                         </Tag>
                     )
+                } else if (text === 'QUIT') {
+                    return (
+                        <Tag icon={<DisconnectOutlined/>} color="orange">
+                            已取消
+                        </Tag>
+                    )
                 } else {
                     return (
                         <Tag icon={<CloseCircleOutlined/>} color="error">
@@ -197,12 +206,28 @@ const Show = (props) => {
                 return (
                     <Space size="middle">
                         {record.status === 'RUNNING' ?
-                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>取消</span> :
-                            <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                                  onClick={() => runTask(record.id, record.taskName)}>启动</span>}
+                            <Popconfirm
+                                title="确定取消迁移任务吗?"
+                                onConfirm={() => cancel(record.id)}
+                                okText="确定"
+                                cancelText="取消"
+                            >
+                                <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>取消</span>
+                            </Popconfirm>
+                            :
+                            <Popconfirm
+                                title="确定启动迁移任务吗?"
+                                onConfirm={() => confirm(record.id)}
+                                okText="确定"
+                                cancelText="取消"
+                            >
+                               <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
+                               >启动</span>
+                            </Popconfirm>
+                        }
                         <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>查看结果</span>
                         <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                              onClick={() => deleteTask(record.id, record.taskName)}>删除</span>
+                              onClick={() => deleteTask(record.id, record.status, record.taskName)}>删除</span>
                     </Space>
                 )
             }
@@ -217,6 +242,9 @@ const Show = (props) => {
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectChange,
+        getCheckboxProps: (record: columns) => ({
+            disabled: record.status === 'RUNNING',
+        }),
     };
 
     return ((
@@ -242,15 +270,16 @@ const Show = (props) => {
             <div style={{height: '10px', background: '#f0f2f5'}}></div>
             <div style={{padding: '10px', background: '#ffffff'}}>
                 <div>
-                    <Table rowSelection={rowSelection}
-                           bordered
-                           columns={columns}
-                           dataSource={list}
-                           pagination={{
-                               showQuickJumper: true,
-                               defaultPageSize: 10,
-                               pageSizeOptions: [10, 20, 50, 100]
-                           }}
+                    <Table
+                        rowSelection={rowSelection}
+                        bordered
+                        columns={columns}
+                        dataSource={list}
+                        pagination={{
+                            showQuickJumper: true,
+                            defaultPageSize: 10,
+                            pageSizeOptions: [10, 20, 50, 100]
+                        }}
                     />
                 </div>
 
@@ -266,17 +295,6 @@ const Show = (props) => {
                     <p>{modalText}</p>
                 </Modal>
 
-                <Modal
-                    title="启动迁移任务"
-                    okText="确定"
-                    cancelText="取消"
-                    visible={visibleRunTask}
-                    onOk={handleRunTaskOk}
-                    confirmLoading={confirmLoading}
-                    onCancel={handleCancelRunTask}
-                >
-                    <p>{modalText}</p>
-                </Modal>
             </div>
         </Spin>
 

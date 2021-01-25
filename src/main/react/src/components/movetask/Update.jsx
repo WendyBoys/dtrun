@@ -121,7 +121,7 @@ const Update = (props) => {
     }
 
     const addItem = () => {
-        const desId = form.getFieldValue('des');
+        const desId = form.getFieldValue('desId');
         //发请求创建新的Bucket
         createBucket({
             desId: desId,
@@ -136,6 +136,7 @@ const Update = (props) => {
                         '创建Bucket成功',
                     duration: 2,
                 });
+                desChange(desId);
                 // setDesBucketList(response.data.data)
             } else {
                 notification['error']({

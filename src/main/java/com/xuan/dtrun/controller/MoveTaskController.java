@@ -95,13 +95,13 @@ public class MoveTaskController {
             String desBucket = jsonObject.getString("desBucket");
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
-            Map map = new HashMap<>();
-            map.put("srcId", srcId);
-            map.put("srcBucket", srcBucket);
-            map.put("desId", desId);
-            map.put("desBucket", desBucket);
-            map.put("allMove", allMove);
-            String taskJson = new JSONObject(map).toJSONString();
+            JSONObject json = new JSONObject();
+            json.put("srcId", srcId);
+            json.put("srcBucket", srcBucket);
+            json.put("desId", desId);
+            json.put("desBucket", desBucket);
+            json.put("allMove", allMove);
+            String taskJson = json.toJSONString();
             MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
             moveTaskService.update(moveTaskEntity);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
@@ -112,9 +112,9 @@ public class MoveTaskController {
     }
 
     @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
-    public CommonResult delete(@RequestBody JSONObject json) {
+    public CommonResult delete(@RequestBody JSONObject jsonObject) {
         try {
-            Object[] ids = json.getJSONArray("id").toArray();
+            Object[] ids = jsonObject.getJSONArray("id").toArray();
             moveTaskService.delete(ids);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
         } catch (Exception e) {
@@ -125,14 +125,28 @@ public class MoveTaskController {
 
 
     @PostMapping(value = "/run", produces = "application/json;charset=utf-8")
-    public CommonResult run(@RequestBody JSONObject json) {
+    public CommonResult run(@RequestBody JSONObject jsonObject) {
         try {
-            Object[] ids = json.getJSONArray("id").toArray();
-            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById((Integer) ids[0]);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+            Integer id = jsonObject.getInteger("id");
+            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
+            //执行核心迁移
+            moveTaskService.updateStatus(id, "RUNNING");
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.RUNFAIL);
+        }
+    }
+
+    @PostMapping(value = "/quit", produces = "application/json;charset=utf-8")
+    public CommonResult quit(@RequestBody JSONObject jsonObject) {
+        try {
+            Integer id = jsonObject.getInteger("id");
+            moveTaskService.updateStatus(id, "QUIT");
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUITFAIL);
         }
     }
 }

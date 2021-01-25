@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xuan.dtrun.mapper.MoveTaskMapper">
 
-
     <select id="findAll" resultType="MoveTaskEntity">
        SELECT * FROM movetask WHERE uid=#{id} ORDER BY createTime desc
     </select>
@@ -19,6 +18,10 @@
 
     <update id="update">
        UPDATE movetask SET taskName=#{taskName},taskJson=#{taskJson} WHERE id=#{id}
+    </update>
+
+    <update id="updateStatus">
+       UPDATE movetask SET status=#{status} WHERE id=#{id}
     </update>
 
     <delete id="delete">

@@ -6,7 +6,21 @@ import MoveTask from '../movetask/MoveTask';
 import {getCurrentUser, modifyPassword} from '../user/service';
 import cookie from 'react-cookies'
 import ImgCrop from 'antd-img-crop';
-import {Avatar, Button, Drawer, Form, Image, Input, Layout, Menu, message, notification, Row, Spin, Upload} from 'antd';
+import {
+    Avatar,
+    Button,
+    Drawer,
+    Form,
+    Image,
+    Input,
+    Layout,
+    Menu,
+    message,
+    notification,
+    Row,
+    Spin,
+    Upload,
+} from 'antd';
 import {
     ContactsOutlined,
     EditOutlined,
@@ -62,8 +76,7 @@ export default class Index extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 const user = response.data.data;
-                this.setState({userName: user.userName, iconUrl: user.iconUrl})
-                this.setState({loading: false});
+                this.setState({userName: user.userName, iconUrl: user.iconUrl, loading: false})
             } else {
                 notification['error']({
                     message: '通知',
@@ -76,7 +89,7 @@ export default class Index extends React.Component {
     }
 
     logout() {
-        cookie.remove('token');
+        cookie.remove('token', {path: '/'});
         this.props.history.push('/login')
         notification['success']({
             message: '通知',
@@ -194,124 +207,127 @@ export default class Index extends React.Component {
     render() {
         const {userName, iconUrl, placement, mainDrawer, mainDrawerWidth, loading, iconLoading} = this.state;
         return <div style={{height: '100%'}}>
-                <Drawer
-                    title={'欢迎回来，' + userName}
-                    placement={placement}
-                    closable={false}
-                    onClose={this.onMainDrawerClose}
-                    visible={mainDrawer}
-                    key={placement}
-                    width={mainDrawerWidth}
+
+            <Drawer
+                title={'欢迎回来，' + userName}
+                placement={placement}
+                closable={false}
+                onClose={this.onMainDrawerClose}
+                visible={mainDrawer}
+                key={placement}
+                width={mainDrawerWidth}
+            >
+                <Spin spinning={iconLoading}>
+                    <Image
+                        style={{borderRadius: '100%', width: '100%', cursor: 'pointer'}}
+                        width="202px"
+                        height="202px"
+                        src={iconUrl}
+                    />
+                </Spin>
+                <div style={{marginLeft: '47px', marginTop: '10px'}}>
+                    <ImgCrop
+                        rotate
+                        modalTitle="编辑图片"
+                        modalOk="确定"
+                        modalCancel="取消"
+                    >
+                        <Upload
+                            headers={head}
+                            showUploadList={false}
+                            action="https://api.dtrun.cn/user/icon"
+                            beforeUpload={this.beforeUpload}
+                            onChange={this.handleChange}
+                        >
+                            <Button icon={<UploadOutlined/>}>更换头像</Button>
+
+                        </Upload>
+                    </ImgCrop>
+                </div>
+                <Menu
+                    mode="inline"
                 >
-                    <Spin spinning={iconLoading}>
-                        <Image
-                            style={{borderRadius: '100%', width: '100%', cursor: 'pointer'}}
-                            width="202px"
-                            height="202px"
-                            src={iconUrl}
-                        />
-                    </Spin>
-                    <div style={{marginLeft: '47px', marginTop: '10px'}}>
-                        <ImgCrop
-                            rotate
-                            modalTitle="编辑图片"
-                            modalOk="确定"
-                            modalCancel="取消"
-                        >
-                            <Upload
-                                headers={head}
-                                showUploadList={false}
-                                action="https://api.dtrun.cn/user/icon"
-                                beforeUpload={this.beforeUpload}
-                                onChange={this.handleChange}
-                            >
-                                <Button icon={<UploadOutlined/>}>更换头像</Button>
-
-                            </Upload>
-                        </ImgCrop>
-                    </div>
-                    <Menu
-                        mode="inline"
-                    >
-                        <Menu.Item key="1" onClick={this.showMessageDrawer} icon={<UserSwitchOutlined/>}>
-                            个人中心
-                        </Menu.Item>
-                        <Menu.Item key="2" onClick={this.showPasswordDrawer} icon={<EditOutlined/>}>
-                            修改密码</Menu.Item>
-                        <Menu.Item key="3" onClick={() => this.logout()}
-                                   icon={<UploadOutlined style={{transform: 'rotate(90deg)'}}/>}>
-                            注销
-                        </Menu.Item>
-                    </Menu>
-
-
-                    <Drawer
-                        title="个人中心"
-                        width={400}
-                        closable={false}
-                        onClose={this.onMessageDrawerClose}
-                        visible={this.state.messageDrawer}
-                    >
+                    <Menu.Item key="1" onClick={this.showMessageDrawer} icon={<UserSwitchOutlined/>}>
                         个人中心
-                    </Drawer>
+                    </Menu.Item>
+                    <Menu.Item key="2" onClick={this.showPasswordDrawer} icon={<EditOutlined/>}>
+                        修改密码</Menu.Item>
+                    <Menu.Item key="3" onClick={() => this.logout()}
+                               icon={<UploadOutlined style={{transform: 'rotate(90deg)'}}/>}>
+                        注销
+                    </Menu.Item>
+                </Menu>
 
-                    <Drawer
-                        title="修改密码"
-                        width={400}
-                        closable={false}
-                        onClose={this.onPasswordDrawerClose}
-                        visible={this.state.passwordDrawer}
-                    >
-                        <Form
-                            {...layout}
-                            name="basic"
-                            onFinish={this.onFinish}
-                        >
-                            <Form.Item
-                                label="旧密码"
-                                name="oldPassword"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: '请输旧密码',
-                                    },
-                                ]}
-                            >
 
-                                <Input type='text'
-                                       placeholder="请输入旧密码"/>
-                            </Form.Item>
-                            <Form.Item
-                                label="新密码"
-                                name="newPassword"
-                                rules={[
-                                    {
-                                        compare: '11111',
-                                        required: true,
-                                        message: '请输新密码',
-                                    },
-                                ]}
-                            >
-
-                                <input placeholder="请输新密码" type="text" id="basic_dtsName"
-                                       class="ant-input" value=""/>
-                            </Form.Item>
-
-                            <Form.Item {...tailLayout}>
-                                <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}
-                                >
-                                    确定
-                                </Button>
-
-                                <Button htmlType="button" onClick={() => this.quit()}>
-                                    取消
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Drawer>
-
+                <Drawer
+                    title="个人中心"
+                    width={400}
+                    closable={false}
+                    onClose={this.onMessageDrawerClose}
+                    visible={this.state.messageDrawer}
+                >
+                    个人中心
                 </Drawer>
-                <Layout style={{height: '100%'}}>
+
+                <Drawer
+                    title="修改密码"
+                    width={400}
+                    closable={false}
+                    onClose={this.onPasswordDrawerClose}
+                    visible={this.state.passwordDrawer}
+                >
+                    <Form
+                        {...layout}
+                        name="basic"
+                        onFinish={this.onFinish}
+                    >
+                        <Form.Item
+                            label="旧密码"
+                            name="oldPassword"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输旧密码',
+                                },
+                            ]}
+                        >
+
+                            <Input type='text'
+                                   placeholder="请输入旧密码"/>
+                        </Form.Item>
+                        <Form.Item
+                            label="新密码"
+                            name="newPassword"
+                            rules={[
+                                {
+                                    compare: '11111',
+                                    required: true,
+                                    message: '请输新密码',
+                                },
+                            ]}
+                        >
+
+                            <input placeholder="请输新密码" type="text" id="basic_dtsName"
+                                   class="ant-input" value=""/>
+                        </Form.Item>
+
+                        <Form.Item {...tailLayout}>
+                            <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}
+                            >
+                                确定
+                            </Button>
+
+                            <Button htmlType="button" onClick={() => this.quit()}>
+                                取消
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Drawer>
+
+            </Drawer>
+
+            <Layout style={{height: '100%'}}>
+                <Spin spinning={loading} size={"large"}>
                     <Header className="header"
                             style={{position: 'relative', left: '0', padding: '0', background: '#12202e'}}>
                         <Row>
@@ -327,63 +343,66 @@ export default class Index extends React.Component {
                                 <span style={{marginLeft: '5px', color: '#ffffff', fontSize: '15px'}}>{userName}</span>
                             </div>
                         </Row>
-
                     </Header>
-                    <Layout>
-                        <Sider width={200} className="site-layout-background" style={{
-                            overflow: 'auto',
-                            height: '100vh',
-                            position: 'fixed',
-                            left: 0,
-                        }}>
-                            <Menu
-                                mode="inline"
-                                // defaultSelectedKeys={['1']}
-                                style={{height: '100%', borderRight: 0}}
-                            >
-                                <Menu.Item key="1" icon={<LaptopOutlined/>}>
-                                    <NavLink to="/dashboard">运维大盘</NavLink>
-                                </Menu.Item>
-                                <Menu.Item key="2" icon={<FolderOpenOutlined/>}>
-                                    <NavLink to="/datasource/show">数据源管理</NavLink></Menu.Item>
-                                <Menu.Item key="3" icon={<SplitCellsOutlined/>}>
-                                    <NavLink to="/movetask">迁移任务管理</NavLink>
-                                </Menu.Item>
-                                <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
-                                    <Menu.Item key="5">系统日志</Menu.Item>
-                                    <Menu.Item key="6">未知模块</Menu.Item>
-                                    <Menu.Item key="7">未知模块</Menu.Item>
-                                    <Menu.Item key="8">未知模块</Menu.Item>
-                                </SubMenu>
-                                <SubMenu key="9" icon={<NotificationOutlined/>} title="推送配置">
-                                    <Menu.Item key="10">邮件配置</Menu.Item>
-                                    <Menu.Item key="11">联系人配置</Menu.Item>
-                                </SubMenu>
-                                <Menu.Item key="12" icon={<ContactsOutlined/>}>
-                                    <NavLink to="/movetask">关于我们</NavLink>
-                                </Menu.Item>
-                            </Menu>
-                        </Sider>
-                        <Layout style={{padding: '0 14px 14px 14px', height: '100%'}}>
+                </Spin>
+                <Layout>
 
-                            <Content
-                                className="site-layout-background"
-                                style={{
-                                    marginLeft: 200,
-                                    height: '100%'
-                                }}
-                            >
-                                <Switch>
-                                    <Route path="/dashboard" component={Dashboard}/>
-                                    <Route path="/datasource" component={Datasource}/>
-                                    <Route path="/movetask" component={MoveTask}/>
-                                    <Redirect to="/dashboard"/>
-                                </Switch>
-                            </Content>
-                        </Layout>
+                    <Sider width={200} className="site-layout-background" style={{
+                        overflow: 'auto',
+                        height: '100vh',
+                        position: 'fixed',
+                        left: 0,
+                    }}>
+                        <Menu
+                            mode="inline"
+                            // defaultSelectedKeys={['1']}
+                            style={{height: '100%', borderRight: 0}}
+                        >
+                            <Menu.Item key="1" icon={<LaptopOutlined/>}>
+                                <NavLink to="/dashboard">运维大盘</NavLink>
+                            </Menu.Item>
+                            <Menu.Item key="2" icon={<FolderOpenOutlined/>}>
+                                <NavLink to="/datasource/show">数据源管理</NavLink></Menu.Item>
+                            <Menu.Item key="3" icon={<SplitCellsOutlined/>}>
+                                <NavLink to="/movetask">迁移任务管理</NavLink>
+                            </Menu.Item>
+                            <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
+                                <Menu.Item key="5">系统日志</Menu.Item>
+                                <Menu.Item key="6">未知模块</Menu.Item>
+                                <Menu.Item key="7">未知模块</Menu.Item>
+                                <Menu.Item key="8">未知模块</Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="9" icon={<NotificationOutlined/>} title="推送配置">
+                                <Menu.Item key="10">邮件配置</Menu.Item>
+                                <Menu.Item key="11">联系人配置</Menu.Item>
+                            </SubMenu>
+                            <Menu.Item key="12" icon={<ContactsOutlined/>}>
+                                <NavLink to="/movetask">关于我们</NavLink>
+                            </Menu.Item>
+                        </Menu>
+                    </Sider>
+
+                    <Layout style={{padding: '0 14px 14px 14px', height: '100%'}}>
+
+                        <Content
+                            className="site-layout-background"
+                            style={{
+                                marginLeft: 200,
+                                height: '100%'
+                            }}
+                        >
+                            <Switch>
+                                <Route path="/dashboard" component={Dashboard}/>
+                                <Route path="/datasource" component={Datasource}/>
+                                <Route path="/movetask" component={MoveTask}/>
+                                <Redirect to="/dashboard"/>
+                            </Switch>
+                        </Content>
                     </Layout>
                 </Layout>
-            </div>
+            </Layout>
+
+        </div>
 
     }
 }

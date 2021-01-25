@@ -39,6 +39,11 @@ public class MoveTaskServiceImpl implements MoveTaskService {
     }
 
     @Override
+    public void updateStatus(Integer id,String status) {
+        moveTaskMapper.updateStatus(id,status);
+    }
+
+    @Override
     public void create(MoveTaskEntity moveTaskEntity) {
         moveTaskMapper.create(moveTaskEntity);
     }

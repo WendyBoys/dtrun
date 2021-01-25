@@ -17,8 +17,13 @@ public enum DataEnum {
     QUERYFAILE("查询失败"),
     DELETESUCCESS("删除成功"),
     DELETEFAIL("删除失败"),
+    MODIFYSUCCESS("修改成功"),
     MODIFYFAIL("修改失败"),
-    MODIFYSUCCESS("修改成功");
+    RUNSUCCESS("启动成功"),
+    RUNFAIL("启动失败"),
+    QUITSUCCESS("取消成功"),
+    QUITFAIL("取消失败");
+
     private String mapping;
 
     DataEnum(String mapping) {
