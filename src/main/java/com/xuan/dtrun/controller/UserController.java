@@ -113,6 +113,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/modifyPassword", produces = "application/json;charset=utf-8")
+    @Transactional
     public CommonResult save(@RequestBody JSONObject Json, @RequestHeader("token") String token) {
         String oldPassword = Json.getString("oldPassword");
         String newPassword = Json.getString("newPassword");

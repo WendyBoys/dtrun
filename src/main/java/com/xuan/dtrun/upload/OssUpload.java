@@ -2,6 +2,8 @@ package com.xuan.dtrun.upload;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -11,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 
 public class OssUpload {
 
@@ -33,7 +34,8 @@ public class OssUpload {
         this.byteSize = byteSize;
     }
 
-    public void upload() throws IOException, InterruptedException {
+    @Async
+    public void upload() throws IOException {
 
         InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, objectName);
         InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
@@ -76,6 +78,5 @@ public class OssUpload {
                 new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
 
         CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
-        ossClient.shutdown();
     }
 }

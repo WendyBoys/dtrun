@@ -1,18 +1,35 @@
 package com.xuan.dtrun.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.exception.CosClientException;
+import com.qcloud.cos.exception.CosServiceException;
+import com.qcloud.cos.model.COSObject;
+import com.qcloud.cos.model.COSObjectInputStream;
+import com.qcloud.cos.model.COSObjectSummary;
+import com.qcloud.cos.region.Region;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
+import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.MoveTaskEntity;
 import com.xuan.dtrun.entity.User;
+import com.xuan.dtrun.service.DtSourceService;
 import com.xuan.dtrun.service.MoveTaskService;
+import com.xuan.dtrun.upload.OssUpload;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +39,9 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/movetask")
 public class MoveTaskController {
+
+    @Autowired
+    private DtSourceService dtSourceService;
 
     @Autowired
     private MoveTaskService moveTaskService;
@@ -127,10 +147,62 @@ public class MoveTaskController {
     @PostMapping(value = "/run", produces = "application/json;charset=utf-8")
     public CommonResult run(@RequestBody JSONObject jsonObject) {
         try {
+            COSClient cosClient = null;
+            OSS ossClient = null;
             Integer id = jsonObject.getInteger("id");
-            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
-            //执行核心迁移
             moveTaskService.updateStatus(id, "RUNNING");
+            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
+
+            //执行核心迁移
+            JSONObject taskJson = JSON.parseObject(moveTaskById.getTaskJson());
+            Integer srcId = taskJson.getInteger("srcId");
+            DtSourceEntity srcDtSourceEntity = dtSourceService.getDtSourceById(srcId);
+            Integer desId = taskJson.getInteger("desId");
+            DtSourceEntity desDtSourceEntity = dtSourceService.getDtSourceById(desId);
+            String srcBucket = taskJson.getString("srcBucket");
+            String dtSourceType = srcDtSourceEntity.getDtSourceType();
+            JSONObject srcEntity = JSON.parseObject(srcDtSourceEntity.getDtSourceJson());
+            JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+            cosClient = new COSClient(new BasicCOSCredentials(srcEntity.getString("accessKey"), srcEntity.getString("accessSecret")),
+                    new ClientConfig(new Region(srcEntity.getString("region"))));
+            ossClient = new OSSClientBuilder().build(desEntity.getString("region"), desEntity.getString("accessKey"), desEntity.getString("accessSecret"));
+
+            String bucketName = srcBucket;
+            com.qcloud.cos.model.ListObjectsRequest listObjectsRequest = new com.qcloud.cos.model.ListObjectsRequest();
+            listObjectsRequest.setBucketName(bucketName);
+            listObjectsRequest.setMaxKeys(1000);
+            com.qcloud.cos.model.ObjectListing objectListing = null;
+            do {
+                try {
+                    objectListing = cosClient.listObjects(listObjectsRequest);
+                } catch (CosServiceException e) {
+                    e.printStackTrace();
+                } catch (CosClientException e) {
+                    e.printStackTrace();
+                }
+                List<COSObjectSummary> cosObjectSummaries = objectListing.getObjectSummaries();
+                COSClient finalCosClient = cosClient;
+                OSS finalOssClient = ossClient;
+                new Thread(() -> {
+                    try {
+                        for (COSObjectSummary cosObjectSummary : cosObjectSummaries) {
+                            String key = cosObjectSummary.getKey();
+                            long fileSize = cosObjectSummary.getSize();
+                            com.qcloud.cos.model.GetObjectRequest getObjectRequest = new com.qcloud.cos.model.GetObjectRequest(bucketName, key);
+                            COSObject cosObject = finalCosClient.getObject(getObjectRequest);
+                            COSObjectInputStream cosObjectInput = cosObject.getObjectContent();
+                            OssUpload ossUpload = new OssUpload(taskJson.getString("desBucket"), key, finalOssClient, cosObjectInput, fileSize, 10 * 1024 * 1024);
+                            ossUpload.upload();
+                            cosObjectInput.close();
+                        }
+                        moveTaskService.updateStatus(id, "FINISH");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+                String nextMarker = objectListing.getNextMarker();
+                listObjectsRequest.setMarker(nextMarker);
+            } while (objectListing.isTruncated());
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

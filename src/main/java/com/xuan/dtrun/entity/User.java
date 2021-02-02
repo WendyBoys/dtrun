@@ -13,6 +13,8 @@ public class User implements Serializable {
     private Date createTime;
     private int isUse;
     private String registerCode;
+    private Date lastLoginTime;
+    private String lastLoginIp;
 
     public User() {
     }
@@ -90,5 +92,21 @@ public class User implements Serializable {
 
     public void setRegisterCode(String registerCode) {
         this.registerCode = registerCode;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public String getLastLoginIp() {
+        return lastLoginIp;
+    }
+
+    public void setLastLoginIp(String lastLoginIp) {
+        this.lastLoginIp = lastLoginIp;
     }
 }
