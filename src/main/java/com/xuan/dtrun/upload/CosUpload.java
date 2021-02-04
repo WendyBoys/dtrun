@@ -1,7 +1,7 @@
 package com.xuan.dtrun.upload;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.model.*;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -16,11 +16,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-public class OssUpload {
-
+public class CosUpload {
     private String bucketName;
     private String objectName;
-    private OSS ossClient;
+    private COSClient cosClient;
     private InputStream inputStream;
     private long fileLength;
     private ExecutorService executors = Executors.newFixedThreadPool(10);
@@ -28,10 +27,10 @@ public class OssUpload {
 
     private Logger logger = LoggerFactory.getLogger(OssUpload.class);
 
-    public OssUpload(String bucketName, String objectName, OSS ossClient, InputStream inputStream, long fileLength, long partSize) {
+    public CosUpload(String bucketName, String objectName, COSClient cosClient, InputStream inputStream, long fileLength, long partSize) {
         this.bucketName = bucketName;
         this.objectName = objectName;
-        this.ossClient = ossClient;
+        this.cosClient = cosClient;
         this.inputStream = inputStream;
         this.fileLength = fileLength;
         this.partSize = partSize;
@@ -40,9 +39,10 @@ public class OssUpload {
     @Async
     public void upload() throws IOException, InterruptedException {
 
-        InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, objectName);
-        InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
-        String uploadId = upresult.getUploadId();
+        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(bucketName, objectName);
+        InitiateMultipartUploadResult initResponse = cosClient.initiateMultipartUpload(initRequest);
+        String uploadId = initResponse.getUploadId();
+
 
         // partETags是PartETag的集合。PartETag由分片的ETag和分片号组成。
         List<PartETag> partETags = new ArrayList<PartETag>();
@@ -65,7 +65,7 @@ public class OssUpload {
             long startPos = i * partSize;
             long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
             logger.info("上传分片" + i);
-            executors.execute(new OssUploader(bucketName, curPartSize, objectName, uploadId, i, ossClient, partETags, desBytes));
+            executors.execute(new CosUploader(bucketName, curPartSize, objectName, uploadId, i, cosClient, partETags, desBytes));
             i++;
             semaphore.release();
         }
@@ -80,9 +80,7 @@ public class OssUpload {
             }
         }
 
-        CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
-
-        CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
+        CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
+        CompleteMultipartUploadResult result = cosClient.completeMultipartUpload(compRequest);
     }
 }

@@ -21,22 +21,51 @@ const Show = (props) => {
 
 
     useEffect(() => {
-        fentch();
+        fentch(true);
+        const interval = setInterval(() => {
+            fentch(false)
+        }, 2000)
+        return () => {
+            clearInterval(interval)
+        }
     }, []);
 
 
-    const fentch = () => {
-        setLoading(true)
-        findAll().then((response) => {
-            const result = response.data.message;
-            const data = response.data.data;
-            if (result === 'Success') {
-                setList(data);
-                setLoading(false)
-            } else {
-                setLoading(false)
-            }
-        });
+    const fentch = (isShow) => {
+        if (isShow) {
+            setLoading(true)
+            findAll().then((response) => {
+                const result = response.data.message;
+                const data = response.data.data;
+                if (result === 'Success') {
+                    setList(data);
+                    setLoading(false)
+                } else {
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '获取任务列表失败',
+                        duration: 2,
+                    });
+                }
+            });
+        } else {
+            findAll().then((response) => {
+                const result = response.data.message;
+                const data = response.data.data;
+                if (result === 'Success') {
+                    setList(data);
+                } else {
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '获取任务列表失败',
+                        duration: 2,
+                    });
+                }
+            });
+        }
+
     }
 
 
@@ -250,7 +279,7 @@ const Show = (props) => {
     return ((
         <Spin size="large" spinning={loading}>
             <div style={{height: '50px', paddingTop: '10px'}}>
-                <Button type="primary" onClick={() => fentch()}
+                <Button type="primary" onClick={() => fentch(true)}
                         style={{
                             background: '#00b4ed',
                             position: 'absolute',

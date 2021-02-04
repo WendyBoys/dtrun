@@ -32,6 +32,8 @@ public class OssUploader implements Runnable {
 
     @Override
     public void run() {
+        long l = System.currentTimeMillis();
+        System.out.println(Thread.currentThread().getName() + "开始");
         UploadPartRequest uploadPartRequest = new UploadPartRequest();
         uploadPartRequest.setBucketName(bucketName);
         uploadPartRequest.setKey(objectName);
@@ -45,5 +47,7 @@ public class OssUploader implements Runnable {
         UploadPartResult uploadPartResult = ossClient.uploadPart(uploadPartRequest);
         // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
         partETags.add(uploadPartResult.getPartETag());
+        long l1 = System.currentTimeMillis();
+        System.out.println(Thread.currentThread().getName() + "结束，耗时" + (l1 - l) / 1000f);
     }
 }
