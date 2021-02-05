@@ -229,14 +229,8 @@ public class MoveTaskController {
                                 case "oss": {
                                     com.aliyun.oss.model.GetObjectRequest getObjectRequest = new com.aliyun.oss.model.GetObjectRequest(srcBucket, fileMessage.getFileName());
                                     OSSObject ossObject = finalOssClient.getObject(getObjectRequest);
-                                    byte[] buf = new byte[4096];
-                                    int len;
                                     BufferedInputStream bufferedInputStream = new BufferedInputStream(ossObject.getObjectContent());
-                                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                                    while ((len = bufferedInputStream.read(buf)) > -1) {
-                                        byteArrayOutputStream.write(buf, 0, len);
-                                    }
-                                    threadLocal.set(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                                    threadLocal.set(bufferedInputStream);
                                     break;
                                 }
                                 default: {
