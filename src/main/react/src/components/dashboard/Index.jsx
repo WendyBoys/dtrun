@@ -3,6 +3,7 @@ import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Datasource from '../datasource/Datasource';
 import MoveTask from '../movetask/MoveTask';
+import About from '../about/About';
 import {getCurrentUser, modifyPassword} from '../user/service';
 import cookie from 'react-cookies'
 import ImgCrop from 'antd-img-crop';
@@ -377,7 +378,7 @@ export default class Index extends React.Component {
                                 <Menu.Item key="11">联系人配置</Menu.Item>
                             </SubMenu>
                             <Menu.Item key="12" icon={<ContactsOutlined/>}>
-                                <NavLink to="/movetask">关于我们</NavLink>
+                                <NavLink to="/about">关于我们</NavLink>
                             </Menu.Item>
                         </Menu>
                     </Sider>
@@ -395,6 +396,7 @@ export default class Index extends React.Component {
                                 <Route path="/dashboard" component={Dashboard}/>
                                 <Route path="/datasource" component={Datasource}/>
                                 <Route path="/movetask" component={MoveTask}/>
+                                <Route path="/about" component={About}/>
                                 <Redirect to="/dashboard"/>
                             </Switch>
                         </Content>
