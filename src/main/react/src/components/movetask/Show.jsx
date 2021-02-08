@@ -24,7 +24,7 @@ const Show = (props) => {
         fentch(true);
         const interval = setInterval(() => {
             fentch(false)
-        }, 2000)
+        }, 5000)
         return () => {
             clearInterval(interval)
         }
