@@ -2,7 +2,8 @@ import axios from 'axios'
 import cookie from 'react-cookies'
 
 const HTTP = axios.create({
-    baseURL: "https://api.dtrun.cn/api",
+    baseURL: "http://127.0.0.1:8080/api",
+   // baseURL: "https://dtrun.cn/api",
     headers: {'token': cookie.load('token')}
 });
 

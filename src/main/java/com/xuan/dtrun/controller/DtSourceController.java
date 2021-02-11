@@ -233,6 +233,7 @@ public class DtSourceController {
         COSClient cosClient = null;
         OSS ossClient = null;
         try {
+            List<String> buckets = null;
             int desId = Integer.parseInt(json.getString("desId"));
             String newBucketName = json.getString("newBucketName");
             DtSourceEntity dtSourceEntity = dtSourceService.getDtSourceById(desId);
@@ -246,14 +247,16 @@ public class DtSourceController {
                     // 设置 bucket 的权限为 Private(私有读写), 其他可选有公有读私有写, 公有读写
                     createBucketRequest.setCannedAcl(CannedAccessControlList.Private);
                     cosClient.createBucket(createBucketRequest);
+                    buckets = cosClient.listBuckets().stream().map(Bucket::getName).collect(Collectors.toList());
                 } else if ("oss".equals(dtSourceType)) {
                     ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
                     com.aliyun.oss.model.CreateBucketRequest createBucketRequest = new com.aliyun.oss.model.CreateBucketRequest(newBucketName);
                     createBucketRequest.setCannedACL(com.aliyun.oss.model.CannedAccessControlList.Private);
                     ossClient.createBucket(createBucketRequest);
+                    buckets = ossClient.listBuckets().stream().map(com.aliyun.oss.model.Bucket::getName).collect(Collectors.toList());
                 }
             }
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+            return new CommonResult(200, MessageEnum.SUCCESS, buckets);
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);

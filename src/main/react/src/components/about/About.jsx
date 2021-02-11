@@ -16,16 +16,16 @@ const About = () => {
             </Col>
         </Row>
         <Row style={{height: '40%'}}>
-            <Col span={6}><img src='http://182.254.133.18:8000/img/1.png' height='80%'/>
+            <Col span={6}><img src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/1.png' height='80%'/>
                 <div>支持多种数据源迁移</div>
             </Col>
-            <Col span={6}><img src='http://182.254.133.18:8000/img/2.png' height='80%'/>
+            <Col span={6}><img src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/2.png' height='80%'/>
                 <div>简单配置，开箱即用</div>
             </Col>
-            <Col span={6}><img src='http://182.254.133.18:8000/img/3.png' height='80%'/>
+            <Col span={6}><img src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/4.png' height='80%'/>
                 <div>自动化迁移，无需人工二次干预</div>
             </Col>
-            <Col span={6}><img src='http://182.254.133.18:8000/img/5.png' height='80%'/>
+            <Col span={6}><img src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/5.png' height='80%'/>
                 <div>无侵入式设计,迁移时不影响业务使用</div>
             </Col>
 

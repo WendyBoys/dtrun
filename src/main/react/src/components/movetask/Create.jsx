@@ -110,7 +110,7 @@ const Create = (props) => {
                         '创建Bucket成功',
                     duration: 2,
                 });
-                // setDesBucketList(response.data.data)
+                setDesBucketList(response.data.data)
             } else {
                 notification['error']({
                     message: '通知',

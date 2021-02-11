@@ -130,11 +130,11 @@ const Dashboard = () => {
         legend: {position: 'top'},
         seriesField: 'type',
         color: function color(_ref) {
-            var type = _ref.type;
-            return type === 'register' ? '#F4664A' : type === 'download' ? '#30BF78' : '#FAAD14';
+            const type = _ref.type;
+            return type === '运行内存' ? '#F4664A' : type === '磁盘用量' ? '#30BF78' : '#FAAD14';
         },
         lineStyle: function lineStyle(_ref2) {
-            var type = _ref2.type;
+            const type = _ref2.type;
             if (type === 'register') {
                 return {
                     lineDash: [4, 4],
@@ -148,14 +148,6 @@ const Dashboard = () => {
     return <div style={{height: '100%'}}>
         <Row style={{height: '100%', padding: '10px', textAlign: 'center'}}>
             <Col span={8} style={{height: '40%', paddingRight: '10px'}}>
-                {/*<Alert*/}
-                {/*    message="欢迎使用DTRUN迁移系统"*/}
-                {/*    description="This is a warning notice about copywriting.This is a warning notice about copywriting.*/}
-                {/*    This is a warning notice about copywriting.This is a warning notice about copywriting.This is a warning notice about copywriting."*/}
-                {/*    type="success"*/}
-                {/*    showIcon*/}
-                {/*    icon={<InfoCircleTwoTone />}*/}
-                {/*/>*/}
                 <Result
                     status="success"
                     title="欢迎使用DTRUN迁移系统"
