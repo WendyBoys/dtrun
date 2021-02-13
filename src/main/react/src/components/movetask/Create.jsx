@@ -56,6 +56,7 @@ const Create = (props) => {
     }
 
     const srcChange = (id) => {
+        setLoading(true)
         form.setFieldsValue({srcBucket: undefined})
         setSrcBucketList([])
         getBucketLists({
@@ -72,10 +73,12 @@ const Create = (props) => {
                     duration: 2,
                 });
             }
+            setLoading(false)
         });
     }
 
     const desChange = (id) => {
+        setLoading(true)
         form.setFieldsValue({desBucket: undefined})
         setDesBucketList([])
         getBucketLists({
@@ -92,6 +95,7 @@ const Create = (props) => {
                     duration: 2,
                 });
             }
+            setLoading(false)
         });
     }
 

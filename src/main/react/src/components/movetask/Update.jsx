@@ -57,6 +57,8 @@ const Update = (props) => {
                 form.setFieldsValue({srcId: parseInt(taskJson.srcId)})
                 form.setFieldsValue({desId: parseInt(taskJson.desId)})
                 form.setFieldsValue({taskName: data.taskName})
+                srcChange(parseInt(taskJson.srcId), false);
+                desChange(parseInt(taskJson.desId), false)
             } else {
                 notification['error']({
                     message: '通知',
@@ -77,9 +79,12 @@ const Update = (props) => {
         setChecked(!checked)
     }
 
-    const srcChange = (id) => {
-        form.setFieldsValue({srcBucket: undefined})
-        setSrcBucketList([])
+    const srcChange = (id, flag) => {
+        setLoading(true)
+        if (flag !== false) {
+            form.setFieldsValue({srcBucket: undefined})
+            setSrcBucketList([])
+        }
         getBucketLists({
             id: id,
         }).then((response) => {
@@ -94,13 +99,16 @@ const Update = (props) => {
                     duration: 2,
                 });
             }
-
+            setLoading(false)
         });
     }
 
-    const desChange = (id) => {
-        form.setFieldsValue({desBucket: undefined})
-        setDesBucketList([])
+    const desChange = (id, flag) => {
+        setLoading(true)
+        if (flag) {
+            form.setFieldsValue({desBucket: undefined})
+            setDesBucketList([])
+        }
         getBucketLists({
             id: id
         }).then((response) => {
@@ -117,6 +125,7 @@ const Update = (props) => {
                     duration: 2,
                 });
             }
+            setLoading(false)
         });
     }
 
@@ -136,8 +145,7 @@ const Update = (props) => {
                         '创建Bucket成功',
                     duration: 2,
                 });
-                desChange(desId);
-                // setDesBucketList(response.data.data)
+                setDesBucketList(response.data.data)
             } else {
                 notification['error']({
                     message: '通知',
