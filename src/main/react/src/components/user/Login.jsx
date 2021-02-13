@@ -7,13 +7,6 @@ import {login} from './service'
 
 export default class Login extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: '登录',
-        }
-    }
-
     onFinish = (values) => {
         login({
             account: values.account,
@@ -71,27 +64,25 @@ export default class Login extends React.Component {
                             >
                                 <Form.Item
                                     name="account"
+                                    label="账号"
                                     rules={[{required: true, message: '请输入账号'}]}
                                 >
                                     <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                                           placeholder="账号"/>
+                                           placeholder="请输入账号"/>
                                 </Form.Item>
                                 <Form.Item
                                     name="password"
+                                    label="密码"
                                     rules={[{required: true, message: '请输入密码'}]}
                                 >
                                     <Input.Password
                                         prefix={<LockOutlined className="site-form-item-icon"/>}
                                         type="password"
-                                        placeholder="密码"
+                                        placeholder="请输入密码"
                                     />
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <Form.Item name="remember" valuePropName="checked" noStyle>
-                                        <Checkbox>记住我</Checkbox>
-                                    </Form.Item>
-
                                     <a className="login-form-forgot" href="">
                                         忘记密码
                                     </a>

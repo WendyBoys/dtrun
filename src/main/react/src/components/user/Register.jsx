@@ -5,15 +5,13 @@ import {Button, Col, Form, Input, notification, Row} from 'antd';
 import {AuditOutlined, LockOutlined, UserOutlined} from '@ant-design/icons';
 import {NavLink} from "react-router-dom";
 
-
+const validateMessages = {
+    required: '${label}为必填项!',
+    string: {
+        range: "${label}的长度为${min}到${max}个字符"
+    },
+};
 export default class Register extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: '注册',
-        }
-    }
 
     onFinish = (values) => {
         register({
@@ -51,35 +49,36 @@ export default class Register extends React.Component {
                             className="login-form"
                             initialValues={{remember: true}}
                             onFinish={this.onFinish}
+                            validateMessages={validateMessages}
                         >
                             <Form.Item
                                 name="account"
-                                rules={[{required: true, message: '请输入账号'}]}
+                                label="账号"
+                                rules={[{required: true, type: 'string', min: 6, max: 10}]}
                             >
                                 <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                                       placeholder="账号"/>
+                                       placeholder="请输入账号"/>
                             </Form.Item>
                             <Form.Item
                                 name="password"
-                                rules={[{required: true, message: '请输入密码'}]}
+                                label="密码"
+                                rules={[{required: true, type: 'string', min: 6, max: 10}]}
                             >
                                 <Input.Password
                                     prefix={<LockOutlined className="site-form-item-icon"/>}
                                     type="password"
-                                    placeholder="密码"
+                                    placeholder="请输入密码"
                                 />
                             </Form.Item>
-                            <Form.Item
+                            {/*  <Form.Item
                                 name="registerCode"
                                 rules={[{required: true, message: '请输入注册码'}]}
                             >
                                 <Input
                                     prefix={<AuditOutlined/>}
                                     placeholder="注册码"/>
-                            </Form.Item>
+                            </Form.Item>*/}
                             <Form.Item>
-
-
                                 <NavLink className="login-form-forgot" to="/login">
                                     已有账号？去登录
                                 </NavLink>
