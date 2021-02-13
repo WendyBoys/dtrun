@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {deletes, findAll, quit, run} from './service';
+import {deletes, findAll, quit, run, getResultById} from './service';
 import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag} from 'antd';
 import {
     CheckCircleOutlined,
@@ -12,11 +12,14 @@ import {
 
 const Show = (props) => {
     const [list, setList] = useState([]);
+    const [resultList, setResultList] = useState([]);
     const [taskId, setTaskId] = useState([]);
     const [visibleDelete, setVisibleDelete] = useState(false);
+    const [visibleResult, setVisibleResult] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
+    const [modalResultText, setResultModalText] = useState('');
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
 
@@ -98,6 +101,27 @@ const Show = (props) => {
             setTaskId(selectedRowKeys);
         }
         setVisibleDelete(true);
+    }
+
+    const showResult = (id, taskName) => {
+        setResultModalText('迁移任务 ' + taskName + ' 执行结果')
+        setVisibleResult(true)
+        getResultById({
+                id: id,
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setResultList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '查询失败',
+                    duration: 2,
+                });
+            }
+        });
+
     }
 
 
@@ -254,7 +278,8 @@ const Show = (props) => {
                                >启动</span>
                             </Popconfirm>
                         }
-                        <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}>查看结果</span>
+                        <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
+                              onClick={() => showResult(record.id, record.taskName)}>查看结果</span>
                         <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
                               onClick={() => deleteTask(record.id, record.status, record.taskName)}>删除</span>
                     </Space>
@@ -263,6 +288,50 @@ const Show = (props) => {
         },
     ];
 
+
+    const resultColumns = [
+        {
+            title: '开始时间',
+            dataIndex: 'startTime',
+        },
+        {
+            title: '结束时间',
+            dataIndex: 'endTime',
+        },
+        {
+            title: '总耗时',
+            dataIndex: 'timeConsume',
+        },
+        {
+            title: '执行结果',
+            dataIndex: 'result',
+            render: (text, record) => {
+                if (text === 'FINISH') {
+                    return (
+                        <Tag icon={<CheckCircleOutlined/>} color="success">
+                            已完成
+                        </Tag>
+                    )
+                } else if (text === 'QUIT') {
+                    return (
+                        <Tag icon={<DisconnectOutlined/>} color="orange">
+                            已取消
+                        </Tag>
+                    )
+                } else {
+                    return (
+                        <Tag icon={<CloseCircleOutlined/>} color="error">
+                            执行失败
+                        </Tag>
+                    )
+                }
+            }
+        },
+        {
+            title: '迁移文件数量',
+            dataIndex: 'fileCount',
+        }
+    ];
 
     const onSelectChange = selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys)
@@ -323,12 +392,28 @@ const Show = (props) => {
                 >
                     <p>{modalText}</p>
                 </Modal>
-
+                <Modal
+                    title={modalResultText}
+                    centered
+                    visible={visibleResult}
+                    onOk={() => setVisibleResult(false)}
+                    onCancel={() => setVisibleResult(false)}
+                    width={800}
+                >
+                    <Table
+                        bordered
+                        columns={resultColumns}
+                        dataSource={resultList}
+                        pagination={{
+                            showQuickJumper: true,
+                            defaultPageSize: 10,
+                            pageSizeOptions: [10, 20, 50, 100]
+                        }}
+                    />
+                </Modal>
             </div>
         </Spin>
-
     ));
-
 }
 
 

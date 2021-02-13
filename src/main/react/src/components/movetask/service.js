@@ -28,3 +28,6 @@ export async function updateMoveTask(params) {
     return await request("/movetask/update", "post", params)
 }
 
+export async function getResultById(params) {
+    return await request("/movetask/getResultById", "get", params)
+}
