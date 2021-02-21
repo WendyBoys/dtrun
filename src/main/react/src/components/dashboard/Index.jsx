@@ -3,6 +3,7 @@ import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Datasource from '../datasource/Datasource';
 import MoveTask from '../movetask/MoveTask';
+import Sysmanage from '../sysmanage/Sysmanage';
 import About from '../about/About';
 import {getCurrentUser, modifyPassword} from '../user/service';
 import cookie from 'react-cookies'
@@ -363,12 +364,12 @@ export default class Index extends React.Component {
                                 <NavLink to="/dashboard">运维大盘</NavLink>
                             </Menu.Item>
                             <Menu.Item key="2" icon={<FolderOpenOutlined/>}>
-                                <NavLink to="/datasource/show">数据源管理</NavLink></Menu.Item>
+                                <NavLink to="/datasource">数据源管理</NavLink></Menu.Item>
                             <Menu.Item key="3" icon={<SplitCellsOutlined/>}>
                                 <NavLink to="/movetask">迁移任务管理</NavLink>
                             </Menu.Item>
                             <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
-                                <Menu.Item key="5">系统日志</Menu.Item>
+                                <Menu.Item key="5"> <NavLink to="/sysmanage/logs">系统日志</NavLink></Menu.Item>
                                 <Menu.Item key="6">未知模块</Menu.Item>
                                 <Menu.Item key="7">未知模块</Menu.Item>
                                 <Menu.Item key="8">未知模块</Menu.Item>
@@ -396,6 +397,7 @@ export default class Index extends React.Component {
                                 <Route path="/dashboard" component={Dashboard}/>
                                 <Route path="/datasource" component={Datasource}/>
                                 <Route path="/movetask" component={MoveTask}/>
+                                <Route path="/sysmanage" component={Sysmanage}/>
                                 <Route path="/about" component={About}/>
                                 <Redirect to="/dashboard"/>
                             </Switch>
