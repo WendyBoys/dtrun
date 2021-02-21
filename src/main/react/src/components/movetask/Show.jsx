@@ -107,7 +107,7 @@ const Show = (props) => {
         setResultModalText('迁移任务 ' + taskName + ' 执行结果')
         setVisibleResult(true)
         getResultById({
-                id: id,
+            id: id,
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
@@ -301,11 +301,14 @@ const Show = (props) => {
         {
             title: '总耗时',
             dataIndex: 'timeConsume',
+            render: (text) => {
+                return text + '秒'
+            }
         },
         {
             title: '执行结果',
             dataIndex: 'result',
-            render: (text, record) => {
+            render: (text) => {
                 if (text === 'FINISH') {
                     return (
                         <Tag icon={<CheckCircleOutlined/>} color="success">

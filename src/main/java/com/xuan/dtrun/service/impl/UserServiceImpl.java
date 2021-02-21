@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int register(User user) {
-        user.setCreateTime(new Date());
         return userMapper.register(user);
     }
 

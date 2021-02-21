@@ -8,6 +8,7 @@ import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.UserService;
+import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,6 +81,7 @@ public class UserController {
                         user.setIconUrl(iconUrl);
                         user.setUserName(userName);
                         user.setRegisterCode(code);
+                        user.setCreateTime(DateUtils.getDate());
                         userService.register(user);
                         userService.updateRegisterCodeStatus(registercode.getId());
                         return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);

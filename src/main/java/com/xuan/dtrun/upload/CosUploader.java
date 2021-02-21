@@ -33,15 +33,19 @@ public class CosUploader implements Runnable {
 
     @Override
     public void run() {
-        long l = System.currentTimeMillis();
-        System.out.println(Thread.currentThread().getName() + "开始");
-        UploadPartRequest uploadRequest = new UploadPartRequest().withBucketName(bucketName).
-                withUploadId(uploadId).withKey(objectName).withPartNumber(i+1).
-                withInputStream(new ByteArrayInputStream(bytes)).withPartSize(curPartSize);
-        UploadPartResult uploadPartResult = cosClient.uploadPart(uploadRequest);
-        String etag = uploadPartResult.getETag();
-        partETags.add(new PartETag(i+1, etag));
-        long l1 = System.currentTimeMillis();
-        System.out.println(Thread.currentThread().getName() + "结束，耗时" + (l1 - l) / 1000f);
+        boolean flag = true;
+        while (flag && !Thread.currentThread().isInterrupted()) {
+            long l = System.currentTimeMillis();
+            System.out.println(Thread.currentThread().getName() + "开始");
+            UploadPartRequest uploadRequest = new UploadPartRequest().withBucketName(bucketName).
+                    withUploadId(uploadId).withKey(objectName).withPartNumber(i + 1).
+                    withInputStream(new ByteArrayInputStream(bytes)).withPartSize(curPartSize);
+            UploadPartResult uploadPartResult = cosClient.uploadPart(uploadRequest);
+            String etag = uploadPartResult.getETag();
+            partETags.add(new PartETag(i + 1, etag));
+            flag = false;
+            long l1 = System.currentTimeMillis();
+            System.out.println(Thread.currentThread().getName() + "结束，耗时" + (l1 - l) / 1000f);
+        }
     }
 }

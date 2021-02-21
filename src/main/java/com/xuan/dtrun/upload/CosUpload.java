@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class CosUpload {
     private String bucketName;
@@ -24,6 +21,7 @@ public class CosUpload {
     private long fileLength;
     private ExecutorService executors = Executors.newFixedThreadPool(10);
     private long partSize;
+    private volatile boolean flag = true;
 
     private Logger logger = LoggerFactory.getLogger(OssUpload.class);
 
@@ -36,8 +34,8 @@ public class CosUpload {
         this.partSize = partSize;
     }
 
-    @Async
-    public void upload() throws IOException, InterruptedException {
+
+    public String upload() throws IOException, InterruptedException {
 
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(bucketName, objectName);
         InitiateMultipartUploadResult initResponse = cosClient.initiateMultipartUpload(initRequest);
@@ -58,17 +56,25 @@ public class CosUpload {
         int len;
         int i = 0;
         Semaphore semaphore = new Semaphore(partCount);
-        while ((len = bufferedInputStream.read(srcBytes)) > -1) {
-            semaphore.acquire();
-            byte[] desBytes = new byte[(int) partSize];
-            System.arraycopy(srcBytes, 0, desBytes, 0, len);
-            long startPos = i * partSize;
-            long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
-            logger.info("上传分片" + i);
-            executors.execute(new CosUploader(bucketName, curPartSize, objectName, uploadId, i, cosClient, partETags, desBytes));
-            i++;
-            semaphore.release();
+        try {
+            while ((len = bufferedInputStream.read(srcBytes)) > -1) {
+                semaphore.acquire();
+                byte[] desBytes = new byte[(int) partSize];
+                System.arraycopy(srcBytes, 0, desBytes, 0, len);
+                long startPos = i * partSize;
+                long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
+                logger.info("上传分片" + i);
+                executors.execute(new CosUploader(bucketName, curPartSize, objectName, uploadId, i, cosClient, partETags, desBytes));
+                i++;
+                semaphore.release();
+            }
+        } catch (RejectedExecutionException e) {
+            logger.info("中断线程池...");
+            return "QUIT";
+        } finally {
+            inputStream.close();
         }
+
         executors.shutdown();
         while (!executors.isTerminated()) {
             try {
@@ -80,7 +86,23 @@ public class CosUpload {
             }
         }
 
-        CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
-        CompleteMultipartUploadResult result = cosClient.completeMultipartUpload(compRequest);
+        try {
+            CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
+            CompleteMultipartUploadResult result = cosClient.completeMultipartUpload(compRequest);
+        } catch (Exception e) {
+            logger.info("完成分片上传失败...");
+            return "FAIL";
+        }
+        return "FINISH";
+    }
+
+    public void stop() throws IOException {
+        if (inputStream != null) {
+            inputStream.close();
+        }
+        if (executors != null) {
+            logger.info("cos终止上传");
+            executors.shutdownNow();
+        }
     }
 }

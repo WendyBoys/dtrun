@@ -27,6 +27,7 @@ import com.xuan.dtrun.service.ResultService;
 import com.xuan.dtrun.upload.CosUpload;
 import com.xuan.dtrun.upload.CosUploader;
 import com.xuan.dtrun.upload.OssUpload;
+import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import jdk.nashorn.internal.ir.SwitchNode;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @RestController
@@ -54,6 +56,12 @@ public class MoveTaskController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    private CosUpload cosUpload;
+
+    private OssUpload ossUpload;
+
+    private ReentrantLock reentrantLock = new ReentrantLock(true);
 
     private Logger logger = LoggerFactory.getLogger(MoveTaskController.class);
 
@@ -96,14 +104,14 @@ public class MoveTaskController {
                 String desBucket = jsonObject.getString("desBucket");
                 String allMove = jsonObject.getString("allMove");
                 String taskName = jsonObject.getString("taskName");
-                Map map = new HashMap<>();
-                map.put("srcId", srcId);
-                map.put("srcBucket", srcBucket);
-                map.put("desId", desId);
-                map.put("desBucket", desBucket);
-                map.put("allMove", allMove);
-                String taskJson = new JSONObject(map).toJSONString();
-                MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", new Date().toLocaleString(), user.getId());
+                JSONObject json = new JSONObject();
+                json.put("srcId", srcId);
+                json.put("srcBucket", srcBucket);
+                json.put("desId", desId);
+                json.put("desBucket", desBucket);
+                json.put("allMove", allMove);
+                String taskJson = json.toJSONString();
+                MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
                 moveTaskService.create(moveTaskEntity);
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
             }
@@ -238,13 +246,16 @@ public class MoveTaskController {
                                     throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
                                 }
                             }
-                            OssUpload ossUpload = new OssUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), ossClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
+                            reentrantLock.lock();
+                            ossUpload = new OssUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), ossClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
+                            reentrantLock.unlock();
                             ossUpload.upload();
+
                         }
                         long endTime = System.currentTimeMillis();
                         String timeConsume = String.valueOf((endTime - startTime) / 1000f);
                         moveTaskService.updateStatus(id, "FINISH");
-                        resultService.create(new ResultEntity(new Date(startTime).toLocaleString(), new Date(endTime).toLocaleString(), "FINISH", timeConsume, fileMessageList.size(), id));
+                        resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", timeConsume, fileMessageList.size(), id));
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
                     } finally {
@@ -287,14 +298,16 @@ public class MoveTaskController {
                                     throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
                                 }
                             }
-                            CosUpload cosUpload = new CosUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), cosClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
+                            reentrantLock.lock();
+                            cosUpload = new CosUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), cosClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
                             cosUpload.upload();
+                            reentrantLock.unlock();
                         }
                         cosClient.shutdown();
                         long endTime = System.currentTimeMillis();
                         String timeConsume = String.valueOf((endTime - startTime) / 1000f);
                         moveTaskService.updateStatus(id, "FINISH");
-                        resultService.create(new ResultEntity(new Date(startTime).toLocaleString(), new Date(endTime).toLocaleString(), "FINISH", timeConsume, fileMessageList.size(), id));
+                        resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", timeConsume, fileMessageList.size(), id));
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
                     } finally {
@@ -325,6 +338,16 @@ public class MoveTaskController {
         try {
             Integer id = jsonObject.getInteger("id");
             moveTaskService.updateStatus(id, "QUIT");
+            reentrantLock.lock();
+            if (ossUpload != null) {
+                ossUpload.stop();
+                ossUpload = null;
+            }
+            if (cosUpload != null) {
+                cosUpload.stop();
+                cosUpload = null;
+            }
+            reentrantLock.unlock();
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

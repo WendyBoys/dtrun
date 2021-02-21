@@ -10,16 +10,16 @@ public class User implements Serializable {
     private String password;
     private String userName;
     private String iconUrl;
-    private Date createTime;
+    private String createTime;
     private int isUse;
     private String registerCode;
-    private Date lastLoginTime;
+    private String lastLoginTime;
     private String lastLoginIp;
 
     public User() {
     }
 
-    public User(Integer id, String account, String password, String userName, String iconUrl, Date createTime, int isUse, String registerCode) {
+    public User(Integer id, String account, String password, String userName, String iconUrl, String createTime, int isUse, String registerCode) {
         this.id = id;
         this.account = account;
         this.password = password;
@@ -70,11 +70,11 @@ public class User implements Serializable {
         this.iconUrl = iconUrl;
     }
 
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -94,11 +94,11 @@ public class User implements Serializable {
         this.registerCode = registerCode;
     }
 
-    public Date getLastLoginTime() {
+    public String getLastLoginTime() {
         return lastLoginTime;
     }
 
-    public void setLastLoginTime(Date lastLoginTime) {
+    public void setLastLoginTime(String lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 

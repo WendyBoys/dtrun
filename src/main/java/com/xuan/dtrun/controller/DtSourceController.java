@@ -16,15 +16,13 @@ import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
+import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -109,15 +107,14 @@ public class DtSourceController {
             String region = json.getString("region");
             DtSourceEntity dtSourceEntity = new DtSourceEntity();
             dtSourceEntity.setDtSourceName(dataSourceName);
-            Map map = new HashMap<>();
-            map.put("dataSourceType", dataSourceType);
-            map.put("accessKey", secretId);
-            map.put("accessSecret", secretKey);
-            map.put("region", region);
-            JSONObject jsonObject = new JSONObject(map);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("dataSourceType", dataSourceType);
+            jsonObject.put("accessKey", secretId);
+            jsonObject.put("accessSecret", secretKey);
+            jsonObject.put("region", region);
             dtSourceEntity.setUser(user);
             dtSourceEntity.setDtSourceType(dataSourceType);
-            dtSourceEntity.setCreateTime(new Date().toLocaleString());
+            dtSourceEntity.setCreateTime(DateUtils.getDate());
             dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
             dtSourceService.create(dtSourceEntity);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);

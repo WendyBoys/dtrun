@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuan.dtrun.mapper.LogMapper">
+
+
+    <insert id="create">
+       INSERT INTO  logs (log,createTime,uid) VALUES (#{log},#{createTime},#{uid})
+    </insert>
+
+    <select id="getLogsById" resultType="com.xuan.dtrun.entity.LogEntity">
+        SELECT * FROM logs WHERE uid=#{id} ORDER BY createTime DESC
+    </select>
+
+
+</mapper>

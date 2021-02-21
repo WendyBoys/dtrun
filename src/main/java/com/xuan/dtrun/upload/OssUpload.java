@@ -4,17 +4,13 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class OssUpload {
 
@@ -25,6 +21,7 @@ public class OssUpload {
     private long fileLength;
     private ExecutorService executors = Executors.newFixedThreadPool(10);
     private long partSize;
+    private volatile boolean flag = true;
 
     private Logger logger = LoggerFactory.getLogger(OssUpload.class);
 
@@ -37,9 +34,7 @@ public class OssUpload {
         this.partSize = partSize;
     }
 
-    @Async
-    public void upload() throws IOException, InterruptedException {
-
+    public String upload() throws IOException, InterruptedException {
         InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, objectName);
         InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
         String uploadId = upresult.getUploadId();
@@ -52,23 +47,30 @@ public class OssUpload {
             partCount++;
         }
         logger.info("分片数为" + partCount);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
         // 遍历分片上传。
-        byte[] srcBytes = new byte[(int) partSize];
-        int len;
-        int i = 0;
-        Semaphore semaphore = new Semaphore(partCount);
-        while ((len = bufferedInputStream.read(srcBytes)) > -1) {
-            semaphore.acquire();
-            byte[] desBytes = new byte[(int) partSize];
-            System.arraycopy(srcBytes, 0, desBytes, 0, len);
-            long startPos = i * partSize;
-            long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
-            logger.info("上传分片" + i);
-            executors.execute(new OssUploader(bucketName, curPartSize, objectName, uploadId, i, ossClient, partETags, desBytes));
-            i++;
-            semaphore.release();
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            byte[] srcBytes = new byte[(int) partSize];
+            int len;
+            int i = 0;
+            Semaphore semaphore = new Semaphore(partCount);
+            while (flag && (len = bufferedInputStream.read(srcBytes)) > -1) {
+                semaphore.acquire();
+                byte[] desBytes = new byte[(int) partSize];
+                System.arraycopy(srcBytes, 0, desBytes, 0, len);
+                long startPos = i * partSize;
+                long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
+                logger.info("上传分片" + i);
+                executors.execute(new OssUploader(bucketName, curPartSize, objectName, uploadId, i, ossClient, partETags, desBytes));
+                i++;
+                semaphore.release();
+            }
+        } catch (RejectedExecutionException e) {
+            logger.info("中断线程池...");
+            return "QUIT";
+        } finally {
+            inputStream.close();
         }
+
         executors.shutdown();
         while (!executors.isTerminated()) {
             try {
@@ -76,13 +78,27 @@ public class OssUpload {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                bufferedInputStream.close();
+                inputStream.close();
             }
         }
 
-        CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
+        try {
+            CompleteMultipartUploadRequest completeMultipartUploadRequest =
+                    new CompleteMultipartUploadRequest(bucketName, objectName, uploadId, partETags);
 
-        CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
+            CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
+        } catch (Exception e) {
+            logger.info("完成分片上传失败...");
+            return "FAIL";
+        }
+        return "FINISH";
+    }
+
+    public void stop() {
+        if (executors != null) {
+            logger.info("oss终止上传");
+            executors.shutdownNow();
+        }
+        flag = false;
     }
 }
