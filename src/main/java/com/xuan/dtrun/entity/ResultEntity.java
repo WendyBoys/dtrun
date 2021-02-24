@@ -5,6 +5,7 @@ public class ResultEntity {
     private String startTime;
     private String endTime;
     private String result;
+    private String failReason;
     private String timeConsume;
     private Integer fileCount;
     private Integer mid;
@@ -13,10 +14,11 @@ public class ResultEntity {
 
     }
 
-    public ResultEntity(String startTime, String endTime, String result, String timeConsume, Integer fileCount, Integer mid) {
+    public ResultEntity(String startTime, String endTime, String result, String failReason, String timeConsume, Integer fileCount, Integer mid) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.result = result;
+        this.failReason = failReason;
         this.timeConsume = timeConsume;
         this.fileCount = fileCount;
         this.mid = mid;
@@ -52,6 +54,14 @@ public class ResultEntity {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getFailReason() {
+        return failReason;
+    }
+
+    public void setFailReason(String failReason) {
+        this.failReason = failReason;
     }
 
     public String getTimeConsume() {

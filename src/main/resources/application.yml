@@ -13,7 +13,7 @@ spring:
     initialSize: 5
     minIdle: 5
     maxActive: 20
-    maxWait: 60000
+    maxWait: 25000
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 30000
     validationQuery: select 'x'

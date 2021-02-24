@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {deletes, findAll, quit, run, getResultById} from './service';
-import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag} from 'antd';
+import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag,Tooltip} from 'antd';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -308,7 +308,7 @@ const Show = (props) => {
         {
             title: '执行结果',
             dataIndex: 'result',
-            render: (text) => {
+            render: (text,record) => {
                 if (text === 'FINISH') {
                     return (
                         <Tag icon={<CheckCircleOutlined/>} color="success">
@@ -324,7 +324,10 @@ const Show = (props) => {
                 } else {
                     return (
                         <Tag icon={<CloseCircleOutlined/>} color="error">
-                            执行失败
+                            <Tooltip placement="bottom" title={record.failReason}>
+                               执行失败
+                            </Tooltip>
+
                         </Tag>
                     )
                 }

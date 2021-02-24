@@ -21,7 +21,6 @@ public class OssUpload {
     private long fileLength;
     private ExecutorService executors = Executors.newFixedThreadPool(10);
     private long partSize;
-    private volatile boolean flag = true;
 
     private Logger logger = LoggerFactory.getLogger(OssUpload.class);
 
@@ -34,7 +33,7 @@ public class OssUpload {
         this.partSize = partSize;
     }
 
-    public String upload() throws IOException, InterruptedException {
+    public String upload() {
         InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, objectName);
         InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
         String uploadId = upresult.getUploadId();
@@ -53,7 +52,7 @@ public class OssUpload {
             int len;
             int i = 0;
             Semaphore semaphore = new Semaphore(partCount);
-            while (flag && (len = bufferedInputStream.read(srcBytes)) > -1) {
+            while ((len = bufferedInputStream.read(srcBytes)) > -1) {
                 semaphore.acquire();
                 byte[] desBytes = new byte[(int) partSize];
                 System.arraycopy(srcBytes, 0, desBytes, 0, len);
@@ -64,21 +63,24 @@ public class OssUpload {
                 i++;
                 semaphore.release();
             }
-        } catch (RejectedExecutionException e) {
-            logger.info("中断线程池...");
-            return "QUIT";
+        } catch (Exception e) {
+            logger.info("上传分片出现异常(可能原因为被迁移任务手动终止):");
         } finally {
-            inputStream.close();
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    logger.info("输入流关闭失败，可能线程已被终止...");
+                }
+            }
         }
-
         executors.shutdown();
         while (!executors.isTerminated()) {
             try {
                 executors.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                inputStream.close();
+                executors.shutdownNow();
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -94,11 +96,4 @@ public class OssUpload {
         return "FINISH";
     }
 
-    public void stop() {
-        if (executors != null) {
-            logger.info("oss终止上传");
-            executors.shutdownNow();
-        }
-        flag = false;
-    }
 }

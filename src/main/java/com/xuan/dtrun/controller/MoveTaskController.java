@@ -5,17 +5,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.exception.CosClientException;
-import com.qcloud.cos.exception.CosServiceException;
-import com.qcloud.cos.model.COSObject;
-import com.qcloud.cos.model.COSObjectInputStream;
 import com.qcloud.cos.model.COSObjectSummary;
-import com.qcloud.cos.model.GetObjectRequest;
 import com.qcloud.cos.region.Region;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.common.DataEnum;
@@ -24,21 +20,19 @@ import com.xuan.dtrun.entity.*;
 import com.xuan.dtrun.service.DtSourceService;
 import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
-import com.xuan.dtrun.upload.CosUpload;
-import com.xuan.dtrun.upload.CosUploader;
-import com.xuan.dtrun.upload.OssUpload;
+import com.xuan.dtrun.thread.CosThread;
+import com.xuan.dtrun.thread.OssThread;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
-import jdk.nashorn.internal.ir.SwitchNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 @RestController
@@ -56,12 +50,6 @@ public class MoveTaskController {
 
     @Autowired
     private RedisTemplate redisTemplate;
-
-    private CosUpload cosUpload;
-
-    private OssUpload ossUpload;
-
-    private ReentrantLock reentrantLock = new ReentrantLock(true);
 
     private Logger logger = LoggerFactory.getLogger(MoveTaskController.class);
 
@@ -163,11 +151,13 @@ public class MoveTaskController {
     @PostMapping(value = "/run", produces = "application/json;charset=utf-8")
     public CommonResult run(@RequestBody JSONObject jsonObject) {
         Integer id = jsonObject.getInteger("id");
+        long startTime = System.currentTimeMillis();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
         try {
             COSClient srcCosClient = null;
             OSS srcOssClient = null;
             List<FileMessage> fileMessageList = new ArrayList<>();
-            ThreadLocal<InputStream> threadLocal = new ThreadLocal<>();
             moveTaskService.updateStatus(id, "RUNNING");
             MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
 
@@ -193,7 +183,7 @@ public class MoveTaskController {
                         try {
                             objectListing = srcCosClient.listObjects(listObjectsRequest);
                         } catch (CosClientException e) {
-                            e.printStackTrace();
+                            e.printStackTrace(pw);
                         }
                         List<COSObjectSummary> cosObjectSummaries = objectListing.getObjectSummaries();
                         for (COSObjectSummary cosObjectSummary : cosObjectSummaries) {
@@ -206,7 +196,12 @@ public class MoveTaskController {
                 }
                 case "oss": {
                     srcOssClient = new OSSClientBuilder().build(srcEntity.getString("region"), srcEntity.getString("accessKey"), srcEntity.getString("accessSecret"));
-                    com.aliyun.oss.model.ObjectListing objectListing = srcOssClient.listObjects(srcBucket);
+                    com.aliyun.oss.model.ObjectListing objectListing = null;
+                    try {
+                        objectListing = srcOssClient.listObjects(srcBucket);
+                    } catch (OSSException e) {
+                        e.printStackTrace(pw);
+                    }
                     for (OSSObjectSummary ossObjectSummary : objectListing.getObjectSummaries()) {
                         fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
                     }
@@ -216,119 +211,26 @@ public class MoveTaskController {
                     throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
                 }
             }
-
+            //迁移文件
             String desDtSourceType = desDtSourceEntity.getDtSourceType();
             if ("oss".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                COSClient finalCosClient = srcCosClient;
-                OSS finalOssClient = srcOssClient;
-                new Thread(() -> {
-                    try {
-                        OSS ossClient = new OSSClientBuilder().build(desEntity.getString("region"), desEntity.getString("accessKey"), desEntity.getString("accessSecret"));
-                        logger.info("启动分片线程");
-                        long startTime = System.currentTimeMillis();
-                        for (FileMessage fileMessage : fileMessageList) {
-                            switch (srcDtSourceType) {
-                                case "cos": {
-                                    GetObjectRequest getObjectRequest = new GetObjectRequest(srcBucket, fileMessage.getFileName());
-                                    COSObject cosObject = finalCosClient.getObject(getObjectRequest);
-                                    threadLocal.set(cosObject.getObjectContent());
-                                    break;
-                                }
-                                case "oss": {
-                                    com.aliyun.oss.model.GetObjectRequest getObjectRequest = new com.aliyun.oss.model.GetObjectRequest(srcBucket, fileMessage.getFileName());
-                                    OSSObject ossObject = finalOssClient.getObject(getObjectRequest);
-                                    BufferedInputStream bufferedInputStream = new BufferedInputStream(ossObject.getObjectContent());
-                                    threadLocal.set(bufferedInputStream);
-                                    break;
-                                }
-                                default: {
-                                    throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
-                                }
-                            }
-                            reentrantLock.lock();
-                            ossUpload = new OssUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), ossClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
-                            reentrantLock.unlock();
-                            ossUpload.upload();
-
-                        }
-                        long endTime = System.currentTimeMillis();
-                        String timeConsume = String.valueOf((endTime - startTime) / 1000f);
-                        moveTaskService.updateStatus(id, "FINISH");
-                        resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", timeConsume, fileMessageList.size(), id));
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            if (threadLocal.get() != null) {
-                                threadLocal.get().close();
-                            }
-                        } catch (IOException e) {
-                            logger.info("关闭" + srcDtSourceType + "端输入流异常");
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                new Thread(new OssThread(id, desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             } else if ("cos".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                COSClient finalCosClient = srcCosClient;
-                OSS finalOssClient = srcOssClient;
-                new Thread(() -> {
-                    try {
-                        COSClient cosClient = new COSClient(new BasicCOSCredentials(desEntity.getString("accessKey"), desEntity.getString("accessSecret")),
-                                new ClientConfig(new Region(desEntity.getString("region"))));
-                        logger.info("启动分片线程");
-                        long startTime = System.currentTimeMillis();
-                        for (FileMessage fileMessage : fileMessageList) {
-                            switch (srcDtSourceType) {
-                                case "cos": {
-                                    GetObjectRequest getObjectRequest = new GetObjectRequest(srcBucket, fileMessage.getFileName());
-                                    COSObject cosObject = finalCosClient.getObject(getObjectRequest);
-                                    threadLocal.set(cosObject.getObjectContent());
-                                    break;
-                                }
-                                case "oss": {
-                                    com.aliyun.oss.model.GetObjectRequest getObjectRequest = new com.aliyun.oss.model.GetObjectRequest(srcBucket, fileMessage.getFileName());
-                                    OSSObject ossObject = finalOssClient.getObject(getObjectRequest);
-                                    BufferedInputStream bufferedInputStream = new BufferedInputStream(ossObject.getObjectContent());
-                                    threadLocal.set(bufferedInputStream);
-                                    break;
-                                }
-                                default: {
-                                    throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
-                                }
-                            }
-                            reentrantLock.lock();
-                            cosUpload = new CosUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), cosClient, threadLocal.get(), fileMessage.getFileLength(), 50 * 1024 * 1024);
-                            cosUpload.upload();
-                            reentrantLock.unlock();
-                        }
-                        cosClient.shutdown();
-                        long endTime = System.currentTimeMillis();
-                        String timeConsume = String.valueOf((endTime - startTime) / 1000f);
-                        moveTaskService.updateStatus(id, "FINISH");
-                        resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", timeConsume, fileMessageList.size(), id));
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            if (threadLocal.get() != null) {
-                                threadLocal.get().close();
-                            }
-                            if (finalCosClient != null) {
-                                finalCosClient.shutdown();
-                            }
-                        } catch (IOException e) {
-                            logger.info("关闭" + srcDtSourceType + "端输入流异常");
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                new Thread(new CosThread(id, desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
+            long endTime = System.currentTimeMillis();
+            String timeConsume = String.valueOf((endTime - startTime) / 1000f);
             moveTaskService.updateStatus(id, "FAIL");
-            e.printStackTrace();
+            String errorMsg = sw.toString();
+            if (errorMsg == null) {
+                e.printStackTrace(pw);
+            }
+            resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FAIL", errorMsg,
+                    timeConsume, 0, id));
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.RUNFAIL);
         }
     }
@@ -337,17 +239,18 @@ public class MoveTaskController {
     public CommonResult quit(@RequestBody JSONObject jsonObject) {
         try {
             Integer id = jsonObject.getInteger("id");
+            ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+            int noThreads = currentGroup.activeCount();
+            Thread[] lstThreads = new Thread[noThreads];
+            currentGroup.enumerate(lstThreads);
+            for (int i = 0; i < noThreads; i++) {
+                String nm = lstThreads[i].getName();
+                if (nm.equals("movetask" + id)) {
+                    lstThreads[i].interrupt();
+                    logger.info("终止id为+" + id + "的迁移任务");
+                }
+            }
             moveTaskService.updateStatus(id, "QUIT");
-            reentrantLock.lock();
-            if (ossUpload != null) {
-                ossUpload.stop();
-                ossUpload = null;
-            }
-            if (cosUpload != null) {
-                cosUpload.stop();
-                cosUpload = null;
-            }
-            reentrantLock.unlock();
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -360,6 +263,25 @@ public class MoveTaskController {
         try {
             List<ResultEntity> resultList = resultService.getResultById(id);
             return new CommonResult(200, MessageEnum.SUCCESS, resultList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+    }
+
+    @GetMapping(value = "/get", produces = "application/json;charset=utf-8")
+    public CommonResult get() {
+        try {
+            ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+            int noThreads = currentGroup.activeCount();
+            Thread[] lstThreads = new Thread[noThreads];
+            currentGroup.enumerate(lstThreads);
+            ArrayList<String> arrayList = new ArrayList();
+            for (int i = 0; i < noThreads; i++) {
+                String nm = lstThreads[i].getName();
+                arrayList.add(nm);
+            }
+            return new CommonResult(200, MessageEnum.SUCCESS, arrayList);
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);

@@ -21,7 +21,6 @@ public class CosUpload {
     private long fileLength;
     private ExecutorService executors = Executors.newFixedThreadPool(10);
     private long partSize;
-    private volatile boolean flag = true;
 
     private Logger logger = LoggerFactory.getLogger(OssUpload.class);
 
@@ -35,7 +34,7 @@ public class CosUpload {
     }
 
 
-    public String upload() throws IOException, InterruptedException {
+    public String upload() {
 
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(bucketName, objectName);
         InitiateMultipartUploadResult initResponse = cosClient.initiateMultipartUpload(initRequest);
@@ -68,21 +67,23 @@ public class CosUpload {
                 i++;
                 semaphore.release();
             }
-        } catch (RejectedExecutionException e) {
-            logger.info("中断线程池...");
-            return "QUIT";
+        } catch (Exception e) {
+            logger.info("上传分片出现异常(可能原因为被迁移任务手动终止):");
         } finally {
-            inputStream.close();
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    logger.info("输入流关闭失败，可能线程已被终止...");
+                }
+            }
         }
-
         executors.shutdown();
         while (!executors.isTerminated()) {
             try {
                 executors.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                bufferedInputStream.close();
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -96,13 +97,4 @@ public class CosUpload {
         return "FINISH";
     }
 
-    public void stop() throws IOException {
-        if (inputStream != null) {
-            inputStream.close();
-        }
-        if (executors != null) {
-            logger.info("cos终止上传");
-            executors.shutdownNow();
-        }
-    }
 }
