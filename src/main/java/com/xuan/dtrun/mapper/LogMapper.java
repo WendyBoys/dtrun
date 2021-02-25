@@ -1,5 +1,6 @@
 package com.xuan.dtrun.mapper;
 
+import com.xuan.dtrun.entity.LogEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +12,5 @@ public interface LogMapper {
 
     void create(Integer uid,String log,String createTime);
 
-    List<String> getLogsById(Integer uid);
+    List<LogEntity> getLogsById(Integer uid);
 }

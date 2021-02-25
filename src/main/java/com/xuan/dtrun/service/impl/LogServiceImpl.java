@@ -1,5 +1,6 @@
 package com.xuan.dtrun.service.impl;
 
+import com.xuan.dtrun.entity.LogEntity;
 import com.xuan.dtrun.mapper.LogMapper;
 import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.utils.DateUtils;
@@ -20,7 +21,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<String> getLogsById(Integer uid) {
+    public List<LogEntity> getLogsById(Integer uid) {
         return logMapper.getLogsById(uid);
     }
 }

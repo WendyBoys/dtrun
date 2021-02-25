@@ -7,7 +7,9 @@ import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
+import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.service.UserService;
+import com.xuan.dtrun.utils.ClientIp;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LogService logService;
+
     @Value("${user.iconUrl}")
     private String iconUrl;
 
@@ -44,17 +49,17 @@ public class UserController {
 
 
     @PostMapping(value = "/login", produces = "application/json;charset=utf-8")
-    public CommonResult login(@RequestBody JSONObject json) {
+    @Transactional
+    public CommonResult login(@RequestBody JSONObject json, @ClientIp String ip) {
         String account = json.getString("account");
         String password = json.getString("password");
         if (!StringUtils.isEmpty(account) && !StringUtils.isEmpty(password)) {
             User user = userService.login(account, password);
             if (user != null) {
-                //账号未被封禁
                 if (user.getIsUse() == 1) {
-                    //生成token 放入redis 并返回给前端
                     String token = TokenUtils.token(account, password);
                     redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
+                    logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate());
                     return new CommonResult(200, MessageEnum.SUCCESS, token);
                 } else {
                     return new CommonResult(200, MessageEnum.LOGINREFUSE, DataEnum.LOGINREFUSE);
@@ -101,7 +106,6 @@ public class UserController {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.REGISTERFAIL);
         }
-
     }
 
 
@@ -111,12 +115,12 @@ public class UserController {
         if (currentUser != null) {
             return new CommonResult(200, MessageEnum.SUCCESS, currentUser);
         }
-        return new CommonResult(200, MessageEnum.LOGINEXPIRE, currentUser);
+        return new CommonResult(200, MessageEnum.LOGINEXPIRE, DataEnum.LOGINEXPIRE);
     }
 
     @PostMapping(value = "/modifyPassword", produces = "application/json;charset=utf-8")
     @Transactional
-    public CommonResult save(@RequestBody JSONObject Json, @RequestHeader("token") String token) {
+    public CommonResult save(@RequestBody JSONObject Json, @RequestHeader("token") String token, @ClientIp String ip) {
         String oldPassword = Json.getString("oldPassword");
         String newPassword = Json.getString("newPassword");
         User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
@@ -126,6 +130,7 @@ public class UserController {
             if (!StringUtils.isEmpty(userById.getPassword()) || !StringUtils.isEmpty(oldPassword)) {
                 if (userById.getPassword().equals(oldPassword)) {
                     userService.modifyPassword(newPassword, id);
+                    logService.create(id, "修改密码,ip地址为" + ip, DateUtils.getDate());
                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
                 } else {
                     return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
@@ -139,7 +144,8 @@ public class UserController {
     }
 
     @RequestMapping("/icon")
-    public CommonResult icon(MultipartFile[] file, @RequestHeader("token") String token) throws IOException {
+    @Transactional
+    public CommonResult icon(MultipartFile[] file, @RequestHeader("token") String token, @ClientIp String ip) throws IOException {
         String md5Token = TokenUtils.md5Token(token);
         User currentUser = (User) redisTemplate.opsForValue().get(md5Token);
         if (currentUser != null) {
@@ -158,6 +164,7 @@ public class UserController {
             userService.modifyIcon(currentUser.getId(), iconUrl);
             currentUser.setIconUrl(iconUrl);
             redisTemplate.opsForValue().set(md5Token, currentUser, 7, TimeUnit.DAYS);
+            logService.create(currentUser.getId(), "更换头像,ip地址为" + ip, DateUtils.getDate());
             return new CommonResult(200, MessageEnum.SUCCESS, iconUrl);
         } else {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);

@@ -18,10 +18,12 @@ import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.*;
 import com.xuan.dtrun.service.DtSourceService;
+import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
 import com.xuan.dtrun.thread.CosThread;
 import com.xuan.dtrun.thread.OssThread;
+import com.xuan.dtrun.utils.ClientIp;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.slf4j.Logger;
@@ -46,6 +48,9 @@ public class MoveTaskController {
     private MoveTaskService moveTaskService;
 
     @Autowired
+    private LogService logService;
+
+    @Autowired
     private ResultService resultService;
 
     @Autowired
@@ -58,8 +63,14 @@ public class MoveTaskController {
     public CommonResult findAll(@RequestHeader("token") String token) {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
-            List<MoveTaskEntity> moveTaskEntityList = moveTaskService.findAll(user.getId());
-            return new CommonResult(200, MessageEnum.SUCCESS, moveTaskEntityList);
+            if (user != null) {
+                List<MoveTaskEntity> moveTaskEntityList = moveTaskService.findAll(user.getId());
+                return new CommonResult(200, MessageEnum.SUCCESS, moveTaskEntityList);
+
+            } else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
@@ -84,7 +95,7 @@ public class MoveTaskController {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user == null) {
-                return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
             } else {
                 String srcId = jsonObject.getString("srcId");
                 String srcBucket = jsonObject.getString("srcBucket");
@@ -136,11 +147,17 @@ public class MoveTaskController {
     }
 
     @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
-    public CommonResult delete(@RequestBody JSONObject jsonObject) {
+    public CommonResult delete(@RequestBody JSONObject jsonObject, @RequestHeader("token") String token, @ClientIp String ip) {
         try {
-            Object[] ids = jsonObject.getJSONArray("id").toArray();
-            moveTaskService.delete(ids);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+            if (user != null) {
+                Object[] ids = jsonObject.getJSONArray("id").toArray();
+                moveTaskService.delete(ids);
+                logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate());
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+            } else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
@@ -149,7 +166,7 @@ public class MoveTaskController {
 
 
     @PostMapping(value = "/run", produces = "application/json;charset=utf-8")
-    public CommonResult run(@RequestBody JSONObject jsonObject) {
+    public CommonResult run(@RequestBody JSONObject jsonObject, @ClientIp String ip) {
         Integer id = jsonObject.getInteger("id");
         long startTime = System.currentTimeMillis();
         StringWriter sw = new StringWriter();
@@ -160,6 +177,7 @@ public class MoveTaskController {
             List<FileMessage> fileMessageList = new ArrayList<>();
             moveTaskService.updateStatus(id, "RUNNING");
             MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
+            logService.create(moveTaskById.getUid(), "启动迁移任务" + moveTaskById.getTaskName() + ",ip地址为" + ip, DateUtils.getDate());
 
             //执行核心迁移
             JSONObject taskJson = JSON.parseObject(moveTaskById.getTaskJson());
@@ -236,9 +254,10 @@ public class MoveTaskController {
     }
 
     @PostMapping(value = "/quit", produces = "application/json;charset=utf-8")
-    public CommonResult quit(@RequestBody JSONObject jsonObject) {
+    public CommonResult quit(@RequestBody JSONObject jsonObject, @ClientIp String ip) {
         try {
             Integer id = jsonObject.getInteger("id");
+            MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
             ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
             int noThreads = currentGroup.activeCount();
             Thread[] lstThreads = new Thread[noThreads];
@@ -251,6 +270,9 @@ public class MoveTaskController {
                 }
             }
             moveTaskService.updateStatus(id, "QUIT");
+            logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate());
+            resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
+                    "", 0, id));
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

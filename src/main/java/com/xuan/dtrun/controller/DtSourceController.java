@@ -16,6 +16,8 @@ import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.DtSourceEntity;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.service.DtSourceService;
+import com.xuan.dtrun.service.LogService;
+import com.xuan.dtrun.utils.ClientIp;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class DtSourceController {
 
     @Autowired
     private DtSourceService dtSourceService;
+
+    @Autowired
+    private LogService logService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -178,11 +183,17 @@ public class DtSourceController {
     }
 
     @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
-    public CommonResult delete(@RequestBody JSONObject json) {
+    public CommonResult delete(@RequestBody JSONObject json, @RequestHeader("token") String token, @ClientIp String ip) {
         try {
-            Object[] ids = json.getJSONArray("id").toArray();
-            dtSourceService.delete(ids);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+            User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+            if (user != null) {
+                Object[] ids = json.getJSONArray("id").toArray();
+                dtSourceService.delete(ids);
+                logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate());
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
+            } else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.DELETEFAIL);
