@@ -4,15 +4,17 @@ public class LogEntity {
     private Integer id;
     private String log;
     private String createTime;
+    private String color;
     private Integer uid;
 
     public LogEntity() {
     }
 
-    public LogEntity(Integer id, String log, String createTime, Integer uid) {
+    public LogEntity(Integer id, String log, String createTime, String color, Integer uid) {
         this.id = id;
         this.log = log;
         this.createTime = createTime;
+        this.color = color;
         this.uid = uid;
     }
 
@@ -38,6 +40,14 @@ public class LogEntity {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public Integer getUid() {

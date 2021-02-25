@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {deletes, findAll, quit, run, getResultById} from './service';
-import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag,Tooltip} from 'antd';
+import {Button, message, Modal, notification, Popconfirm, Space, Spin, Table, Tag, Tooltip} from 'antd';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -17,9 +17,11 @@ const Show = (props) => {
     const [visibleDelete, setVisibleDelete] = useState(false);
     const [visibleResult, setVisibleResult] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [resultLoading, setResultLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
-    const [modalResultText, setResultModalText] = useState('');
+    const [modalResultText, setModalResultText] = useState('');
+    const [modalResultId, setmodalResultId] = useState('');
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
 
@@ -103,9 +105,9 @@ const Show = (props) => {
         setVisibleDelete(true);
     }
 
-    const showResult = (id, taskName) => {
-        setResultModalText('迁移任务 ' + taskName + ' 执行结果')
-        setVisibleResult(true)
+
+    const getResult = (id) => {
+        setResultLoading(true)
         getResultById({
             id: id,
         }).then((response) => {
@@ -120,8 +122,20 @@ const Show = (props) => {
                     duration: 2,
                 });
             }
+            setResultLoading(false)
         });
+    }
 
+
+    const showResult = (id, taskName) => {
+        setModalResultText('迁移任务 ' + taskName + ' 执行结果')
+        setVisibleResult(true)
+        setmodalResultId(id)
+        getResult(id);
+    }
+
+    const fenchResult = () => {
+        getResult(modalResultId);
     }
 
 
@@ -260,7 +274,7 @@ const Show = (props) => {
                     <Space size="middle">
                         {record.status === 'RUNNING' ?
                             <Popconfirm
-                                title="确定取消迁移任务吗?"
+                                title={'确定取消 ' + record.taskName+' 的运行吗?'}
                                 onConfirm={() => cancel(record.id)}
                                 okText="确定"
                                 cancelText="取消"
@@ -269,7 +283,7 @@ const Show = (props) => {
                             </Popconfirm>
                             :
                             <Popconfirm
-                                title="确定启动迁移任务吗?"
+                                title={'确定启动 ' + record.taskName+' 吗?'}
                                 onConfirm={() => confirm(record.id)}
                                 okText="确定"
                                 cancelText="取消"
@@ -308,7 +322,7 @@ const Show = (props) => {
         {
             title: '执行结果',
             dataIndex: 'result',
-            render: (text,record) => {
+            render: (text, record) => {
                 if (text === 'FINISH') {
                     return (
                         <Tag icon={<CheckCircleOutlined/>} color="success">
@@ -325,7 +339,7 @@ const Show = (props) => {
                     return (
                         <Tag icon={<CloseCircleOutlined/>} color="error">
                             <Tooltip placement="bottom" title={record.failReason}>
-                               执行失败
+                                执行失败
                             </Tooltip>
 
                         </Tag>
@@ -398,6 +412,7 @@ const Show = (props) => {
                 >
                     <p>{modalText}</p>
                 </Modal>
+
                 <Modal
                     title={modalResultText}
                     centered
@@ -405,18 +420,29 @@ const Show = (props) => {
                     onOk={() => setVisibleResult(false)}
                     onCancel={() => setVisibleResult(false)}
                     width={800}
+                    footer={[
+                        <Button onClick={() => fenchResult()}>
+                            刷新
+                        </Button>,
+                        <Button type="primary" loading={loading} onClick={() => setVisibleResult(false)}>
+                            确定
+                        </Button>,
+                    ]}
                 >
-                    <Table
-                        bordered
-                        columns={resultColumns}
-                        dataSource={resultList}
-                        pagination={{
-                            showQuickJumper: true,
-                            defaultPageSize: 10,
-                            pageSizeOptions: [10, 20, 50, 100]
-                        }}
-                    />
+                    <Spin size={"large"} spinning={resultLoading}>
+                        <Table
+                            bordered
+                            columns={resultColumns}
+                            dataSource={resultList}
+                            pagination={{
+                                showQuickJumper: true,
+                                defaultPageSize: 10,
+                                pageSizeOptions: [10, 20, 50, 100]
+                            }}
+                        />
+                    </Spin>
                 </Modal>
+
             </div>
         </Spin>
     ));

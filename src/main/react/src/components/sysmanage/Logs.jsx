@@ -28,7 +28,8 @@ const Logs = () => {
         <Timeline style={{height: '100%', textAlign: 'left', padding: '10px 10px 0 10px', overflowY: ' auto'}}>
             {
                 list.map((item, index) => {
-                    return <Timeline.Item color="green" key={index}>{item.log}---{item.createTime}</Timeline.Item>
+                    return <Timeline.Item color={item.color === '' ? 'green' : item.color}
+                                          key={index}>{item.log}---{item.createTime}</Timeline.Item>
                 })
             }
         </Timeline>
