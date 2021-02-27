@@ -4,6 +4,7 @@ public enum DataEnum {
     LOGINERROR("账号或密码错误"),
     LOGINREFUSE("账号已被封禁"),
     LOGINEXPIRE("登录过期，请重新登录"),
+    LOGOUTSUCCESS("注销成功"),
     REGISTERSUCCESS("注册成功"),
     REGISTERFAIL("注册失败"),
     REGISTERALREADY("注册失败,该用户名已存在"),

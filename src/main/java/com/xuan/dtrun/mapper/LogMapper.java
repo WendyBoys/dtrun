@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
 
-    void create(Integer uid,String log,String createTime);
+    void create(Integer uid,String log,String createTime,String color);
 
     List<LogEntity> getLogsById(Integer uid);
 }

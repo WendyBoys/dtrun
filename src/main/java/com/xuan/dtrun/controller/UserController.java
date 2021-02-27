@@ -59,14 +59,25 @@ public class UserController {
                 if (user.getIsUse() == 1) {
                     String token = TokenUtils.token(account, password);
                     redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
-                    logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate());
+                    logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate(), "green");
                     return new CommonResult(200, MessageEnum.SUCCESS, token);
                 } else {
-                    return new CommonResult(200, MessageEnum.LOGINREFUSE, DataEnum.LOGINREFUSE);
+                    return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINREFUSE);
                 }
             }
         }
         return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINERROR);
+    }
+
+
+    @PostMapping(value = "/logout", produces = "application/json;charset=utf-8")
+    public CommonResult logout(@RequestHeader("token") String token) {
+        User currentUser = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+        if (currentUser != null) {
+            redisTemplate.delete(TokenUtils.md5Token(token));
+            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.LOGOUTSUCCESS);
+        }
+        return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
     }
 
 
@@ -130,7 +141,7 @@ public class UserController {
             if (!StringUtils.isEmpty(userById.getPassword()) || !StringUtils.isEmpty(oldPassword)) {
                 if (userById.getPassword().equals(oldPassword)) {
                     userService.modifyPassword(newPassword, id);
-                    logService.create(id, "修改密码,ip地址为" + ip, DateUtils.getDate());
+                    logService.create(id, "修改密码,ip地址为" + ip, DateUtils.getDate(), "blue");
                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
                 } else {
                     return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
@@ -164,7 +175,7 @@ public class UserController {
             userService.modifyIcon(currentUser.getId(), iconUrl);
             currentUser.setIconUrl(iconUrl);
             redisTemplate.opsForValue().set(md5Token, currentUser, 7, TimeUnit.DAYS);
-            logService.create(currentUser.getId(), "更换头像,ip地址为" + ip, DateUtils.getDate());
+            logService.create(currentUser.getId(), "更换头像,ip地址为" + ip, DateUtils.getDate(), "blue");
             return new CommonResult(200, MessageEnum.SUCCESS, iconUrl);
         } else {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);

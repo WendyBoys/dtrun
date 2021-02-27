@@ -5,7 +5,7 @@ import Datasource from '../datasource/Datasource';
 import MoveTask from '../movetask/MoveTask';
 import Sysmanage from '../sysmanage/Sysmanage';
 import About from '../about/About';
-import {getCurrentUser, modifyPassword} from '../user/service';
+import {getCurrentUser, modifyPassword, logout} from '../user/service';
 import cookie from 'react-cookies'
 import ImgCrop from 'antd-img-crop';
 import {
@@ -91,13 +91,25 @@ export default class Index extends React.Component {
     }
 
     logout() {
-        cookie.remove('token', {path: '/'});
-        this.props.history.push('/login')
-        notification['success']({
-            message: '通知',
-            description:
-                '注销成功',
-            duration: 2,
+        logout().then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                cookie.remove('token', {path: '/'});
+                this.props.history.push('/login')
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '注销成功',
+                    duration: 2,
+                });
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '服务器连接失败，请稍后重试',
+                    duration: 2,
+                });
+            }
         });
     };
 
@@ -180,9 +192,9 @@ export default class Index extends React.Component {
         if (!isJpgOrPng) {
             message.error('仅支持JPG和PNG文件');
         }
-        const isLt2M = file.size / 1024 / 1024 < 2;
+        const isLt2M = file.size / 1024 / 1024 < 1;
         if (!isLt2M) {
-            message.error('图片大小不得大于2MB');
+            message.error('图片大小不得大于1MB');
         }
         return isJpgOrPng && isLt2M;
     }
@@ -225,6 +237,13 @@ export default class Index extends React.Component {
                         width="202px"
                         height="202px"
                         src={iconUrl}
+                        placeholder={
+                            <Image
+                                preview={false}
+                                src={iconUrl}
+                                width={200}
+                            />
+                        }
                     />
                 </Spin>
                 <div style={{marginLeft: '47px', marginTop: '10px'}}>
@@ -237,7 +256,7 @@ export default class Index extends React.Component {
                         <Upload
                             headers={head}
                             showUploadList={false}
-                            action="https://api.dtrun.cn/api/user/icon"
+                            action="https://dtrun.cn/api/user/icon"
                             beforeUpload={this.beforeUpload}
                             onChange={this.handleChange}
                         >

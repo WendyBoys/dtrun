@@ -16,8 +16,8 @@ public class LogServiceImpl implements LogService {
     private LogMapper logMapper;
 
     @Override
-    public void create(Integer uid, String log, String createTime) {
-        logMapper.create(uid, log, DateUtils.getDate());
+    public void create(Integer uid, String log, String createTime,String color) {
+        logMapper.create(uid, log, DateUtils.getDate(),color);
     }
 
     @Override

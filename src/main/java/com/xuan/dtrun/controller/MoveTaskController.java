@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
@@ -153,7 +154,7 @@ public class MoveTaskController {
             if (user != null) {
                 Object[] ids = jsonObject.getJSONArray("id").toArray();
                 moveTaskService.delete(ids);
-                logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate());
+                logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate(),"red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
             } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
@@ -177,7 +178,7 @@ public class MoveTaskController {
             List<FileMessage> fileMessageList = new ArrayList<>();
             moveTaskService.updateStatus(id, "RUNNING");
             MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
-            logService.create(moveTaskById.getUid(), "启动迁移任务" + moveTaskById.getTaskName() + ",ip地址为" + ip, DateUtils.getDate());
+            logService.create(moveTaskById.getUid(), "启动迁移任务" + moveTaskById.getTaskName() + ",ip地址为" + ip, DateUtils.getDate(),"blue");
 
             //执行核心迁移
             JSONObject taskJson = JSON.parseObject(moveTaskById.getTaskJson());
@@ -254,6 +255,7 @@ public class MoveTaskController {
     }
 
     @PostMapping(value = "/quit", produces = "application/json;charset=utf-8")
+    @Transactional
     public CommonResult quit(@RequestBody JSONObject jsonObject, @ClientIp String ip) {
         try {
             Integer id = jsonObject.getInteger("id");
@@ -267,12 +269,12 @@ public class MoveTaskController {
                 if (nm.equals("movetask" + id)) {
                     lstThreads[i].interrupt();
                     logger.info("终止id为+" + id + "的迁移任务");
+                    moveTaskService.updateStatus(id, "QUIT");
+                    logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(),"orange");
+                    resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
+                            "0", 0, id));
                 }
             }
-            moveTaskService.updateStatus(id, "QUIT");
-            logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate());
-            resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
-                    "", 0, id));
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,7 +4,7 @@ public enum MessageEnum {
     SUCCESS("Success"),
     FAIL("Fail"),
     LOGINREFUSE("LoginRefuse"),
-    LOGINEXPIRE("LOGINEXPIRE");
+    LOGINEXPIRE("LoginExpire");
 
     private String mapping;
 

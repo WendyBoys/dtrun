@@ -6,7 +6,7 @@
 
 
     <insert id="create">
-       INSERT INTO  logs (log,createTime,uid) VALUES (#{log},#{createTime},#{uid})
+       INSERT INTO  logs (log,createTime,uid,color) VALUES (#{log},#{createTime},#{uid},#{color})
     </insert>
 
     <select id="getLogsById" resultType="com.xuan.dtrun.entity.LogEntity">

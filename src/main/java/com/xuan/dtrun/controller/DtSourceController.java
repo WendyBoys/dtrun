@@ -189,7 +189,7 @@ public class DtSourceController {
             if (user != null) {
                 Object[] ids = json.getJSONArray("id").toArray();
                 dtSourceService.delete(ids);
-                logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate());
+                logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate(),"red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
             } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
