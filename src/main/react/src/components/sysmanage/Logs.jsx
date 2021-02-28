@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {notification, Timeline} from 'antd';
+import {notification, Timeline, Empty} from 'antd';
 import {getLogsById} from './service';
 
 const Logs = () => {
@@ -25,14 +25,19 @@ const Logs = () => {
 
 
     return <div style={{height: '100%', padding: '10px 10px 0 10px'}}>
-        <Timeline style={{height: '100%', textAlign: 'left', padding: '10px 10px 0 10px', overflowY: ' auto'}}>
-            {
-                list.map((item, index) => {
-                    return <Timeline.Item color={item.color}
-                                          key={index}>{item.log}---{item.createTime}</Timeline.Item>
-                })
-            }
-        </Timeline>
+        {
+            list.length === 0 ? <Empty style={{position:'absolute',top:'40%',left:'50%'}}/> :
+                <Timeline style={{height: '100%', textAlign: 'left', padding: '10px 10px 0 10px', overflowY: ' auto'}}>
+                    {
+                        list.map((item, index) => {
+                            return <Timeline.Item color={item.color}
+                                                  key={index}>{item.log}---{item.createTime}</Timeline.Item>
+                        })
+                    }
+                </Timeline>
+        }
+
+
     </div>
 
 

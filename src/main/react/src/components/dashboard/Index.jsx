@@ -200,6 +200,11 @@ export default class Index extends React.Component {
     }
 
 
+    setIconLoading = () => {
+        this.setState({iconLoading: false});
+    };
+
+
     handleChange = info => {
         if (info.file.status === 'uploading') {
             this.setState({iconLoading: true});
@@ -209,7 +214,14 @@ export default class Index extends React.Component {
             const response = info.fileList[this.state.index].response;
             if (response.message === 'Success') {
                 this.setState({iconUrl: response.data});
-                this.setState({iconLoading: false});
+                const size = info.file.size / 1024
+                if (size > 512 && size <= 1024) {
+                    setTimeout(this.setIconLoading, 2000)
+                } else if (size > 256 && size <= 512) {
+                    setTimeout(this.setIconLoading, 1000)
+                } else {
+                    this.setState({iconLoading: false});
+                }
                 message.success('修改头像成功');
             } else {
                 message.error('修改头像失败');
@@ -237,13 +249,6 @@ export default class Index extends React.Component {
                         width="202px"
                         height="202px"
                         src={iconUrl}
-                        placeholder={
-                            <Image
-                                preview={false}
-                                src={iconUrl}
-                                width={200}
-                            />
-                        }
                     />
                 </Spin>
                 <div style={{marginLeft: '47px', marginTop: '10px'}}>
@@ -389,7 +394,7 @@ export default class Index extends React.Component {
                             </Menu.Item>
                             <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
                                 <Menu.Item key="5"> <NavLink to="/sysmanage/logs">系统日志</NavLink></Menu.Item>
-                                <Menu.Item key="6">未知模块</Menu.Item>
+                                <Menu.Item key="6">白名单管理</Menu.Item>
                                 <Menu.Item key="7">未知模块</Menu.Item>
                                 <Menu.Item key="8">未知模块</Menu.Item>
                             </SubMenu>
