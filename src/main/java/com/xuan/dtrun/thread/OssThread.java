@@ -7,7 +7,6 @@ import com.aliyun.oss.model.OSSObject;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.GetObjectRequest;
-import com.xuan.dtrun.controller.MoveTaskController;
 import com.xuan.dtrun.entity.FileMessage;
 import com.xuan.dtrun.entity.ResultEntity;
 import com.xuan.dtrun.service.MoveTaskService;
@@ -17,9 +16,7 @@ import com.xuan.dtrun.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 public class OssThread implements Runnable {
@@ -60,13 +57,19 @@ public class OssThread implements Runnable {
                     case "cos": {
                         GetObjectRequest getObjectRequest = new GetObjectRequest(srcBucket, fileMessage.getFileName());
                         COSObject cosObject = srcCosClient.getObject(getObjectRequest);
-                        inputStream = cosObject.getObjectContent();
+                        inputStream = new BufferedInputStream(cosObject.getObjectContent());
                         break;
                     }
                     case "oss": {
                         com.aliyun.oss.model.GetObjectRequest getObjectRequest = new com.aliyun.oss.model.GetObjectRequest(srcBucket, fileMessage.getFileName());
                         OSSObject ossObject = srcOssClient.getObject(getObjectRequest);
-                        inputStream = new BufferedInputStream(ossObject.getObjectContent());
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        int len;
+                        byte[] srcBytes = new byte[10 * 1024 * 1024];
+                        while ((len = ossObject.getObjectContent().read(srcBytes)) > -1) {
+                            byteArrayOutputStream.write(srcBytes, 0, len);
+                        }
+                        inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                         break;
                     }
                     default: {
@@ -87,6 +90,8 @@ public class OssThread implements Runnable {
             String timeConsume = String.valueOf((endTime - startTime) / 1000f);
             moveTaskService.updateStatus(id, "FINISH");
             resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", null, timeConsume, fileMessageList.size(), id));
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (inputStream != null) {

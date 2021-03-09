@@ -269,12 +269,12 @@ public class MoveTaskController {
                 if (nm.equals("movetask" + id)) {
                     lstThreads[i].interrupt();
                     logger.info("终止id为+" + id + "的迁移任务");
-                    moveTaskService.updateStatus(id, "QUIT");
                     logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(),"orange");
                     resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
                             "0", 0, id));
                 }
             }
+            moveTaskService.updateStatus(id, "QUIT");
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.QUITSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

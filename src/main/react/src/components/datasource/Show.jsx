@@ -47,7 +47,7 @@ const Show = (props) => {
         connection({
             id: id,
         }).then((response) => {
-            var result = response.data.message;
+            const result = response.data.message;
             if (result === 'Success') {
                 setLoading(false)
                 notification['success']({
