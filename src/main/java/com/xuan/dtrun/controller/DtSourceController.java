@@ -182,12 +182,12 @@ public class DtSourceController {
         }
     }
 
-    @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public CommonResult delete(@RequestBody JSONObject json, @RequestHeader("token") String token, @ClientIp String ip) {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user != null) {
-                Object[] ids = json.getJSONArray("id").toArray();
+                Object[] ids = json.getJSONObject("data").getJSONArray("id").toArray();
                 dtSourceService.delete(ids);
                 logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate(),"red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);

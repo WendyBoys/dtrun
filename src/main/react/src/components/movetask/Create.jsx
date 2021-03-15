@@ -21,6 +21,7 @@ const Create = (props) => {
     const [current, setCurrent] = useState(0);
     const [data, setData] = useState({});
     const [checked, setChecked] = useState(true);
+    const [contactChecked, setContactChecked] = useState(true);
     const [dtsList, setDtsList] = useState([]);
     const [srcBucketList, setSrcBucketList] = useState([]);
     const [desBucketList, setDesBucketList] = useState([]);
@@ -53,6 +54,9 @@ const Create = (props) => {
 
     const onChange = () => {
         setChecked(!checked)
+    }
+    const contactChange = () => {
+        setContactChecked(!contactChecked)
     }
 
     const srcChange = (id) => {
@@ -87,6 +91,7 @@ const Create = (props) => {
             const result = response.data.message;
             if (result === 'Success') {
                 setDesBucketList(response.data.data)
+                setShowAddBucket(true)
             } else {
                 notification['error']({
                     message: '通知',
@@ -100,7 +105,7 @@ const Create = (props) => {
     }
 
     const addItem = () => {
-        const desId = form.getFieldValue('des');
+        const desId = form.getFieldValue('desId');
         createBucket({
             desId: desId,
             newBucketName: newBucketName,
@@ -239,6 +244,24 @@ const Create = (props) => {
                     <Checkbox onChange={onChange} checked={checked}></Checkbox>
                 </Form.Item>
 
+                {!checked &&
+                <div>
+                    <Form.Item
+                        label="请输入文件名前缀"
+                        name="fileNameStart"
+                    >
+                        <Input placeholder="请输入文件名前缀"/>
+                    </Form.Item>
+                    <Form.Item
+                        label="请输入文件名后缀"
+                        name="fileNameEnd"
+                    >
+                        <Input placeholder="请输入文件名后缀"/>
+                    </Form.Item>
+                </div>
+                }
+
+
                 <Form.Item>
                     <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
                         下一步
@@ -345,12 +368,30 @@ const Create = (props) => {
                 onFinish={OnFinish}
             >
                 <Form.Item
-                    label="任务名称"
+                    label="迁移任务名称"
                     name="taskName"
                     rules={[{required: true, message: '请选择Bucket'}]}
                 >
-                    <Input placeholder="请输入任务名称"/>
+                    <Input placeholder="请输入迁移任务名称"/>
                 </Form.Item>
+
+                <Form.Item label="任务完成通知">
+                    <Checkbox onChange={contactChange} checked={checked}></Checkbox>
+                </Form.Item>
+
+                {contactChecked &&
+                <Form.Item name="contact" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
+                    <Select
+                        placeholder="请选择联系人"
+                        allowClear
+                    >
+                        <Option value="张三">张三</Option>
+                        <Option value="李四">李四</Option>
+                        <Option value="王麻子">王麻子</Option>
+                    </Select>
+                </Form.Item>
+                }
+
                 <Form.Item>
                     <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
                         确定

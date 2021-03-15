@@ -39,16 +39,6 @@ export function request(url, method, param) {
                 .catch((error) => {
                     reject(error)
                 })
-        } else if (method === 'delete') {
-            HTTP.delete(url, param)
-                .then(response => {
-                    resolve(response);
-                }, err => {
-                    reject(err);
-                })
-                .catch((error) => {
-                    reject(error)
-                })
         } else if (method === 'put') {
             HTTP.put(url, param, {
                 headers: {'token': cookie.load('token')}

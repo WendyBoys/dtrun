@@ -147,12 +147,12 @@ public class MoveTaskController {
         }
     }
 
-    @DeleteMapping(value = "/delete", produces = "application/json;charset=utf-8")
+    @PostMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public CommonResult delete(@RequestBody JSONObject jsonObject, @RequestHeader("token") String token, @ClientIp String ip) {
         try {
             User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
             if (user != null) {
-                Object[] ids = jsonObject.getJSONArray("id").toArray();
+                Object[] ids = jsonObject.getJSONObject("data").getJSONArray("id").toArray();
                 moveTaskService.delete(ids);
                 logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate(),"red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);

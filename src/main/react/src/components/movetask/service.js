@@ -5,7 +5,7 @@ export async function findAll(params) {
 }
 
 export async function deletes(params) {
-    return await request("/movetask/delete", "delete", params)
+    return await request("/movetask/delete", "post", params)
 }
 
 export async function run(params) {

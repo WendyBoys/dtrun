@@ -9,7 +9,7 @@ export async function connection(params) {
 }
 
 export async function deletes(params) {
-    return await request("/dtsource/delete", "delete", params)
+    return await request("/dtsource/delete", "post", params)
 }
 
 export async function testconnection(params) {
