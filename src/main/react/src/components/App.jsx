@@ -20,6 +20,7 @@ export default class App extends React.Component {
             <AuthorizedRoute path="/datasource" component={Index}/>
             <AuthorizedRoute path="/movetask" component={Index}/>
             <AuthorizedRoute path="/sysmanage" component={Index}/>
+            <AuthorizedRoute path="/pushconfig" component={Index}/>
             <AuthorizedRoute path="/about" component={Index}/>
         </Switch>
 

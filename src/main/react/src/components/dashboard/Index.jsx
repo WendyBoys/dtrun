@@ -4,6 +4,7 @@ import Dashboard from './Dashboard';
 import Datasource from '../datasource/Datasource';
 import MoveTask from '../movetask/MoveTask';
 import Sysmanage from '../sysmanage/Sysmanage';
+import Pushconfig from '../pushconfig/Pushconfig';
 import About from '../about/About';
 import {getCurrentUser, modifyPassword, logout} from '../user/service';
 import cookie from 'react-cookies'
@@ -400,7 +401,7 @@ export default class Index extends React.Component {
                             </SubMenu>
                             <SubMenu key="9" icon={<NotificationOutlined/>} title="推送配置">
                                 <Menu.Item key="10">邮件配置</Menu.Item>
-                                <Menu.Item key="11">联系人配置</Menu.Item>
+                                <Menu.Item key="11"> <NavLink to="/pushconfig/contact">联系人配置</NavLink></Menu.Item>
                             </SubMenu>
                             <Menu.Item key="12" icon={<ContactsOutlined/>}>
                                 <NavLink to="/about">关于我们</NavLink>
@@ -422,6 +423,7 @@ export default class Index extends React.Component {
                                 <Route path="/datasource" component={Datasource}/>
                                 <Route path="/movetask" component={MoveTask}/>
                                 <Route path="/sysmanage" component={Sysmanage}/>
+                                <Route path="/pushconfig" component={Pushconfig}/>
                                 <Route path="/about" component={About}/>
                                 <Redirect to="/dashboard"/>
                             </Switch>
