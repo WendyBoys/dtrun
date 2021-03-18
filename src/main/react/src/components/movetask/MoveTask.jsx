@@ -4,7 +4,7 @@ import Show from './Show';
 import Update from './Update';
 import {Redirect, Route, Switch} from 'react-router-dom';
 
-export default class Index extends React.Component {
+export default class MoveTask extends React.Component {
 
     render() {
         return <div>
