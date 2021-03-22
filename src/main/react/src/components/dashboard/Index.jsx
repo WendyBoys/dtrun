@@ -51,14 +51,13 @@ const layout = {
         span: 15,
     },
 };
-const token = cookie.load('token');
-const head = {token: token}
 
 export default class Index extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            token: cookie.load('token'),
             userName: '',
             iconUrl: '',
             mainDrawer: false,
@@ -259,7 +258,7 @@ export default class Index extends React.Component {
                         modalCancel="取消"
                     >
                         <Upload
-                            headers={head}
+                            headers={{token: this.state.token}}
                             showUploadList={false}
                             action="https://dtrun.cn/api/user/icon"
                             beforeUpload={this.beforeUpload}
