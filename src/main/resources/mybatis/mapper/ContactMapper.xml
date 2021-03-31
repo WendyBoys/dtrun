@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuan.dtrun.mapper.ContactMapper">
+
+    <select id="findAll" resultType="contactEntity">
+        SELECT * FROM contact where uid=#{id}
+    </select>
+
+    <select id="isCreate" resultType="String">
+        SELECT contactName FROM contact where contactName=#{contactName}
+    </select>
+
+    <insert id="createContact" >
+       INSERT INTO contact (contactName,contactEmail,createTime,uid) VALUES (#{contactName},#{contactEmail},#{createTime},#{uid})
+    </insert>
+
+    <select id="getContactById" resultType="contactEntity">
+        SELECT contactName,contactEmail FROM contact where id=#{id}
+    </select>
+
+    <delete id="deleteContact">
+        DELETE FROM contact WHERE id in
+        <foreach collection="array" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateContact">
+        UPDATE contact SET contactName=#{contactName},contactEmail=#{contactEmail} WHERE id=#{integer}
+    </update>
+
+</mapper>
