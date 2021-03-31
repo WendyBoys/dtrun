@@ -6,7 +6,7 @@ import {connection} from "../datasource/service";
 
 const Contact = (props) => {
     const [list, setList] = useState([]);
-    const [dtsId, setDtsId] = useState([]);
+    const [contactId, setContactId] = useState([]);
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -76,10 +76,10 @@ const Contact = (props) => {
             setModalText('您确定要删除联系人 ' + contactName + ' 吗?');
             const idArray = [];
             idArray.push(id)
-            setDtsId(idArray);
+            setContactId(idArray);
         } else {
             setModalText('您确定要删除选中的' + selecteLength + '多个联系人吗吗?');
-            setDtsId(selectedRowKeys);
+            setContactId(selectedRowKeys);
         }
         setVisible(true);
 
@@ -89,7 +89,7 @@ const Contact = (props) => {
         setConfirmLoading(true);
         deletes({
             data: {
-                id: dtsId,
+                id: contactId,
             }
         }).then((response) => {
             const result = response.data.message;
@@ -195,7 +195,7 @@ const Contact = (props) => {
                 </div>
 
                 <Modal
-                    title="删除数据源"
+                    title="删除联系人"
                     okText="确定"
                     cancelText="取消"
                     visible={visible}

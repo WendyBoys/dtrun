@@ -1,6 +1,5 @@
 package com.xuan.dtrun.entity;
 
-import java.util.Date;
 
 public class ContactEntity {
      private Integer id;
@@ -8,6 +7,7 @@ public class ContactEntity {
      private String contactEmail;
      private String createTime;
      private Integer uid;
+     private int key;
 
      public ContactEntity() {
      }
@@ -58,5 +58,13 @@ public class ContactEntity {
 
      public void setUid(Integer uid) {
           this.uid = uid;
+     }
+
+     public int getKey() {
+          return key;
+     }
+
+     public void setKey(int key) {
+          this.key = key;
      }
 }
