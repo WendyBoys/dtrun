@@ -25,6 +25,7 @@ public enum DataEnum {
     QUITSUCCESS("取消成功"),
     QUITFAIL("取消失败");
 
+
     private String mapping;
 
     DataEnum(String mapping) {
