@@ -154,7 +154,7 @@ public class MoveTaskController {
             if (user != null) {
                 Object[] ids = jsonObject.getJSONObject("data").getJSONArray("id").toArray();
                 moveTaskService.delete(ids);
-                logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate(),"red");
+                logService.create(user.getId(), "删除" + ids.length + "个迁移任务,ip地址为" + ip, DateUtils.getDate(), "red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
             } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
@@ -178,7 +178,7 @@ public class MoveTaskController {
             List<FileMessage> fileMessageList = new ArrayList<>();
             moveTaskService.updateStatus(id, "RUNNING");
             MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
-            logService.create(moveTaskById.getUid(), "启动迁移任务" + moveTaskById.getTaskName() + ",ip地址为" + ip, DateUtils.getDate(),"blue");
+            logService.create(moveTaskById.getUid(), "启动迁移任务" + moveTaskById.getTaskName() + ",ip地址为" + ip, DateUtils.getDate(), "blue");
 
             //执行核心迁移
             JSONObject taskJson = JSON.parseObject(moveTaskById.getTaskJson());
@@ -234,10 +234,10 @@ public class MoveTaskController {
             String desDtSourceType = desDtSourceEntity.getDtSourceType();
             if ("oss".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new OssThread(id, desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             } else if ("cos".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new CosThread(id, desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
@@ -269,7 +269,7 @@ public class MoveTaskController {
                 if (nm.equals("movetask" + id)) {
                     lstThreads[i].interrupt();
                     logger.info("终止id为+" + id + "的迁移任务");
-                    logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(),"orange");
+                    logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(), "orange");
                     resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
                             "0", 0, id));
                 }

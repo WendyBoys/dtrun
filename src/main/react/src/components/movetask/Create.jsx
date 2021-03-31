@@ -21,7 +21,7 @@ const Create = (props) => {
     const [current, setCurrent] = useState(0);
     const [data, setData] = useState({});
     const [checked, setChecked] = useState(true);
-    const [contactChecked, setContactChecked] = useState(true);
+    const [contactChecked, setContactChecked] = useState(false);
     const [dtsList, setDtsList] = useState([]);
     const [srcBucketList, setSrcBucketList] = useState([]);
     const [desBucketList, setDesBucketList] = useState([]);
@@ -376,7 +376,7 @@ const Create = (props) => {
                 </Form.Item>
 
                 <Form.Item label="任务完成通知">
-                    <Checkbox onChange={contactChange} checked={checked}></Checkbox>
+                    <Checkbox onChange={contactChange} checked={contactChecked}></Checkbox>
                 </Form.Item>
 
                 {contactChecked &&

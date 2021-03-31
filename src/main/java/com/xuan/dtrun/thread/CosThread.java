@@ -15,6 +15,7 @@ import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
 import com.xuan.dtrun.upload.CosUpload;
 import com.xuan.dtrun.utils.DateUtils;
+import com.xuan.dtrun.utils.MailUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import java.util.List;
 
 public class CosThread implements Runnable {
     private Integer id;
+    private String taskName;
     private JSONObject desEntity;
     private List<FileMessage> fileMessageList;
     private String srcDtSourceType;
@@ -35,8 +37,9 @@ public class CosThread implements Runnable {
     private InputStream inputStream;
     private Logger logger = LoggerFactory.getLogger(CosThread.class);
 
-    public CosThread(Integer id, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
+    public CosThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
         this.id = id;
+        this.taskName = taskName;
         this.desEntity = desEntity;
         this.fileMessageList = fileMessageList;
         this.srcDtSourceType = srcDtSourceType;
@@ -92,6 +95,7 @@ public class CosThread implements Runnable {
             String timeConsume = String.valueOf((endTime - startTime) / 1000f);
             moveTaskService.updateStatus(id, "FINISH");
             resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", null, timeConsume, fileMessageList.size(), id));
+            MailUtils.sendMail("您的迁移任务" + taskName + "已完成", "709027500@qq.com");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

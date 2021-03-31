@@ -24,7 +24,6 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     filters: stat,wall,slf4j
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-
   druid:
     username: xiaoxiaoxuan
     password: 199951
