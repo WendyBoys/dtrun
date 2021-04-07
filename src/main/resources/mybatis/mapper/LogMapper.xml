@@ -13,5 +13,8 @@
         SELECT * FROM logs WHERE uid=#{id} ORDER BY createTime DESC
     </select>
 
+    <select id="getColorById" resultType="com.xuan.dtrun.entity.LogEntity">
+        SELECT * FROM logs WHERE uid=#{id} AND color=#{color} ORDER BY createTime DESC
+    </select>
 
 </mapper>

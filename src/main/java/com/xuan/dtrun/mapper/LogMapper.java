@@ -13,4 +13,6 @@ public interface LogMapper {
     void create(Integer uid,String log,String createTime,String color);
 
     List<LogEntity> getLogsById(Integer uid);
+
+     List<LogEntity> getColorById(String color,Integer id);
 }

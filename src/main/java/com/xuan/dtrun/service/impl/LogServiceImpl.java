@@ -24,4 +24,11 @@ public class LogServiceImpl implements LogService {
     public List<LogEntity> getLogsById(Integer uid) {
         return logMapper.getLogsById(uid);
     }
+
+    @Override
+    public List<LogEntity> getColorById(String color,Integer id) {
+        List<LogEntity> colorById = logMapper.getColorById(color, id);
+        System.out.println(colorById);
+        return logMapper.getColorById(color,id);
+    }
 }
