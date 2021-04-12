@@ -1,5 +1,6 @@
 package com.xuan.dtrun.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xuan.dtrun.common.CommonResult;
 import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
@@ -9,10 +10,7 @@ import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +40,18 @@ public class SysManageController {
         }
     }
 
+    @PostMapping(value = "/getColorById", produces = "application/json;charset=utf-8")
+    public CommonResult getColorById(@RequestBody JSONObject json,@RequestHeader("token") String token){
+        User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+        if (user!=null){
+            Integer id = user.getId();
+            String color = json.getString("key");
+            List<LogEntity> colorById = logService.getColorById(color,id);
+            return new CommonResult(200,MessageEnum.SUCCESS,colorById);
+        }else {
+            return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
+        }
+
+    }
 
 }
