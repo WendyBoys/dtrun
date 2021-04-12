@@ -1,6 +1,7 @@
 import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
-import {createBucket, getAllDtSourceName, getBucketLists, getContactLists} from '../datasource/service';
+import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
+import {getContactLists} from '../pushconfig/service';
 import {createMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
 
@@ -105,22 +106,21 @@ const Create = (props) => {
         });
     }
 
-    const onContactChange = (id) => {
+    const onContactFocus = (id) => {
         setLoading(true)
         form.setFieldsValue({desBucket: undefined})
         setDesBucketList([])
         getContactLists({
-            id: 67
+            id: 42
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
                 setContactList(response.data.data)
-                setShowAddBucket(true)
             } else {
                 notification['error']({
                     message: '通知',
                     description:
-                        '获取Bucket列表失败，请检查数据源配置',
+                        '获取联系人列表失败，请检查网络配置',
                     duration: 2,
                 });
             }
@@ -174,6 +174,12 @@ const Create = (props) => {
         setCurrent(current + 1);
     };
 
+    const onContactChange = values => {
+        setData({...data, 'email': values})
+    };
+
+
+
     const OnFinish = values => {
         const body = {...data, 'option': values}
         createMoveTask({
@@ -183,6 +189,8 @@ const Create = (props) => {
             desBucket: body.des.desBucket,
             allMove: body.allMove,
             taskName: body.option.taskName,
+            sendMail: contactChecked,
+            email:body.email,
         })
             .then((response) => {
                 const result = response.data.message;
@@ -399,20 +407,21 @@ const Create = (props) => {
                     <Input placeholder="请输入迁移任务名称"/>
                 </Form.Item>
 
-                <Form.Item label="任务完成通知">
+                <Form.Item label="任务完成通知" name="sendMail">
                     <Checkbox onChange={contactChange} checked={contactChecked}></Checkbox>
                 </Form.Item>
 
                 {contactChecked &&
-                <Form.Item name="contact" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
+                <Form.Item name="email" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
                     <Select
                         placeholder="请选择联系人"
                         allowClear
-                        onFocus={onContactChange}
+                        onFocus={onContactFocus}
+                        onChange={onContactChange}
                     >
                         {
                             contactList.map((item, index) =>
-                                <Option key={index} value={item}>{item}</Option>
+                                <Option key={index} value={item.contactEmail}>{item.contactName}</Option>
                             )
                         }
                     </Select>

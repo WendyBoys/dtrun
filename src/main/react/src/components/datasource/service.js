@@ -36,10 +36,6 @@ export async function getBucketLists(params) {
     return await request("/dtsource/getBucketLists", "get", params)
 }
 
-export async function getContactLists(params) {
-    return await request("/dtsource/getBucketLists", "get", params)
-}
-
 export async function createBucket(params) {
     return await request("/dtsource/createBucket", "post", params)
 }

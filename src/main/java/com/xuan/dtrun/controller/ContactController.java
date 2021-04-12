@@ -101,7 +101,6 @@ public class ContactController {
 
      @GetMapping(value = "getMailById", produces = "application/json;charset=utf-8")
      public String getMailById(int id){
-
           return "email:"+id;
      }
 }

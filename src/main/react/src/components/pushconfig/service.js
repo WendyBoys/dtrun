@@ -15,3 +15,7 @@ export async function getContactById(params) {
 export async function updateContact(params) {
     return await request("/contact/updateContact", "post", params)
 }
+
+export async function getContactLists(params) {
+    return await request("/contact/findAll", "get", params)
+}

@@ -13,7 +13,6 @@ public interface ContactService {
 
      ContactEntity getContactById(int id);
 
-
      void updateContact( Integer integer,String contactName, String contactEmail);
 
      String isCreate(String contactName);
