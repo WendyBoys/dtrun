@@ -1,6 +1,6 @@
 import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
-import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
+import {createBucket, getAllDtSourceName, getBucketLists, getContactLists} from '../datasource/service';
 import {createMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
 
@@ -25,6 +25,7 @@ const Create = (props) => {
     const [dtsList, setDtsList] = useState([]);
     const [srcBucketList, setSrcBucketList] = useState([]);
     const [desBucketList, setDesBucketList] = useState([]);
+    const [contactList, setContactList] = useState([]);
     const [showAddBucket, setShowAddBucket] = useState(false);
     const [newBucketName, setNewBucketName] = useState([]);
 
@@ -91,6 +92,29 @@ const Create = (props) => {
             const result = response.data.message;
             if (result === 'Success') {
                 setDesBucketList(response.data.data)
+                setShowAddBucket(true)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+            setLoading(false)
+        });
+    }
+
+    const onContactChange = (id) => {
+        setLoading(true)
+        form.setFieldsValue({desBucket: undefined})
+        setDesBucketList([])
+        getContactLists({
+            id: 67
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setContactList(response.data.data)
                 setShowAddBucket(true)
             } else {
                 notification['error']({
@@ -384,10 +408,13 @@ const Create = (props) => {
                     <Select
                         placeholder="请选择联系人"
                         allowClear
+                        onFocus={onContactChange}
                     >
-                        <Option value="张三">张三</Option>
-                        <Option value="李四">李四</Option>
-                        <Option value="王麻子">王麻子</Option>
+                        {
+                            contactList.map((item, index) =>
+                                <Option key={index} value={item}>{item}</Option>
+                            )
+                        }
                     </Select>
                 </Form.Item>
                 }
