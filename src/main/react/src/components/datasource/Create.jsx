@@ -1,7 +1,7 @@
 import React from 'react';
 import {createDataSource, testconnection} from './service';
-import {Button, Col, Form, Input, notification, Row, Select} from 'antd';
-
+import {Button, Col, Form, Input, notification, Row, Select,Tooltip,Space,Typography} from 'antd';
+import {LockOutlined, UserOutlined,QuestionCircleOutlined} from '@ant-design/icons';
 const {Option} = Select;
 
 const layout = {
@@ -19,6 +19,10 @@ const tailLayout = {
         span: 16,
     },
 };
+
+const text = <span>prompt text</span>;
+
+
 export default class Create extends React.Component {
     formRef = React.createRef();
 
@@ -94,24 +98,29 @@ export default class Create extends React.Component {
                         }}
                         onFinish={this.onFinish}
                     >
-                        <Form.Item
-                            label="数据源名称"
-                            name="dtsName"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: '请输入数据源名称',
-                                },
-                            ]}
-                        >
-                            <Input placeholder="请输入数据源名称"/>
-                        </Form.Item>
+                            <Form.Item
+                                label="数据源名称"
+                                name="dtsName"
+                                tooltip="请输入数据源名称"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: '请输入数据源名称',
+                                    },
+                                ]}
+                            >
+                                <Input  style={{ width: 600 }} placeholder="请输入数据源名称"/>
+                            </Form.Item>
 
-                        <Form.Item name="dtsType" label="数据源类型" rules={[{required: true, message: '请选择数据源类型'}]}>
+                        <Form.Item
+                            tooltip="COS：腾讯云数据源类型，OSS：阿里云数据源类型，OBS:华为云数据源类型，BOS：百度云数据源类型" name="dtsType" label="数据源类型" rules={[{required: true, message: '请选择数据源类型'}]}>
                             <Select
+
+                                style={{ width: 600 }}
                                 placeholder="请选择数据源类型"
                                 onChange={this.onGenderChange}
                                 allowClear
+
                             >
                                 <Option value="cos">COS</Option>
                                 <Option value="oss">OSS</Option>
@@ -121,6 +130,7 @@ export default class Create extends React.Component {
                         </Form.Item>
 
                         <Form.Item
+                            tooltip=" 登录云服务网站后在API 密钥中查看,API 密钥是构建云 API 请求的重要凭证，使用 API 可以操作您名下的所有云资源。"
                             label="AccessKey"
                             name="accessKey"
                             rules={[
@@ -130,10 +140,12 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessKey"/>
+                            <Input  style={{ width: 600 }}  placeholder="请输入AccessKey"/>
+
                         </Form.Item>
 
                         <Form.Item
+                            tooltip=" 登录云服务网站后在API 密钥中查看,API 密钥是构建云 API 请求的重要凭证，使用 API 可以操作您名下的所有云资源。"
                             label="AccessSecret"
                             name="accessSecret"
                             rules={[
@@ -143,10 +155,12 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入AccessSecret"/>
+                            <Input  style={{ width: 600 }}  placeholder="请输入AccessSecret"/>
+
                         </Form.Item>
 
                         <Form.Item
+                            tooltip="登录云服务网站后在对象存储中的 Bucket 列表 可查看所有数据源地域"
                             label="地域"
                             name="region"
                             rules={[
@@ -156,7 +170,8 @@ export default class Create extends React.Component {
                                 },
                             ]}
                         >
-                            <Input placeholder="请输入地域"/>
+                            <Input  style={{ width: 600 }}  placeholder="请输入地域"/>
+
                         </Form.Item>
 
                         <Form.Item {...tailLayout}>
