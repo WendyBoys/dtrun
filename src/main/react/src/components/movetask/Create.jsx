@@ -216,7 +216,7 @@ const Create = (props) => {
 
     const steps = [
         {
-            title: '选择起始数据源',
+            title: '选择初始数据源',
             content: (<Form
                 {...layout}
                 name="basic"
@@ -224,6 +224,7 @@ const Create = (props) => {
                 onFinish={srcOnFinish}
             >
                 <Form.Item
+                    tooltip="选择源端数据源"
                     label="数据源"
                     name="srcId"
                     rules={[{required: true, message: '请选择数据源'}]}
@@ -249,6 +250,7 @@ const Create = (props) => {
                     </Select>
                 </Form.Item>
                 <Form.Item
+                    tooltip="选择你所要迁移的Bucket"
                     name="srcBucket"
                     label="Bucket"
                     rules={[{required: true, message: '请选择Bucket'}]}>
@@ -313,6 +315,7 @@ const Create = (props) => {
                 onFinish={desOnFinish}
             >
                 <Form.Item
+                    tooltip="选择目的数据源"
                     label="数据源"
                     name="desId"
                     rules={[{required: true, message: '请选择数据源'}]}
@@ -340,6 +343,7 @@ const Create = (props) => {
 
 
                 <Form.Item
+                    tooltip="选择你所需要迁移到的Bucket"
                     name="desBucket"
                     label="Bucket"
                     rules={[{required: true, message: '请选择Bucket'}]}
@@ -400,6 +404,7 @@ const Create = (props) => {
                 onFinish={OnFinish}
             >
                 <Form.Item
+                    tooltip="请输入迁移任务名称"
                     label="迁移任务名称"
                     name="taskName"
                     rules={[{required: true, message: '请选择Bucket'}]}
@@ -412,7 +417,9 @@ const Create = (props) => {
                 </Form.Item>
 
                 {contactChecked &&
-                <Form.Item name="email" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
+                <Form.Item
+                    tooltip="在推送配置中,可创建联系人"
+                    name="email" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
                     <Select
                         placeholder="请选择联系人"
                         allowClear

@@ -61,6 +61,7 @@ export default class Pushconfig extends React.Component {
                            onFinish={this.onFinish}
                        >
                            <Form.Item
+                               tooltip="请输入联系人名称"
                                label="联系人名称"
                                name="contactName"
                                rules={[
@@ -74,6 +75,7 @@ export default class Pushconfig extends React.Component {
                            </Form.Item>
 
                            <Form.Item
+                               tooltip="请输入正确格式的邮箱地址"
                                name="contactEmail"
                                label="联系人邮箱"
                                rules={[
