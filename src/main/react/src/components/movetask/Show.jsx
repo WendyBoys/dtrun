@@ -13,11 +13,14 @@ import {
 const Show = (props) => {
     const [list, setList] = useState([]);
     const [resultList, setResultList] = useState([]);
+    const [fileMessageList, setFileMessageList] = useState([]);
     const [taskId, setTaskId] = useState([]);
     const [visibleDelete, setVisibleDelete] = useState(false);
     const [visibleResult, setVisibleResult] = useState(false);
+    const [visibleFileMessageList, setVisibleFileMessageList] = useState(false);
     const [loading, setLoading] = useState(false);
     const [resultLoading, setResultLoading] = useState(false);
+    const [fileMessagelistloading, setFileMessagelistloading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('');
     const [modalResultText, setModalResultText] = useState('');
@@ -136,6 +139,27 @@ const Show = (props) => {
 
     const fenchResult = () => {
         getResult(modalResultId);
+    }
+
+    const showFileMessageList = (id) => {
+        setVisibleFileMessageList(true)
+        setFileMessagelistloading(true)
+        getResultById({
+            id: id,
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setFileMessageList(JSON.parse(response.data.data[0].fileMessageList))
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '查询失败',
+                    duration: 2,
+                });
+            }
+            setFileMessagelistloading(false)
+        });
     }
 
 
@@ -274,7 +298,7 @@ const Show = (props) => {
                     <Space size="middle">
                         {record.status === 'RUNNING' ?
                             <Popconfirm
-                                title={'确定取消 ' + record.taskName+' 的运行吗?'}
+                                title={'确定取消 ' + record.taskName + ' 的运行吗?'}
                                 onConfirm={() => cancel(record.id)}
                                 okText="确定"
                                 cancelText="取消"
@@ -283,7 +307,7 @@ const Show = (props) => {
                             </Popconfirm>
                             :
                             <Popconfirm
-                                title={'确定启动 ' + record.taskName+' 吗?'}
+                                title={'确定启动 ' + record.taskName + ' 吗?'}
                                 onConfirm={() => confirm(record.id)}
                                 okText="确定"
                                 cancelText="取消"
@@ -350,8 +374,34 @@ const Show = (props) => {
         {
             title: '迁移文件数量',
             dataIndex: 'fileCount',
-        }
+        },
+        {
+            title: '详细信息',
+            dataIndex: 'mid',
+            render: (text) => {
+                return (
+                    <span onClick={() => showFileMessageList(text)} style={{color:"blue",cursor: 'pointer'}}>查看</span>
+                )
+            }
+        },
     ];
+
+
+    const fileMessageListColumns = [
+        {
+            title: '文件名称',
+            dataIndex: 'fileName',
+        },
+        {
+            title: '文件大小',
+            dataIndex: 'fileLength',
+            render: (text) => {
+                return (text/1024).toFixed(2) + 'KB'
+            }
+        },
+
+    ];
+
 
     const onSelectChange = selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys)
@@ -434,6 +484,34 @@ const Show = (props) => {
                             bordered
                             columns={resultColumns}
                             dataSource={resultList}
+                            pagination={{
+                                showQuickJumper: true,
+                                defaultPageSize: 10,
+                                pageSizeOptions: [10, 20, 50, 100]
+                            }}
+                        />
+                    </Spin>
+                </Modal>
+
+
+                <Modal
+                    title="详细信息"
+                    centered
+                    visible={visibleFileMessageList}
+                    width={500}
+                    onCancel={() => setVisibleFileMessageList(false)}
+                    footer={[
+                        <Button type="primary" loading={fileMessagelistloading}
+                                onClick={() => setVisibleFileMessageList(false)}>
+                            确定
+                        </Button>,
+                    ]}
+                >
+                    <Spin size={"large"} spinning={fileMessagelistloading}>
+                        <Table
+                            bordered
+                            columns={fileMessageListColumns}
+                            dataSource={fileMessageList}
                             pagination={{
                                 showQuickJumper: true,
                                 defaultPageSize: 10,

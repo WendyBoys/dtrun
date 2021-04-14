@@ -104,12 +104,19 @@ public class MoveTaskController {
                 String desBucket = jsonObject.getString("desBucket");
                 String allMove = jsonObject.getString("allMove");
                 String taskName = jsonObject.getString("taskName");
+                String sendMail = jsonObject.getString("sendMail");
+                String contact;
                 JSONObject json = new JSONObject();
                 json.put("srcId", srcId);
                 json.put("srcBucket", srcBucket);
                 json.put("desId", desId);
                 json.put("desBucket", desBucket);
                 json.put("allMove", allMove);
+                json.put("sendMail", sendMail);
+                if ("true".equals(sendMail)) {
+                    contact = jsonObject.getString("contact");
+                    json.put("contact", contact);
+                }
                 String taskJson = json.toJSONString();
                 MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
                 moveTaskService.create(moveTaskEntity);
@@ -249,7 +256,7 @@ public class MoveTaskController {
                 e.printStackTrace(pw);
             }
             resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FAIL", errorMsg,
-                    timeConsume, 0, id));
+                    timeConsume, 0,null, id));
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.RUNFAIL);
         }
     }
@@ -271,7 +278,7 @@ public class MoveTaskController {
                     logger.info("终止id为+" + id + "的迁移任务");
                     logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(), "orange");
                     resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
-                            "0", 0, id));
+                            "0", 0,null, id));
                 }
             }
             moveTaskService.updateStatus(id, "QUIT");

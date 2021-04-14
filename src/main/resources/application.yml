@@ -44,4 +44,5 @@ user:
   iconUrl: https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/icon.png
   userName: 无名氏
   #本地开发时用 http://127.0.0.1:8080/api/icon/
-  iconUrlPrefix: https://dtrun.cn/api/icon/
+  iconUrlPrefix: http://127.0.0.1:8080/api/icon/
+  #iconUrlPrefix: https://dtrun.cn/api/icon/

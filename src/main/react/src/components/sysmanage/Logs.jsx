@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {notification, Timeline, Empty,Menu, Dropdown, message} from 'antd';
-import {getLogsById,getColorById} from './service';
-import { DownOutlined } from '@ant-design/icons';
-import {deletes} from "../pushconfig/service";
+import {notification, Timeline, Empty, Menu, Dropdown, message} from 'antd';
+import {getLogsById, getColorById} from './service';
+import {DownOutlined} from '@ant-design/icons';
 
 const Logs = () => {
 
@@ -25,7 +24,7 @@ const Logs = () => {
             });
     }, []);
 
-    const onClick = ({ key }) => {
+    const onClick = ({key}) => {
         getColorById({key}).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
@@ -44,25 +43,25 @@ const Logs = () => {
 
     const menu = (
         <Menu onClick={onClick}>
-            <Menu.Item key="blue">显示蓝色信息</Menu.Item>
-            <Menu.Item key="green">显示绿色信息</Menu.Item>
-            <Menu.Item key="red">显示红色信息</Menu.Item>
+            <Menu.Item key="all">全部日志</Menu.Item>
+            <Menu.Item key="green">登录日志</Menu.Item>
+            <Menu.Item key="blue">常规日志</Menu.Item>
+            <Menu.Item key="orange">取消日志</Menu.Item>
+            <Menu.Item key="red">删除日志</Menu.Item>
         </Menu>
     );
 
 
     return <div style={{height: '100%', padding: '10px 10px 0 10px'}}>
-
-      <Dropdown  overlay={menu} style={{padding:'20px 10px 10px 20px'}}>
-        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-            点击选择展示信息 <DownOutlined />
-        </a>
-      </Dropdown>
-
+        <Dropdown overlay={menu}>
+            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                筛选日志 <DownOutlined/>
+            </a>
+        </Dropdown>
 
         {
-            list.length === 0 ? <Empty style={{position:'absolute',top:'40%',left:'50%'}}/> :
-                <Timeline style={{height: '100%', textAlign: 'left', padding: '10px 10px 0 10px', overflowY: ' auto'}}>
+            list.length === 0 ? <Empty style={{position: 'absolute', top: '40%', left: '50%'}}/> :
+                <Timeline style={{height: '100%', textAlign: 'left', padding: '20px 10px 0 10px', overflowY: ' auto'}}>
                     {
                         list.map((item, index) => {
                             return <Timeline.Item color={item.color}

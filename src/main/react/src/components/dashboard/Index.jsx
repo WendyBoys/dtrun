@@ -261,7 +261,8 @@ export default class Index extends React.Component {
                         <Upload
                             headers={{token: this.state.token}}
                             showUploadList={false}
-                            action="https://dtrun.cn/api/user/icon"
+                           // action="https://dtrun.cn/api/user/icon"
+                            action="http://127.0.0.1:8080/api/user/icon"
                             beforeUpload={this.beforeUpload}
                             onChange={this.handleChange}
                         >

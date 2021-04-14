@@ -175,7 +175,7 @@ const Create = (props) => {
     };
 
     const onContactChange = values => {
-        setData({...data, 'email': values})
+        setData({...data, 'contact': values})
     };
 
 
@@ -190,7 +190,7 @@ const Create = (props) => {
             allMove: body.allMove,
             taskName: body.option.taskName,
             sendMail: contactChecked,
-            email:body.email,
+            contact:body.contact,
         })
             .then((response) => {
                 const result = response.data.message;

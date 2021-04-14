@@ -94,8 +94,14 @@ public class CosThread implements Runnable {
             long endTime = System.currentTimeMillis();
             String timeConsume = String.valueOf((endTime - startTime) / 1000f);
             moveTaskService.updateStatus(id, "FINISH");
-            resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", null, timeConsume, fileMessageList.size(), id));
-            MailUtils.sendMail("您的迁移任务" + taskName + "已完成", "709027500@qq.com");
+            resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FINISH", null, timeConsume, fileMessageList.size(), JSONObject.toJSONString(fileMessageList), id));
+            String sendMail = taskJson.getString("sendMail");
+            if ("true".equals(sendMail)) {
+                String mail = taskJson.getString("contact");
+                {
+                    MailUtils.sendMail("您的迁移任务" + taskName + "已完成", mail);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

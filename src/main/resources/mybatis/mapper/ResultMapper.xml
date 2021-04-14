@@ -6,7 +6,7 @@
 
 
     <insert id="create">
-       INSERT INTO  result (startTime,endTime,result,failReason,timeConsume,fileCount,mid) VALUES (#{startTime},#{endTime},#{result},#{failReason},#{timeConsume},#{fileCount},#{mid})
+       INSERT INTO  result (startTime,endTime,result,failReason,timeConsume,fileCount,fileMessageList,mid) VALUES (#{startTime},#{endTime},#{result},#{failReason},#{timeConsume},#{fileCount},#{fileMessageList},#{mid})
     </insert>
 
     <select id="getResultById" resultType="com.xuan.dtrun.entity.ResultEntity">

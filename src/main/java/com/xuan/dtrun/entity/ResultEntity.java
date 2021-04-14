@@ -8,19 +8,21 @@ public class ResultEntity {
     private String failReason;
     private String timeConsume;
     private Integer fileCount;
+    private String fileMessageList;
     private Integer mid;
 
     public ResultEntity() {
 
     }
 
-    public ResultEntity(String startTime, String endTime, String result, String failReason, String timeConsume, Integer fileCount, Integer mid) {
+    public ResultEntity(String startTime, String endTime, String result, String failReason, String timeConsume, Integer fileCount, String fileMessageList, Integer mid) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.result = result;
         this.failReason = failReason;
         this.timeConsume = timeConsume;
         this.fileCount = fileCount;
+        this.fileMessageList = fileMessageList;
         this.mid = mid;
     }
 
@@ -80,6 +82,14 @@ public class ResultEntity {
         this.fileCount = fileCount;
     }
 
+
+    public String getFileMessageList() {
+        return fileMessageList;
+    }
+
+    public void setFileMessageList(String fileMessageList) {
+        this.fileMessageList = fileMessageList;
+    }
 
     public Integer getMid() {
         return mid;

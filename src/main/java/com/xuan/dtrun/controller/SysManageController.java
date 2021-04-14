@@ -41,17 +41,21 @@ public class SysManageController {
     }
 
     @PostMapping(value = "/getColorById", produces = "application/json;charset=utf-8")
-    public CommonResult getColorById(@RequestBody JSONObject json,@RequestHeader("token") String token){
+    public CommonResult getColorById(@RequestBody JSONObject json, @RequestHeader("token") String token) {
         User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
-        if (user!=null){
+        if (user != null) {
             Integer id = user.getId();
             String color = json.getString("key");
-            List<LogEntity> colorById = logService.getColorById(color,id);
-            return new CommonResult(200,MessageEnum.SUCCESS,colorById);
-        }else {
+            List<LogEntity> colorById;
+            if ("all".equals(color)) {
+                colorById = logService.getLogsById(id);
+            } else {
+                colorById = logService.getColorById(color, id);
+            }
+            return new CommonResult(200, MessageEnum.SUCCESS, colorById);
+        } else {
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.QUERYFAILE);
         }
-
     }
 
 }
