@@ -395,7 +395,7 @@ export default class Index extends React.Component {
                             </Menu.Item>
                             <SubMenu key="4" icon={<SettingOutlined/>} title="系统管理">
                                 <Menu.Item key="5"> <NavLink to="/sysmanage/logs">系统日志</NavLink></Menu.Item>
-                                <Menu.Item key="6">白名单管理</Menu.Item>
+                                <Menu.Item key="6"><NavLink to="/sysmanage/whitelist">白名单管理</NavLink></Menu.Item>
                                 <Menu.Item key="7">未知模块</Menu.Item>
                                 <Menu.Item key="8">未知模块</Menu.Item>
                             </SubMenu>

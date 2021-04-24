@@ -9,6 +9,7 @@ public class ContactEntity {
      private Integer uid;
      private int key;
 
+
      public ContactEntity() {
      }
 

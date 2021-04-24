@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuan.dtrun.mapper.WhiteListMapper">
+
+    <select id="findAll" resultType="WhiteListEntity">
+        SELECT * FROM whitelist
+    </select>
+
+    <insert id="createWhiteList" >
+        INSERT INTO whitelist (ip,createTime) VALUES (#{ip},#{createTime})
+    </insert>
+
+    <select id="isCreate" resultType="String">
+         SELECT ip FROM whitelist where ip=#{ip}
+    </select>
+
+    <select id="getWhiteListById" resultType="WhiteListEntity">
+    SELECT ip FROM  whitelist where id=#{id}
+    </select>
+
+    <update id="updateIp">
+        UPDATE whitelist SET ip=#{ip} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteWhiteList">
+        DELETE FROM whitelist WHERE id in
+        <foreach collection="array" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

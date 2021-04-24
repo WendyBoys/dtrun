@@ -47,6 +47,7 @@ public class ContactController {
      public CommonResult getContactById(int id) {
           try {
                ContactEntity contactEntity = contactService.getContactById(id);
+               System.out.println(contactEntity);
                return new CommonResult(200, MessageEnum.SUCCESS, contactEntity);
           } catch (Exception e) {
                e.printStackTrace();

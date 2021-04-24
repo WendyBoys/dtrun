@@ -31,4 +31,5 @@
         UPDATE contact SET contactName=#{contactName},contactEmail=#{contactEmail} WHERE id=#{integer}
     </update>
 
+
 </mapper>

@@ -13,6 +13,19 @@ public class DtSourceEntity implements Serializable {
     private int uid;
     private int key;
 
+    @Override
+    public String toString() {
+        return "DtSourceEntity{" +
+                "id=" + id +
+                ", dtSourceName='" + dtSourceName + '\'' +
+                ", dtSourceType='" + dtSourceType + '\'' +
+                ", dtSourceJson='" + dtSourceJson + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", user=" + user +
+                ", uid=" + uid +
+                ", key=" + key +
+                '}';
+    }
 
     public DtSourceEntity() {
     }
