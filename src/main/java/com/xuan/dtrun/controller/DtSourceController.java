@@ -106,23 +106,30 @@ public class DtSourceController {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
             }
             String dataSourceName = json.getString("dataSourceName");
-            String dataSourceType = json.getString("dataSourceType");
-            String secretId = json.getString("secretId");
-            String secretKey = json.getString("secretKey");
-            String region = json.getString("region");
-            DtSourceEntity dtSourceEntity = new DtSourceEntity();
-            dtSourceEntity.setDtSourceName(dataSourceName);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("dataSourceType", dataSourceType);
-            jsonObject.put("accessKey", secretId);
-            jsonObject.put("accessSecret", secretKey);
-            jsonObject.put("region", region);
-            dtSourceEntity.setUser(user);
-            dtSourceEntity.setDtSourceType(dataSourceType);
-            dtSourceEntity.setCreateTime(DateUtils.getDate());
-            dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
-            dtSourceService.create(dtSourceEntity);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+            String dtSourceName = dtSourceService.getDtSourceName(dataSourceName);
+            if (dtSourceName==null){
+                String dataSourceType = json.getString("dataSourceType");
+                String secretId = json.getString("secretId");
+                String secretKey = json.getString("secretKey");
+                String region = json.getString("region");
+                DtSourceEntity dtSourceEntity = new DtSourceEntity();
+                dtSourceEntity.setDtSourceName(dataSourceName);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("dataSourceType", dataSourceType);
+                jsonObject.put("accessKey", secretId);
+                jsonObject.put("accessSecret", secretKey);
+                jsonObject.put("region", region);
+                dtSourceEntity.setUser(user);
+                dtSourceEntity.setDtSourceType(dataSourceType);
+                dtSourceEntity.setCreateTime(DateUtils.getDate());
+                dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
+                dtSourceService.create(dtSourceEntity);
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+            }else if (dataSourceName.equals(dtSourceName)){
+                return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.NAMEEXISTS);
+            }else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
@@ -135,22 +142,29 @@ public class DtSourceController {
         try {
             String id = json.getString("id");
             String dataSourceName = json.getString("dataSourceName");
-            String dataSourceType = json.getString("dataSourceType");
-            String secretId = json.getString("secretId");
-            String secretKey = json.getString("secretKey");
-            String region = json.getString("region");
-            DtSourceEntity dtSourceEntity = new DtSourceEntity();
-            dtSourceEntity.setDtSourceName(dataSourceName);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("dataSourceType", dataSourceType);
-            jsonObject.put("accessKey", secretId);
-            jsonObject.put("accessSecret", secretKey);
-            jsonObject.put("region", region);
-            dtSourceEntity.setId(Integer.parseInt(id));
-            dtSourceEntity.setDtSourceType(dataSourceType);
-            dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
-            dtSourceService.update(dtSourceEntity);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+            String dtSourceName = dtSourceService.getDtSourceName(dataSourceName);
+            if(dtSourceName==null){
+                String dataSourceType = json.getString("dataSourceType");
+                String secretId = json.getString("secretId");
+                String secretKey = json.getString("secretKey");
+                String region = json.getString("region");
+                DtSourceEntity dtSourceEntity = new DtSourceEntity();
+                dtSourceEntity.setDtSourceName(dataSourceName);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("dataSourceType", dataSourceType);
+                jsonObject.put("accessKey", secretId);
+                jsonObject.put("accessSecret", secretKey);
+                jsonObject.put("region", region);
+                dtSourceEntity.setId(Integer.parseInt(id));
+                dtSourceEntity.setDtSourceType(dataSourceType);
+                dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
+                dtSourceService.update(dtSourceEntity);
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYFAIL);
+            }else if (dataSourceName.equals(dtSourceName)){
+                return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.NAMEEXISTS);
+            }else {
+                return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);

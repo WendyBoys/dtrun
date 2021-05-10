@@ -63,8 +63,13 @@ export default class Pushconfig extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/pushconfig/contact');
-            } else {
-
+            } else if(result === 'CreateRepeat') {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '联系人名称已存在，请重新输入',
+                    duration: 1,
+                });
             }
         });
     };

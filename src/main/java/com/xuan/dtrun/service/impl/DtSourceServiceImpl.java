@@ -48,5 +48,10 @@ public class DtSourceServiceImpl implements DtSourceService {
         return dtSourceMapper.getAllDtSourceName(userId);
     }
 
+    @Override
+    public String getDtSourceName(String dataSourceName) {
+        return dtSourceMapper.getDtSourceName(dataSourceName);
+    }
+
 
 }

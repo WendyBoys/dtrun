@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 @Mapper
 public interface WhiteListMapper {
-     List<WhiteListEntity> findAll();
+     List<WhiteListEntity> findAll(int id);
 
      void createWhiteList(WhiteListEntity whiteListEntity);
 

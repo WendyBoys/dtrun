@@ -14,9 +14,10 @@ public class WhiteListServiceImpl implements WhiteListService {
      @Autowired
      private WhiteListMapper whiteListMapper;
 
+
      @Override
-     public List<WhiteListEntity> findAll() {
-          List<WhiteListEntity> whiteListEntityList = whiteListMapper.findAll();
+     public List<WhiteListEntity> findAll(int uid) {
+          List<WhiteListEntity> whiteListEntityList = whiteListMapper.findAll(uid);
           whiteListEntityList.forEach(dtSourceEntity -> {
                dtSourceEntity.setKey(dtSourceEntity.getId());
           });

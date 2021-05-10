@@ -104,24 +104,31 @@ public class MoveTaskController {
                 String desBucket = jsonObject.getString("desBucket");
                 String allMove = jsonObject.getString("allMove");
                 String taskName = jsonObject.getString("taskName");
-                String sendMail = jsonObject.getString("sendMail");
-                String contact;
-                JSONObject json = new JSONObject();
-                json.put("srcId", srcId);
-                json.put("srcBucket", srcBucket);
-                json.put("desId", desId);
-                json.put("desBucket", desBucket);
-                json.put("allMove", allMove);
-                json.put("sendMail", sendMail);
-                if ("true".equals(sendMail)) {
-                    contact = jsonObject.getString("contact");
-                    json.put("contact", contact);
+                String moveTaskName = moveTaskService.getMoveTaskName(taskName);
+                if (moveTaskName==null){
+                     String sendMail = jsonObject.getString("sendMail");
+                     String contact;
+                     JSONObject json = new JSONObject();
+                     json.put("srcId", srcId);
+                     json.put("srcBucket", srcBucket);
+                     json.put("desId", desId);
+                     json.put("desBucket", desBucket);
+                     json.put("allMove", allMove);
+                     json.put("sendMail", sendMail);
+                     if ("true".equals(sendMail)) {
+                          contact = jsonObject.getString("contact");
+                          json.put("contact", contact);
+                     }
+                     String taskJson = json.toJSONString();
+                     MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
+                     moveTaskService.create(moveTaskEntity);
+                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+                }else if (taskName.equals(moveTaskName)){
+                     return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.CREATEFAIL);
+                }else {
+                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATEFAIL);
                 }
-                String taskJson = json.toJSONString();
-                MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
-                moveTaskService.create(moveTaskEntity);
-                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
-            }
+                }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
@@ -138,16 +145,23 @@ public class MoveTaskController {
             String desBucket = jsonObject.getString("desBucket");
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
-            JSONObject json = new JSONObject();
-            json.put("srcId", srcId);
-            json.put("srcBucket", srcBucket);
-            json.put("desId", desId);
-            json.put("desBucket", desBucket);
-            json.put("allMove", allMove);
-            String taskJson = json.toJSONString();
-            MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
-            moveTaskService.update(moveTaskEntity);
-            return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+            String moveTaskName = moveTaskService.getMoveTaskName(taskName);
+            if(moveTaskName==null){
+                 JSONObject json = new JSONObject();
+                 json.put("srcId", srcId);
+                 json.put("srcBucket", srcBucket);
+                 json.put("desId", desId);
+                 json.put("desBucket", desBucket);
+                 json.put("allMove", allMove);
+                 String taskJson = json.toJSONString();
+                 MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
+                 moveTaskService.update(moveTaskEntity);
+                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+            }else if (taskName.equals(moveTaskName)){
+                 return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.MODIFYFAIL);
+            }else {
+                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYFAIL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);

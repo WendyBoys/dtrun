@@ -6,11 +6,11 @@
 
 
     <select id="login" resultType="user">
-       SELECT id,userName,iconUrl,isUse FROM user WHERE account=#{account} AND password= #{password}
+       SELECT id,userName,iconUrl,isUse,registerIp FROM user WHERE account=#{account} AND password= #{password}
     </select>
 
     <insert id="register" parameterType="user">
-       INSERT INTO user (account,password,userName,createTime,isUse,iconUrl,registerCode) VALUES (#{account},#{password},#{userName},#{createTime},1,#{iconUrl},#{registerCode})
+       INSERT INTO user (account,password,userName,createTime,isUse,iconUrl,registerCode,registerIp) VALUES (#{account},#{password},#{userName},#{createTime},1,#{iconUrl},#{registerCode},#{registerIp})
     </insert>
 
     <select id="isRegister" resultType="int">

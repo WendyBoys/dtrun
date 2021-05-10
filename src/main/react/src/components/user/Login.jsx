@@ -25,7 +25,15 @@ export default class Login extends React.Component {
                         '账号已被封禁',
                     duration: 2,
                 });
-            } else {
+            } else if (result === 'LoginIpLimit') {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        'IP地址被限制',
+                    duration: 2,
+                });
+            }
+            else {
                 notification['error']({
                     message: '通知',
                     description:

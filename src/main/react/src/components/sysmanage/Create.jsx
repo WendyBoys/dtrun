@@ -37,7 +37,7 @@ export default class Whitelist extends React.Component {
                 notification['error']({
                     message: '通知',
                     description:
-                        '创建失败，ip地址已存在',
+                        '创建失败，ip地址已存在,此ip可以登录',
                     duration: 1,
                 });
             }

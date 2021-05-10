@@ -61,10 +61,17 @@ public class ContactController {
           try {
                String id = json.getString("id");
                String contactName = json.getString("contactName");
-               String contactEmail = json.getString("contactEmail");
-               Integer integer = Integer.parseInt(id);
-               contactService.updateContact(integer, contactName, contactEmail);
-               return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+               String oldContactName = contactService.isCreate(contactName);
+               if (oldContactName==null){
+                    String contactEmail = json.getString("contactEmail");
+                    Integer integer = Integer.parseInt(id);
+                    contactService.updateContact(integer, contactName, contactEmail);
+                    return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+               }else if (contactName.equals(oldContactName)){
+                    return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.MODIFYFAIL);
+               }else{
+                    return new CommonResult(200,MessageEnum.FAIL,DataEnum.MODIFYFAIL);
+               }
           } catch (Exception e) {
                e.printStackTrace();
                return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);

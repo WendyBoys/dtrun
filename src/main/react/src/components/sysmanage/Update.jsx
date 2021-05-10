@@ -37,7 +37,8 @@ export default class Pushconfig extends React.Component {
                         ip: data.ip,
                     },
                 );
-            } else {
+            }
+            else {
                 notification['error']({
                     message: '通知',
                     description:
@@ -61,8 +62,13 @@ export default class Pushconfig extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/sysmanage/whitelist');
-            } else {
-
+            } else if (result==='CreateRepeat'){
+                notification['error']({
+                    message: '通知',
+                    description:
+                        'ip地址已存在,请重新输入',
+                    duration: 1,
+                });
             }
         });
     };

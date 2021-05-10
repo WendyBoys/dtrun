@@ -196,6 +196,13 @@ const Update = (props) => {
                     duration: 2,
                 });
                 props.history.push('/movetask/show');
+            }else if(result === 'CreateRepeat'){
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '请不要使用重复的迁移任务名称',
+                    duration: 2,
+                });
             } else {
                 notification['error']({
                     message: '通知',

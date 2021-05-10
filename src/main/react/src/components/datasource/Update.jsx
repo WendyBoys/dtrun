@@ -109,11 +109,19 @@ export default class Update extends React.Component {
                     duration: 1,
                 });
                 this.props.history.push('/datasource/show');
-            } else {
+            } else  if (result ==='CreateRepeat'){
                 notification['error']({
                     message: '通知',
                     description:
-                        '修改失败,请重试',
+                        '修改失败，请不要使用重复或已存在的数据源名称',
+                    duration: 1,
+                });
+
+            }else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '修改失败，请检查您的参数设置',
                     duration: 1,
                 });
 

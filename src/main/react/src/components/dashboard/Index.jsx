@@ -9,6 +9,7 @@ import About from '../about/About';
 import {getCurrentUser, modifyPassword, logout} from '../user/service';
 import cookie from 'react-cookies'
 import ImgCrop from 'antd-img-crop';
+
 import {
     Avatar,
     Button,

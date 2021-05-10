@@ -144,7 +144,8 @@ const Create = (props) => {
                     duration: 2,
                 });
                 setDesBucketList(response.data.data)
-            } else {
+            }
+            else {
                 notification['error']({
                     message: '通知',
                     description:
@@ -202,7 +203,15 @@ const Create = (props) => {
                         duration: 2,
                     });
                     props.history.push('/movetask/show');
-                } else {
+                } else if(result === 'CreateRepeat'){
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '请不要重复使用迁移任务名称',
+                        duration: 2,
+                    });
+                }
+                else {
                     notification['error']({
                         message: '通知',
                         description:
@@ -407,7 +416,7 @@ const Create = (props) => {
                     tooltip="请输入迁移任务名称"
                     label="迁移任务名称"
                     name="taskName"
-                    rules={[{required: true, message: '请选择Bucket'}]}
+                    rules={[{required: true, message: '请输入迁移任务名称'}]}
                 >
                     <Input placeholder="请输入迁移任务名称"/>
                 </Form.Item>

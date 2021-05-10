@@ -5,11 +5,11 @@
 <mapper namespace="com.xuan.dtrun.mapper.WhiteListMapper">
 
     <select id="findAll" resultType="WhiteListEntity">
-        SELECT * FROM whitelist
+        SELECT * FROM whitelist WHERE uid=#{uid}
     </select>
 
     <insert id="createWhiteList" >
-        INSERT INTO whitelist (ip,createTime) VALUES (#{ip},#{createTime})
+        INSERT INTO whitelist (ip,createTime,uid) VALUES (#{ip},#{createTime},#{uid})
     </insert>
 
     <select id="isCreate" resultType="String">

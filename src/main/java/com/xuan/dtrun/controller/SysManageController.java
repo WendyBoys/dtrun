@@ -67,18 +67,22 @@ public class SysManageController {
     }
 
     @GetMapping(value = "/findAll", produces = "application/json;charset=utf-8")
-    public  CommonResult  findAll(){
-        List<WhiteListEntity> whiteListEntities = whiteListService.findAll();
+    public  CommonResult  findAll(@RequestHeader("token") String token){
+        User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
+        int uid = user.getId();
+        List<WhiteListEntity> whiteListEntities = whiteListService.findAll(uid);
         return new CommonResult(200,MessageEnum.SUCCESS,whiteListEntities);
     }
 
     @PostMapping(value = "/createWhiteList",produces = "application/json;charset=utf-8")
-    public  CommonResult createWhiteList(@RequestBody WhiteListEntity whiteListEntity){
+    public  CommonResult createWhiteList(@RequestBody WhiteListEntity whiteListEntity,@RequestHeader("token") String token){
+        User user = (User) redisTemplate.opsForValue().get(TokenUtils.md5Token(token));
         String newIp = whiteListEntity.getIp();
         String oldIp = whiteListService.isCreate(newIp);
         if (oldIp==null) {
             whiteListEntity.setCreateTime(DateUtils.getDate());
             whiteListEntity.setIp(newIp);
+            whiteListEntity.setUid(Integer.toString(user.getId()));
             whiteListService.createWhiteList(whiteListEntity);
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
         }else if (newIp.equals(oldIp)){
@@ -92,9 +96,17 @@ public class SysManageController {
     public CommonResult updateWhiteList(@RequestBody JSONObject json){
         String jsonString = json.getString("id");
         String ip = json.getString("ip");
-        int id = Integer.parseInt(jsonString);
-        whiteListService.updateIp(id,ip);
-        return new CommonResult(200,MessageEnum.SUCCESS,DataEnum.MODIFYSUCCESS);
+        String oldIp = whiteListService.isCreate(ip);
+        if (oldIp==null){
+            int id = Integer.parseInt(jsonString);
+            whiteListService.updateIp(id,ip);
+            return new CommonResult(200,MessageEnum.SUCCESS,DataEnum.MODIFYSUCCESS);
+        }else if (ip.equals(oldIp)){
+            return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.MODIFYFAIL);
+        }else {
+            return new CommonResult(200,MessageEnum.FAIL,DataEnum.MODIFYFAIL);
+        }
+
     }
 
     @PostMapping(value = "/getWhiteListById", produces = "application/json;charset=utf-8")
@@ -116,4 +128,5 @@ public class SysManageController {
         whiteListService.deleteWhiteList(ids);
         return new CommonResult(200,MessageEnum.SUCCESS,DataEnum.DELETESUCCESS);
     }
+
 }

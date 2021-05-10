@@ -20,4 +20,6 @@ public interface DtSourceMapper {
      void update(DtSourceEntity dtSourceEntity);
 
      List<DtSourceEntity> getAllDtSourceName(int userId);
+
+     String getDtSourceName(String dataSourceName);
 }

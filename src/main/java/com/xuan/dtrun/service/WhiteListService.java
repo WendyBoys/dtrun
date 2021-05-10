@@ -5,7 +5,7 @@ import com.xuan.dtrun.entity.WhiteListEntity;
 import java.util.List;
 
 public interface WhiteListService {
-     List<WhiteListEntity> findAll();
+     List<WhiteListEntity> findAll(int uid);
 
      void createWhiteList(WhiteListEntity whiteListEntity);
 

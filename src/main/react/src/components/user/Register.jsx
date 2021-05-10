@@ -70,14 +70,15 @@ export default class Register extends React.Component {
                                     placeholder="请输入密码"
                                 />
                             </Form.Item>
-                            {/*  <Form.Item
+                              <Form.Item
                                 name="registerCode"
+                                label="注册码"
                                 rules={[{required: true, message: '请输入注册码'}]}
                             >
                                 <Input
-                                    prefix={<AuditOutlined/>}
+                                    prefix={<AuditOutlined className="site-form-item-icon" />}
                                     placeholder="注册码"/>
-                            </Form.Item>*/}
+                            </Form.Item>
                             <Form.Item>
                                 <NavLink className="login-form-forgot" to="/login">
                                     已有账号？去登录
