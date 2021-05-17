@@ -117,20 +117,19 @@ public class MoveTaskController {
                      json.put("srcId", srcId);
                      json.put("srcBucket", srcBucket);
                      json.put("fileNameStart", fileNameStart);
-                json.put("fileNameEnd", fileNameEnd);
-                json.put("desId", desId);
-                json.put("desBucket", desBucket);
-                json.put("allMove", allMove);
-                json.put("sendMail", sendMail);
-                if ("true".equals(sendMail)) {
-                    contact = jsonObject.getString("contact");
-                    json.put("contact", contact);
-                }
-                String taskJson = json.toJSONString();
-                MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
-                moveTaskService.create(moveTaskEntity);
-                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
-            }else if (taskName.equals(moveTaskName)){
+                json.put("fileNameEnd", fileNameEnd);json.put("desId", desId);
+                     json.put("desBucket", desBucket);
+                     json.put("allMove", allMove);
+                     json.put("sendMail", sendMail);
+                     if ("true".equals(sendMail)) {
+                          contact = jsonObject.getString("contact");
+                          json.put("contact", contact);
+                     }
+                     String taskJson = json.toJSONString();
+                     MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
+                     moveTaskService.create(moveTaskEntity);
+                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+                }else if (taskName.equals(moveTaskName)){
                      return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.CREATEFAIL);
                 }else {
                      return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATEFAIL);
