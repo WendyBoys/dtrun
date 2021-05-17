@@ -23,7 +23,9 @@ public enum DataEnum {
     RUNSUCCESS("启动成功"),
     RUNFAIL("启动失败"),
     QUITSUCCESS("取消成功"),
-    QUITFAIL("取消失败");
+    QUITFAIL("取消失败"),
+    IPNOTFOUND("ip地址被限制"),
+    NAMEEXISTS("此名称已存在");
 
 
     private String mapping;

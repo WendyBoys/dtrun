@@ -3,7 +3,7 @@ import {Route, Switch} from 'react-router-dom';
 import Login from './user/Login';
 import Index from './dashboard/Index';
 import Register from './user/Register';
-import AuthorizedRoute from './AuthorizedRoute'
+import AuthorizedRoute from './AuthorizedRoute';
 
 import 'antd/dist/antd.css';
 import '../css/css.css';
@@ -22,6 +22,7 @@ export default class App extends React.Component {
             <AuthorizedRoute path="/sysmanage" component={Index}/>
             <AuthorizedRoute path="/pushconfig" component={Index}/>
             <AuthorizedRoute path="/about" component={Index}/>
+
         </Switch>
 
     }

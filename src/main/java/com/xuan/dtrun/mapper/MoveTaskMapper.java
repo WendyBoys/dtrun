@@ -20,4 +20,6 @@ public interface MoveTaskMapper {
     void delete(Object[] ids);
 
     void updateStatus(Integer id,String status);
+
+     String getMoveTaskName(String taskName);
 }

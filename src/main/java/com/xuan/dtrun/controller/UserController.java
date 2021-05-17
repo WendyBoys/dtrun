@@ -7,8 +7,10 @@ import com.xuan.dtrun.common.DataEnum;
 import com.xuan.dtrun.common.MessageEnum;
 import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
+import com.xuan.dtrun.entity.WhiteListEntity;
 import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.service.UserService;
+import com.xuan.dtrun.service.WhiteListService;
 import com.xuan.dtrun.utils.ClientIp;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.TokenUtils;
@@ -22,8 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -31,6 +35,9 @@ public class UserController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private WhiteListService whiteListService;
 
     @Autowired
     private UserService userService;
@@ -55,14 +62,24 @@ public class UserController {
         String password = json.getString("password");
         if (!StringUtils.isEmpty(account) && !StringUtils.isEmpty(password)) {
             User user = userService.login(account, password);
+            int id = user.getId();
+            List<WhiteListEntity> all = whiteListService.findAll(id);
+            List<String> alluserip = all.stream().map(WhiteListEntity::getIp).collect(Collectors.toList());
+            String registerIp = user.getRegisterIp();
             if (user != null) {
                 if (user.getIsUse() == 1) {
-                    String token = TokenUtils.token(account, password);
-                    redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
-                    logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate(), "green");
-                    return new CommonResult(200, MessageEnum.SUCCESS, token);
-                } else {
-                    return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINREFUSE);
+                    if (registerIp==null){
+                        return new CommonResult(200,MessageEnum.LOGINIPLIMIT,DataEnum.IPNOTFOUND);
+                    }else if (registerIp.equals(ip)|| alluserip.contains(ip)){
+                        String token = TokenUtils.token(account, password);
+                        redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
+                        logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate(), "green");
+                        return new CommonResult(200, MessageEnum.SUCCESS, token);}
+                     else {
+                        return new CommonResult(200,MessageEnum.LOGINIPLIMIT,DataEnum.IPNOTFOUND);
+                    }
+                }else {
+                    return new CommonResult(200,MessageEnum.FAIL,DataEnum.LOGINREFUSE);
                 }
             }
         }
@@ -83,7 +100,7 @@ public class UserController {
 
     @PostMapping(value = "/register", produces = "application/json;charset=utf-8")
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public CommonResult register(@RequestBody User user) {
+    public CommonResult register(@RequestBody User user, @ClientIp String ip) {
         try {
             String code = user.getRegisterCode();
             RegisterCode registercode = userService.verifyRegisterCode(code);
@@ -98,6 +115,7 @@ public class UserController {
                         user.setUserName(userName);
                         user.setRegisterCode(code);
                         user.setCreateTime(DateUtils.getDate());
+                        user.setRegisterIp(ip);
                         userService.register(user);
                         userService.updateRegisterCodeStatus(registercode.getId());
                         return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.REGISTERSUCCESS);

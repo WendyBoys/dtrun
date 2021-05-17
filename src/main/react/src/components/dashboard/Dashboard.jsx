@@ -2,6 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {Line, RingProgress} from '@ant-design/charts';
 import {Col, Row, Alert, Result, Button, Carousel, Image} from 'antd';
 import {NavLink} from "react-router-dom";
+import cookie from "react-cookies";
+import {login} from "../user/service";
+import {notification} from "antd/lib/index";
 
 
 const contentStyle = {
@@ -33,7 +36,7 @@ const Dashboard = () => {
         {
             "date": "2018/8/2",
             "type": "cpu",
-            "value": 61
+            "value": 89
         },
         {
             "date": "2018/8/2",

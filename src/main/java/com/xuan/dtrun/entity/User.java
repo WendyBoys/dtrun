@@ -15,11 +15,12 @@ public class User implements Serializable {
     private String registerCode;
     private String lastLoginTime;
     private String lastLoginIp;
+    private String registerIp;
 
     public User() {
     }
 
-    public User(Integer id, String account, String password, String userName, String iconUrl, String createTime, int isUse, String registerCode) {
+    public User(Integer id, String account, String password, String userName, String iconUrl, String createTime, int isUse, String registerCode, String lastLoginTime, String lastLoginIp, String registerIp) {
         this.id = id;
         this.account = account;
         this.password = password;
@@ -28,6 +29,17 @@ public class User implements Serializable {
         this.createTime = createTime;
         this.isUse = isUse;
         this.registerCode = registerCode;
+        this.lastLoginTime = lastLoginTime;
+        this.lastLoginIp = lastLoginIp;
+        this.registerIp = registerIp;
+    }
+
+    public String getRegisterIp() {
+        return registerIp;
+    }
+
+    public void setRegisterIp(String registerIp) {
+        this.registerIp = registerIp;
     }
 
     public Integer getId() {
@@ -108,5 +120,22 @@ public class User implements Serializable {
 
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", userName='" + userName + '\'' +
+                ", iconUrl='" + iconUrl + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", isUse=" + isUse +
+                ", registerCode='" + registerCode + '\'' +
+                ", lastLoginTime='" + lastLoginTime + '\'' +
+                ", lastLoginIp='" + lastLoginIp + '\'' +
+                ", registerIp='" + registerIp + '\'' +
+                '}';
     }
 }

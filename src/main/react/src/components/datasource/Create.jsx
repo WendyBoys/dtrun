@@ -78,7 +78,21 @@ export default class Create extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/datasource/show');
-            } else {
+            } else  if (result ==='CreateRepeat'){
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '创建失败，请不要使用已存在的数据源名称',
+                    duration: 1,
+                });
+
+            }else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '创建失败，请检查您的参数设置',
+                    duration: 1,
+                });
 
             }
         });
@@ -101,7 +115,7 @@ export default class Create extends React.Component {
                             <Form.Item
                                 label="数据源名称"
                                 name="dtsName"
-                                tooltip="请输入数据源名称"
+                                tooltip="请不要使用重复的数据源名称"
                                 rules={[
                                     {
                                         required: true,

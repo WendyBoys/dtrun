@@ -17,4 +17,6 @@ public interface DtSourceService {
      void update(DtSourceEntity dtSourceEntity);
 
     List<DtSourceEntity> getAllDtSourceName(int userId);
+
+     String getDtSourceName(String dataSourceName);
 }

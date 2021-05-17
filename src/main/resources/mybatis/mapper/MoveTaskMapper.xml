@@ -30,4 +30,8 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="getMoveTaskName" resultType="string">
+        SELECT taskName FROM movetask  WHERE  taskName=#{taskName}
+    </select>
 </mapper>
