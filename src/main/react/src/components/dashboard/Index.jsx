@@ -274,9 +274,6 @@ export default class Index extends React.Component {
                 <Menu
                     mode="inline"
                 >
-                    <Menu.Item key="1" onClick={this.showMessageDrawer} icon={<UserSwitchOutlined/>}>
-                        个人中心
-                    </Menu.Item>
                     <Menu.Item key="2" onClick={this.showPasswordDrawer} icon={<EditOutlined/>}>
                         修改密码</Menu.Item>
                     <Menu.Item key="3" onClick={() => this.logout()}

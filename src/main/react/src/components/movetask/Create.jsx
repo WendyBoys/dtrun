@@ -179,18 +179,19 @@ const Create = (props) => {
     };
 
 
-
     const OnFinish = values => {
         const body = {...data, 'option': values}
         createMoveTask({
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,
+            fileNameStart: body.src.fileNameStart,
+            fileNameEnd: body.src.fileNameEnd,
             desId: body.des.desId,
             desBucket: body.des.desBucket,
             allMove: body.allMove,
             taskName: body.option.taskName,
             sendMail: contactChecked,
-            contact:body.contact,
+            contact: body.contact,
         })
             .then((response) => {
                 const result = response.data.message;
@@ -297,11 +298,11 @@ const Create = (props) => {
 
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
-                        下一步
-                    </Button>
-                    <Button htmlType="button" onClick={() => quit()}>
+                    <Button htmlType="button" style={{margin: '0 10px 0 25%'}} onClick={() => quit()}>
                         取消
+                    </Button>
+                    <Button type="primary" htmlType="submit" >
+                        下一步
                     </Button>
                 </Form.Item>
             </Form>),
@@ -387,11 +388,11 @@ const Create = (props) => {
 
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
-                        下一步
-                    </Button>
-                    <Button type="primary" htmlType="button" onClick={prev}>
+                    <Button type="primary" htmlType="button" style={{margin: '0 10px 0 25%'}}  onClick={prev}>
                         上一步
+                    </Button>
+                    <Button type="primary" htmlType="submit" >
+                        下一步
                     </Button>
                 </Form.Item>
             </Form>),

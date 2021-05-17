@@ -25,7 +25,7 @@
     </select>
 
     <select id="getAllDtSourceName" resultType="DtSourceEntity">
-       SELECT id,dtSourceName FROM dtsource  WHERE  uid=#{id}
+       SELECT id,dtSourceName FROM dtsource  WHERE  uid=#{id} ORDER BY createTime DESC
     </select>
 
     <select id="findAll" resultMap="DtsourceMap">

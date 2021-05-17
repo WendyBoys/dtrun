@@ -1,8 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Line, RingProgress} from '@ant-design/charts';
-import {Col, Row, Alert, Result, Button, Menu} from 'antd';
-import {InfoCircleTwoTone} from '@ant-design/icons';
+import {Col, Row, Alert, Result, Button, Carousel, Image} from 'antd';
 import {NavLink} from "react-router-dom";
+
+
+const contentStyle = {
+    height: '510px',
+    color: '#fff',
+    width:'100%',
+    textAlign: 'center',
+    background: '#364d79',
+};
 
 const Dashboard = () => {
 
@@ -145,7 +153,7 @@ const Dashboard = () => {
         },
     };
 
-    return <div style={{height: '100%'}}>
+    return <div style={{height: '40%'}}>
         <Row style={{height: '100%', padding: '10px', textAlign: 'center'}}>
             <Col span={8} style={{height: '40%', paddingRight: '10px'}}>
                 <Result
@@ -161,11 +169,54 @@ const Dashboard = () => {
                 />
             </Col>
             <Col span={16}><Line {...config}
-                                 style={{maxHeight: '400px', height: '40%', minHeight: '200px'}}/></Col>
-        </Row>
+                                 style={{maxHeight: '500px', height: '40%', minHeight: '350px'}}/></Col>
 
-        <Row>
+
         </Row>
+        <Carousel autoplay style={{padding: '20px 20px 0 20px'}}>
+            <div>
+                <Image
+                    src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/a.jpg'
+                    style={contentStyle}
+                    width='100%'
+                    placeholder={
+                        <Image
+                            preview={false}
+                            src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/a.jpg'
+                        />
+                    }
+                />
+            </div>
+            <div>
+                <Image
+                    src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/b.jpg'
+                    style={contentStyle}
+                    width='100%'
+                    placeholder={
+                        <Image
+                            preview={false}
+                            src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/b.jpg'
+                        />
+                    }
+                />
+            </div>
+            <div>
+                <Image
+                    src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/c.jpg'
+                    style={contentStyle}
+                    width='100%'
+                    placeholder={
+                        <Image
+                            preview={false}
+                            src='https://cdn.jsdelivr.net/gh/WendyBoys/oss/img/c.jpg'
+                        />
+                    }
+                />
+            </div>
+        </Carousel>
+
+
+
     </div>
 
 
