@@ -117,7 +117,7 @@ public class MoveTaskController {
                     json.put("srcId", srcId);
                     json.put("srcBucket", srcBucket);
                     json.put("fileNameStart", fileNameStart);
-                json.put("fileNameEnd", fileNameEnd);
+                    json.put("fileNameEnd", fileNameEnd);
                     json.put("desId", desId);
                     json.put("desBucket", desBucket);
                     json.put("allMove", allMove);
@@ -266,7 +266,19 @@ public class MoveTaskController {
                         e.printStackTrace(pw);
                     }
                     for (OSSObjectSummary ossObjectSummary : objectListing.getObjectSummaries()) {
-                        fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                        if ("false".equals(allMove)) {
+                            if (fileNameStart != null && fileNameEnd == null && ossObjectSummary.getKey().startsWith(fileNameStart)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                            if (fileNameStart == null && fileNameEnd != null && ossObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                            if (fileNameStart != null && fileNameEnd != null && ossObjectSummary.getKey().endsWith(fileNameEnd) && ossObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                        } else {
+                            fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                        }
                     }
                     break;
                 }
@@ -289,7 +301,10 @@ public class MoveTaskController {
                             if (fileNameStart != null && fileNameEnd != null && obsObject.getObjectKey().endsWith(fileNameEnd) && obsObject.getObjectKey().endsWith(fileNameEnd)) {
                                 fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
                             }
+                        } else {
+                            fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
                         }
+
                     }
                     break;
                 }
@@ -305,9 +320,6 @@ public class MoveTaskController {
             } else if ("cos".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
                 new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
-            } else if ("obs".equals(desDtSourceType)) {
-                JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             } else if ("obs".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
                 new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
