@@ -9,6 +9,7 @@ import com.xuan.dtrun.entity.RegisterCode;
 import com.xuan.dtrun.entity.User;
 import com.xuan.dtrun.entity.WhiteListEntity;
 import com.xuan.dtrun.service.LogService;
+import com.xuan.dtrun.service.ServerparametersService;
 import com.xuan.dtrun.service.UserService;
 import com.xuan.dtrun.service.WhiteListService;
 import com.xuan.dtrun.utils.ClientIp;
@@ -45,6 +46,9 @@ public class UserController {
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private ServerparametersService serverparametersService;
+
     @Value("${user.iconUrl}")
     private String iconUrl;
 
@@ -74,6 +78,7 @@ public class UserController {
                         String token = TokenUtils.token(account, password);
                         redisTemplate.opsForValue().set(TokenUtils.md5Token(token), user, 7, TimeUnit.DAYS);
                         logService.create(user.getId(), "登录系统,ip地址为" + ip, DateUtils.getDate(), "green");
+                        serverparametersService.create(DateUtils.getDate(),"100","100","1101",user.getId());
                         return new CommonResult(200, MessageEnum.SUCCESS, token);}
                      else {
                         return new CommonResult(200,MessageEnum.LOGINIPLIMIT,DataEnum.IPNOTFOUND);

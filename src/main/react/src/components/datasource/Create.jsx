@@ -78,6 +78,12 @@ export default class Create extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/datasource/show');
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '创建成功',
+                    duration: 1,
+                });
             } else  if (result ==='CreateRepeat'){
                 notification['error']({
                     message: '通知',

@@ -35,6 +35,12 @@ export default class Pushconfig extends React.Component {
             const result = response.data.message;
             if (result === 'Success') {
                 this.props.history.push('/pushconfig/contact');
+                notification['success']({
+                    message: '通知',
+                    description:
+                        '创建成功',
+                    duration: 1,
+                });
             } else {
                 notification['error']({
                     message: '通知',
