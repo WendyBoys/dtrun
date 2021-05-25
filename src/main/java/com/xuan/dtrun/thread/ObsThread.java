@@ -16,6 +16,7 @@ import com.xuan.dtrun.entity.ResultEntity;
 import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
 import com.xuan.dtrun.upload.CosUpload;
+import com.xuan.dtrun.upload.ObsUpload;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.MailUtils;
 import org.slf4j.Logger;
@@ -36,14 +37,14 @@ public class ObsThread implements Runnable {
     private String srcBucket;
     private COSClient srcCosClient;
     private OSS srcOssClient;
-    private ObsClient srcoObsClient;
+    private ObsClient srcObsClient;
     private JSONObject taskJson;
     private MoveTaskService moveTaskService;
     private ResultService resultService;
     private InputStream inputStream;
     private Logger logger = LoggerFactory.getLogger(ObsThread.class);
 
-    public ObsThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, ObsClient srcoObsClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
+    public ObsThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, ObsClient srcObsClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
         this.id = id;
         this.taskName = taskName;
         this.desEntity = desEntity;
@@ -52,7 +53,7 @@ public class ObsThread implements Runnable {
         this.srcBucket = srcBucket;
         this.srcCosClient = srcCosClient;
         this.srcOssClient = srcOssClient;
-        this.srcoObsClient = srcoObsClient;
+        this.srcObsClient = srcObsClient;
         this.taskJson = taskJson;
         this.moveTaskService = moveTaskService;
         this.resultService = resultService;
@@ -62,8 +63,7 @@ public class ObsThread implements Runnable {
     public void run() {
         try {
             long startTime = System.currentTimeMillis();
-            COSClient cosClient = new COSClient(new BasicCOSCredentials(desEntity.getString("accessKey"), desEntity.getString("accessSecret")),
-                    new ClientConfig(new Region(desEntity.getString("region"))));
+            ObsClient obsClient =  new ObsClient(desEntity.getString("accessKey"), desEntity.getString("accessSecret"), desEntity.getString("region"));
             for (FileMessage fileMessage : fileMessageList) {
                 switch (srcDtSourceType) {
                     case "cos": {
@@ -85,7 +85,7 @@ public class ObsThread implements Runnable {
                         break;
                     }
                     case "obs": {
-                        ObsObject obsObject = srcoObsClient.getObject(srcBucket, fileMessage.getFileName());
+                        ObsObject obsObject = srcObsClient.getObject(srcBucket, fileMessage.getFileName());
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         int len;
                         byte[] srcBytes = new byte[10 * 1024 * 1024];
@@ -99,10 +99,10 @@ public class ObsThread implements Runnable {
                         throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
                     }
                 }
-                CosUpload cosUpload = new CosUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), cosClient, inputStream, fileMessage.getFileLength(), 50 * 1024 * 1024);
-                cosUpload.upload();
+                ObsUpload obsUpload = new ObsUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), obsClient, inputStream, fileMessage.getFileLength(), 50 * 1024 * 1024);
+                obsUpload.upload();
             }
-            cosClient.shutdown();
+            obsClient.close();
             if (srcOssClient != null) {
                 srcOssClient.shutdown();
             }

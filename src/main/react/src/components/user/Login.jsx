@@ -29,7 +29,7 @@ export default class Login extends React.Component {
                 notification['error']({
                     message: '通知',
                     description:
-                        'IP地址被限制',
+                        'IP地址不在白名单中，无法登陆',
                     duration: 2,
                 });
             }

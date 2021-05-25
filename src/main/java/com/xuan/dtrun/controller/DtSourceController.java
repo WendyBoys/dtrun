@@ -152,7 +152,7 @@ public class DtSourceController {
         try {
             String id = json.getString("id");
             String dataSourceName = json.getString("dataSourceName");
-            String dtSourceName = dtSourceService.getDtSourceName(dataSourceName);
+            String dtSourceName = dtSourceService.getDtSourceName2(dataSourceName,Integer.parseInt(id));
             if(dtSourceName==null){
                 String dataSourceType = json.getString("dataSourceType");
                 String secretId = json.getString("secretId");

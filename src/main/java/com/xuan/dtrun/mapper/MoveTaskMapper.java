@@ -2,6 +2,7 @@ package com.xuan.dtrun.mapper;
 
 import com.xuan.dtrun.entity.MoveTaskEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public interface MoveTaskMapper {
 
     void delete(Object[] ids);
 
-    void updateStatus(Integer id,String status);
+    void updateStatus(Integer id, String status);
 
-     String getMoveTaskName(String taskName);
+    String getMoveTaskName(String taskName);
+
+    String getMoveTaskName2(@Param("taskName") String taskName, @Param("id") int id);
 }

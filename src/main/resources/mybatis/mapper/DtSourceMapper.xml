@@ -28,6 +28,10 @@
         SELECT dtSourceName FROM dtsource  WHERE  dtSourceName=#{dtSourceName}
     </select>
 
+    <select id="getDtSourceName2" resultType="string">
+        SELECT dtSourceName FROM dtsource  WHERE  dtSourceName=#{dtSourceName} AND id !=#{id}
+    </select>
+
     <select id="getAllDtSourceName" resultType="DtSourceEntity">
        SELECT id,dtSourceName FROM dtsource  WHERE  uid=#{id} ORDER BY createTime DESC
     </select>
