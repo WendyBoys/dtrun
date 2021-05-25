@@ -3,6 +3,8 @@ package com.xuan.dtrun.thread;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.OSSObject;
+import com.obs.services.ObsClient;
+import com.obs.services.model.ObsObject;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -31,13 +33,14 @@ public class CosThread implements Runnable {
     private String srcBucket;
     private COSClient srcCosClient;
     private OSS srcOssClient;
+    private ObsClient srcObsClient;
     private JSONObject taskJson;
     private MoveTaskService moveTaskService;
     private ResultService resultService;
     private InputStream inputStream;
     private Logger logger = LoggerFactory.getLogger(CosThread.class);
 
-    public CosThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
+    public CosThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, ObsClient srcObsClient,JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
         this.id = id;
         this.taskName = taskName;
         this.desEntity = desEntity;
@@ -46,6 +49,7 @@ public class CosThread implements Runnable {
         this.srcBucket = srcBucket;
         this.srcCosClient = srcCosClient;
         this.srcOssClient = srcOssClient;
+        this.srcObsClient = srcObsClient;
         this.taskJson = taskJson;
         this.moveTaskService = moveTaskService;
         this.resultService = resultService;
@@ -72,6 +76,17 @@ public class CosThread implements Runnable {
                         int len;
                         byte[] srcBytes = new byte[10 * 1024 * 1024];
                         while ((len = ossObject.getObjectContent().read(srcBytes)) > -1) {
+                            byteArrayOutputStream.write(srcBytes, 0, len);
+                        }
+                        inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                        break;
+                    }
+                    case "obs": {
+                        ObsObject obsObject = srcObsClient.getObject(srcBucket, fileMessage.getFileName());
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        int len;
+                        byte[] srcBytes = new byte[10 * 1024 * 1024];
+                        while ((len = obsObject.getObjectContent().read(srcBytes)) > -1) {
                             byteArrayOutputStream.write(srcBytes, 0, len);
                         }
                         inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());

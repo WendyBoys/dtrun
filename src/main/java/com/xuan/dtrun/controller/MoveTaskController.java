@@ -7,6 +7,8 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObjectSummary;
+import com.obs.services.ObsClient;
+import com.obs.services.model.ObsObject;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -22,6 +24,7 @@ import com.xuan.dtrun.service.LogService;
 import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
 import com.xuan.dtrun.thread.CosThread;
+import com.xuan.dtrun.thread.ObsThread;
 import com.xuan.dtrun.thread.OssThread;
 import com.xuan.dtrun.utils.ClientIp;
 import com.xuan.dtrun.utils.DateUtils;
@@ -103,32 +106,36 @@ public class MoveTaskController {
                 String desId = jsonObject.getString("desId");
                 String desBucket = jsonObject.getString("desBucket");
                 String allMove = jsonObject.getString("allMove");
+                String fileNameStart = jsonObject.getString("fileNameStart");
+                String fileNameEnd = jsonObject.getString("fileNameEnd");
                 String taskName = jsonObject.getString("taskName");
                 String moveTaskName = moveTaskService.getMoveTaskName(taskName);
-                if (moveTaskName==null){
-                     String sendMail = jsonObject.getString("sendMail");
-                     String contact;
-                     JSONObject json = new JSONObject();
-                     json.put("srcId", srcId);
-                     json.put("srcBucket", srcBucket);
-                     json.put("desId", desId);
-                     json.put("desBucket", desBucket);
-                     json.put("allMove", allMove);
-                     json.put("sendMail", sendMail);
-                     if ("true".equals(sendMail)) {
-                          contact = jsonObject.getString("contact");
-                          json.put("contact", contact);
-                     }
-                     String taskJson = json.toJSONString();
-                     MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
-                     moveTaskService.create(moveTaskEntity);
-                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
-                }else if (taskName.equals(moveTaskName)){
-                     return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.CREATEFAIL);
-                }else {
-                     return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATEFAIL);
+                if (moveTaskName == null) {
+                    String sendMail = jsonObject.getString("sendMail");
+                    String contact;
+                    JSONObject json = new JSONObject();
+                    json.put("srcId", srcId);
+                    json.put("srcBucket", srcBucket);
+                    json.put("fileNameStart", fileNameStart);
+                    json.put("fileNameEnd", fileNameEnd);
+                    json.put("desId", desId);
+                    json.put("desBucket", desBucket);
+                    json.put("allMove", allMove);
+                    json.put("sendMail", sendMail);
+                    if ("true".equals(sendMail)) {
+                        contact = jsonObject.getString("contact");
+                        json.put("contact", contact);
+                    }
+                    String taskJson = json.toJSONString();
+                    MoveTaskEntity moveTaskEntity = new MoveTaskEntity(taskName, taskJson, "READY", DateUtils.getDate(), user.getId());
+                    moveTaskService.create(moveTaskEntity);
+                    return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
+                } else if (taskName.equals(moveTaskName)) {
+                    return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.CREATEFAIL);
+                } else {
+                    return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATEFAIL);
                 }
-                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
@@ -146,21 +153,21 @@ public class MoveTaskController {
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
             String moveTaskName = moveTaskService.getMoveTaskName(taskName);
-            if(moveTaskName==null){
-                 JSONObject json = new JSONObject();
-                 json.put("srcId", srcId);
-                 json.put("srcBucket", srcBucket);
-                 json.put("desId", desId);
-                 json.put("desBucket", desBucket);
-                 json.put("allMove", allMove);
-                 String taskJson = json.toJSONString();
-                 MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
-                 moveTaskService.update(moveTaskEntity);
-                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
-            }else if (taskName.equals(moveTaskName)){
-                 return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.MODIFYFAIL);
-            }else {
-                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYFAIL);
+            if (moveTaskName == null) {
+                JSONObject json = new JSONObject();
+                json.put("srcId", srcId);
+                json.put("srcBucket", srcBucket);
+                json.put("desId", desId);
+                json.put("desBucket", desBucket);
+                json.put("allMove", allMove);
+                String taskJson = json.toJSONString();
+                MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
+                moveTaskService.update(moveTaskEntity);
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYSUCCESS);
+            } else if (taskName.equals(moveTaskName)) {
+                return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.MODIFYFAIL);
+            } else {
+                return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYFAIL);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,6 +203,7 @@ public class MoveTaskController {
         try {
             COSClient srcCosClient = null;
             OSS srcOssClient = null;
+            ObsClient srcObsClient = null;
             List<FileMessage> fileMessageList = new ArrayList<>();
             moveTaskService.updateStatus(id, "RUNNING");
             MoveTaskEntity moveTaskById = moveTaskService.getMoveTaskById(id);
@@ -208,6 +216,9 @@ public class MoveTaskController {
             Integer desId = taskJson.getInteger("desId");
             DtSourceEntity desDtSourceEntity = dtSourceService.getDtSourceById(desId);
             String srcBucket = taskJson.getString("srcBucket");
+            String allMove = taskJson.getString("allMove");
+            String fileNameStart = taskJson.getString("fileNameStart");
+            String fileNameEnd = taskJson.getString("fileNameEnd");
             String srcDtSourceType = srcDtSourceEntity.getDtSourceType();
             JSONObject srcEntity = JSON.parseObject(srcDtSourceEntity.getDtSourceJson());
             //获取源端文件信息
@@ -227,7 +238,19 @@ public class MoveTaskController {
                         }
                         List<COSObjectSummary> cosObjectSummaries = objectListing.getObjectSummaries();
                         for (COSObjectSummary cosObjectSummary : cosObjectSummaries) {
-                            fileMessageList.add(new FileMessage(cosObjectSummary.getKey(), cosObjectSummary.getSize()));
+                            if ("false".equals(allMove)) {
+                                if (fileNameStart != null && fileNameEnd == null && cosObjectSummary.getKey().startsWith(fileNameStart)) {
+                                    fileMessageList.add(new FileMessage(cosObjectSummary.getKey(), cosObjectSummary.getSize()));
+                                }
+                                if (fileNameStart == null && fileNameEnd != null && cosObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                    fileMessageList.add(new FileMessage(cosObjectSummary.getKey(), cosObjectSummary.getSize()));
+                                }
+                                if (fileNameStart != null && fileNameEnd != null && cosObjectSummary.getKey().endsWith(fileNameEnd) && cosObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                    fileMessageList.add(new FileMessage(cosObjectSummary.getKey(), cosObjectSummary.getSize()));
+                                }
+                            } else {
+                                fileMessageList.add(new FileMessage(cosObjectSummary.getKey(), cosObjectSummary.getSize()));
+                            }
                         }
                         String nextMarker = objectListing.getNextMarker();
                         listObjectsRequest.setMarker(nextMarker);
@@ -243,7 +266,43 @@ public class MoveTaskController {
                         e.printStackTrace(pw);
                     }
                     for (OSSObjectSummary ossObjectSummary : objectListing.getObjectSummaries()) {
-                        fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                        if ("false".equals(allMove)) {
+                            if (fileNameStart != null && fileNameEnd == null && ossObjectSummary.getKey().startsWith(fileNameStart)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                            if (fileNameStart == null && fileNameEnd != null && ossObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                            if (fileNameStart != null && fileNameEnd != null && ossObjectSummary.getKey().endsWith(fileNameEnd) && ossObjectSummary.getKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                            }
+                        } else {
+                            fileMessageList.add(new FileMessage(ossObjectSummary.getKey(), ossObjectSummary.getSize()));
+                        }
+                    }
+                    break;
+                }
+                case "obs": {
+                    srcObsClient = new ObsClient(srcEntity.getString("accessKey"), srcEntity.getString("accessSecret"), srcEntity.getString("region"));
+                    com.obs.services.model.ObjectListing objectListing = null;
+                    try {
+                        objectListing = srcObsClient.listObjects(srcBucket);
+                    } catch (OSSException e) {
+                        e.printStackTrace(pw);
+                    }
+                    for (ObsObject obsObject : objectListing.getObjects()) {
+                        if ("false".equals(allMove)) {
+                            if (fileNameStart != null && fileNameEnd == null && obsObject.getObjectKey().startsWith(fileNameStart)) {
+                                fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
+                            }
+                            if (fileNameStart == null && fileNameEnd != null && obsObject.getObjectKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
+                            }
+                            if (fileNameStart != null && fileNameEnd != null && obsObject.getObjectKey().endsWith(fileNameEnd) && obsObject.getObjectKey().endsWith(fileNameEnd)) {
+                                fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
+                            }
+                        }
+                        fileMessageList.add(new FileMessage(obsObject.getObjectKey(), obsObject.getMetadata().getContentLength()));
                     }
                     break;
                 }
@@ -255,10 +314,13 @@ public class MoveTaskController {
             String desDtSourceType = desDtSourceEntity.getDtSourceType();
             if ("oss".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             } else if ("cos".equals(desDtSourceType)) {
                 JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+            } else if ("obs".equals(desDtSourceType)) {
+                JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
@@ -270,7 +332,7 @@ public class MoveTaskController {
                 e.printStackTrace(pw);
             }
             resultService.create(new ResultEntity(DateUtils.getDate(startTime), DateUtils.getDate(endTime), "FAIL", errorMsg,
-                    timeConsume, 0,null, id));
+                    timeConsume, 0, null, id));
             return new CommonResult(200, MessageEnum.FAIL, DataEnum.RUNFAIL);
         }
     }
@@ -292,7 +354,7 @@ public class MoveTaskController {
                     logger.info("终止id为+" + id + "的迁移任务");
                     logService.create(moveTaskById.getUid(), "取消迁移任务" + moveTaskById.getTaskName() + "的运行,ip地址为" + ip, DateUtils.getDate(), "orange");
                     resultService.create(new ResultEntity(DateUtils.getDate(), DateUtils.getDate(), "QUIT", null,
-                            "0", 0,null, id));
+                            "0", 0, null, id));
                 }
             }
             moveTaskService.updateStatus(id, "QUIT");

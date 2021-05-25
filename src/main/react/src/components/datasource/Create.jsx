@@ -136,10 +136,9 @@ export default class Create extends React.Component {
                                 allowClear
 
                             >
-                                <Option value="cos">COS</Option>
-                                <Option value="oss">OSS</Option>
-                                <Option value="obs">OBS</Option>
-                                <Option value="bos">BOS</Option>
+                                <Option value="cos">腾讯云COS</Option>
+                                <Option value="oss">阿里云OSS</Option>
+                                <Option value="obs">华为云OBS</Option>
                             </Select>
                         </Form.Item>
 

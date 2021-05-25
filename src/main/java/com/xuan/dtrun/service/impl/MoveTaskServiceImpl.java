@@ -49,6 +49,11 @@ public class MoveTaskServiceImpl implements MoveTaskService {
     }
 
     @Override
+    public String getMoveTaskName2(String taskName, int id) {
+        return moveTaskMapper.getMoveTaskName2(taskName,id);
+    }
+
+    @Override
     public void create(MoveTaskEntity moveTaskEntity) {
         moveTaskMapper.create(moveTaskEntity);
     }

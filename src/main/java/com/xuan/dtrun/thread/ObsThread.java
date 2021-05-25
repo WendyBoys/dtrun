@@ -2,28 +2,33 @@ package com.xuan.dtrun.thread;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.OSSObject;
 import com.obs.services.ObsClient;
 import com.obs.services.model.ObsObject;
 import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.GetObjectRequest;
+import com.qcloud.cos.region.Region;
 import com.xuan.dtrun.entity.FileMessage;
 import com.xuan.dtrun.entity.ResultEntity;
 import com.xuan.dtrun.service.MoveTaskService;
 import com.xuan.dtrun.service.ResultService;
-import com.xuan.dtrun.upload.OssUpload;
+import com.xuan.dtrun.upload.CosUpload;
+import com.xuan.dtrun.upload.ObsUpload;
 import com.xuan.dtrun.utils.DateUtils;
 import com.xuan.dtrun.utils.MailUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-public class OssThread implements Runnable {
-
+public class ObsThread implements Runnable {
     private Integer id;
     private String taskName;
     private JSONObject desEntity;
@@ -36,10 +41,10 @@ public class OssThread implements Runnable {
     private JSONObject taskJson;
     private MoveTaskService moveTaskService;
     private ResultService resultService;
-    private InputStream inputStream = null;
-    private Logger logger = LoggerFactory.getLogger(OssThread.class);
+    private InputStream inputStream;
+    private Logger logger = LoggerFactory.getLogger(ObsThread.class);
 
-    public OssThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, ObsClient srcObsClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
+    public ObsThread(Integer id, String taskName, JSONObject desEntity, List<FileMessage> fileMessageList, String srcDtSourceType, String srcBucket, COSClient srcCosClient, OSS srcOssClient, ObsClient srcObsClient, JSONObject taskJson, MoveTaskService moveTaskService, ResultService resultService) {
         this.id = id;
         this.taskName = taskName;
         this.desEntity = desEntity;
@@ -58,13 +63,13 @@ public class OssThread implements Runnable {
     public void run() {
         try {
             long startTime = System.currentTimeMillis();
-            OSS ossClient = new OSSClientBuilder().build(desEntity.getString("region"), desEntity.getString("accessKey"), desEntity.getString("accessSecret"));
+            ObsClient obsClient =  new ObsClient(desEntity.getString("accessKey"), desEntity.getString("accessSecret"), desEntity.getString("region"));
             for (FileMessage fileMessage : fileMessageList) {
                 switch (srcDtSourceType) {
                     case "cos": {
                         GetObjectRequest getObjectRequest = new GetObjectRequest(srcBucket, fileMessage.getFileName());
                         COSObject cosObject = srcCosClient.getObject(getObjectRequest);
-                        inputStream = new BufferedInputStream(cosObject.getObjectContent());
+                        inputStream = cosObject.getObjectContent();
                         break;
                     }
                     case "oss": {
@@ -94,10 +99,10 @@ public class OssThread implements Runnable {
                         throw new RuntimeException("不支持的数据源类型: " + srcDtSourceType);
                     }
                 }
-                OssUpload ossUpload = new OssUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), ossClient, inputStream, fileMessage.getFileLength(), 50 * 1024 * 1024);
-                ossUpload.upload();
+                ObsUpload obsUpload = new ObsUpload(taskJson.getString("desBucket"), fileMessage.getFileName(), obsClient, inputStream, fileMessage.getFileLength(), 50 * 1024 * 1024);
+                obsUpload.upload();
             }
-            ossClient.shutdown();
+            obsClient.close();
             if (srcOssClient != null) {
                 srcOssClient.shutdown();
             }

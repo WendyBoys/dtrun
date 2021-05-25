@@ -138,8 +138,6 @@ const Whitelist = (props) => {
             render: (text, record) => (
                 <Space size="middle">
                     <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
-                          onClick={() => testDts(record.id)}>测试</span>
-                    <span style={{color: '#0062FF', cursor: 'pointer', marginRight: '10px'}}
                           onClick={() => deleteWhiteList(record.id, record.contactName)}>删除</span>
                 </Space>
             )
@@ -189,7 +187,6 @@ const Whitelist = (props) => {
                            }}
                     />
                 </div>
-
                 <Modal
                     title="删除ip地址"
                     okText="确定"

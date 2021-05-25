@@ -34,4 +34,8 @@
     <select id="getMoveTaskName" resultType="string">
         SELECT taskName FROM movetask  WHERE  taskName=#{taskName}
     </select>
+
+    <select id="getMoveTaskName2" resultType="string">
+        SELECT taskName FROM movetask  WHERE  taskName=#{taskName} AND id !=#{id}
+    </select>
 </mapper>

@@ -246,10 +246,6 @@ const Show = (props) => {
             dataIndex: 'createTime',
         },
         {
-            title: '更新时间',
-            dataIndex: 'updateTime',
-        },
-        {
             title: '当前状态',
             dataIndex: 'status',
             render: (text, record) => {
@@ -285,10 +281,6 @@ const Show = (props) => {
                     )
                 }
             }
-        },
-        {
-            title: '执行次数',
-            dataIndex: 'runCount',
         },
         {
             title: '操作',
