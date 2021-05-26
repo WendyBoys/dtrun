@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.obs.services.ObsClient;
+import com.obs.services.model.AccessControlList;
+import com.obs.services.model.ObsBucket;
 import com.obs.services.model.S3Bucket;
+import com.obs.services.model.StorageClassEnum;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -60,7 +63,7 @@ public class DtSourceController {
                 OSS ossClient = new OSSClientBuilder().build(region, accessKey, accessSecret);
                 ossClient.listBuckets();
                 ossClient.shutdown();
-            }else if ("obs".equals(dataSourceType)) {
+            } else if ("obs".equals(dataSourceType)) {
                 ObsClient obsClient = new ObsClient(accessKey, accessSecret, region);
                 obsClient.listBuckets();
                 obsClient.close();
@@ -97,7 +100,7 @@ public class DtSourceController {
                 OSS ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
                 ossClient.listBuckets();
                 ossClient.shutdown();
-            }else if ("obs".equals(dtSourceType)) {
+            } else if ("obs".equals(dtSourceType)) {
                 ObsClient obsClient = new ObsClient(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"), jsonObject.getString("region"));
                 List<S3Bucket> s3Buckets = obsClient.listBuckets();
                 obsClient.close();
@@ -117,7 +120,7 @@ public class DtSourceController {
             }
             String dataSourceName = json.getString("dataSourceName");
             String dtSourceName = dtSourceService.getDtSourceName(dataSourceName);
-            if (dtSourceName==null){
+            if (dtSourceName == null) {
                 String dataSourceType = json.getString("dataSourceType");
                 String secretId = json.getString("secretId");
                 String secretKey = json.getString("secretKey");
@@ -135,9 +138,9 @@ public class DtSourceController {
                 dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
                 dtSourceService.create(dtSourceEntity);
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.CREATESUCCESS);
-            }else if (dataSourceName.equals(dtSourceName)){
-                return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.NAMEEXISTS);
-            }else {
+            } else if (dataSourceName.equals(dtSourceName)) {
+                return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.NAMEEXISTS);
+            } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.CREATEFAIL);
             }
         } catch (Exception e) {
@@ -152,8 +155,8 @@ public class DtSourceController {
         try {
             String id = json.getString("id");
             String dataSourceName = json.getString("dataSourceName");
-            String dtSourceName = dtSourceService.getDtSourceName2(dataSourceName,Integer.parseInt(id));
-            if(dtSourceName==null){
+            String dtSourceName = dtSourceService.getDtSourceName2(dataSourceName, Integer.parseInt(id));
+            if (dtSourceName == null) {
                 String dataSourceType = json.getString("dataSourceType");
                 String secretId = json.getString("secretId");
                 String secretKey = json.getString("secretKey");
@@ -170,9 +173,9 @@ public class DtSourceController {
                 dtSourceEntity.setDtSourceJson(jsonObject.toJSONString());
                 dtSourceService.update(dtSourceEntity);
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.MODIFYFAIL);
-            }else if (dataSourceName.equals(dtSourceName)){
-                return new CommonResult(200,MessageEnum.CREATEREPEAT,DataEnum.NAMEEXISTS);
-            }else {
+            } else if (dataSourceName.equals(dtSourceName)) {
+                return new CommonResult(200, MessageEnum.CREATEREPEAT, DataEnum.NAMEEXISTS);
+            } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.MODIFYFAIL);
             }
         } catch (Exception e) {
@@ -213,7 +216,7 @@ public class DtSourceController {
             if (user != null) {
                 Object[] ids = json.getJSONObject("data").getJSONArray("id").toArray();
                 dtSourceService.delete(ids);
-                logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate(),"red");
+                logService.create(user.getId(), "删除" + ids.length + "个数据源,ip地址为" + ip, DateUtils.getDate(), "red");
                 return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.DELETESUCCESS);
             } else {
                 return new CommonResult(200, MessageEnum.FAIL, DataEnum.LOGINEXPIRE);
@@ -244,7 +247,7 @@ public class DtSourceController {
                 } else if ("oss".equals(dtSourceType)) {
                     ossClient = new OSSClientBuilder().build(jsonObject.getString("region"), jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"));
                     buckets = ossClient.listBuckets().stream().map(com.aliyun.oss.model.Bucket::getName).collect(Collectors.toList());
-                }else if ("obs".equals(dtSourceType)) {
+                } else if ("obs".equals(dtSourceType)) {
                     ObsClient obsClient = new ObsClient(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"), jsonObject.getString("region"));
                     buckets = obsClient.listBuckets().stream().map(com.obs.services.model.S3Bucket::getBucketName).collect(Collectors.toList());
                 }
@@ -267,6 +270,7 @@ public class DtSourceController {
     public CommonResult createBucket(@RequestBody JSONObject json) {
         COSClient cosClient = null;
         OSS ossClient = null;
+        ObsClient obsClient = null;
         try {
             List<String> buckets = null;
             int desId = Integer.parseInt(json.getString("desId"));
@@ -289,6 +293,16 @@ public class DtSourceController {
                     createBucketRequest.setCannedACL(com.aliyun.oss.model.CannedAccessControlList.Private);
                     ossClient.createBucket(createBucketRequest);
                     buckets = ossClient.listBuckets().stream().map(com.aliyun.oss.model.Bucket::getName).collect(Collectors.toList());
+                } else if ("obs".equals(dtSourceType)) {
+                    obsClient = new ObsClient(jsonObject.getString("accessKey"), jsonObject.getString("accessSecret"), jsonObject.getString("region"));
+                    ObsBucket obsBucket = new ObsBucket();
+                    obsBucket.setBucketName(newBucketName);
+                    obsBucket.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+                    obsBucket.setBucketStorageClass(StorageClassEnum.COLD);
+                    //因为华为限制创建桶时，如果使用的终端节点归属于默认区域华北-北京一（cn-north-1），则可以不指定区域；如果使用的终端节点归属于其他区域，则必须指定区域，且指定的区域必须与终端节点归属的区域一致。自己注册的是北京4 这里暂时写死
+                    obsBucket.setLocation("cn-north-4");
+                    obsClient.createBucket(obsBucket);
+                    buckets = obsClient.listBuckets().stream().map(com.obs.services.model.S3Bucket::getBucketName).collect(Collectors.toList());
                 }
             }
             return new CommonResult(200, MessageEnum.SUCCESS, buckets);

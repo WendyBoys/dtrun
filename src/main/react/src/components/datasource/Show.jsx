@@ -93,6 +93,7 @@ const Show = (props) => {
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
+                setDtsId([]);
                 setVisible(false);
                 setConfirmLoading(false);
                 fentch();

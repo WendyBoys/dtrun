@@ -152,7 +152,7 @@ public class MoveTaskController {
             String desBucket = jsonObject.getString("desBucket");
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
-            String moveTaskName = moveTaskService.getMoveTaskName(taskName);
+            String moveTaskName = moveTaskService.getMoveTaskName2(taskName,id);
             if (moveTaskName == null) {
                 JSONObject json = new JSONObject();
                 json.put("srcId", srcId);

@@ -94,6 +94,7 @@ const Contact = (props) => {
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
+                setContactId([]);
                 setVisible(false);
                 setConfirmLoading(false);
                 fentch();

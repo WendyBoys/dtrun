@@ -94,6 +94,7 @@ const Whitelist = (props) => {
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
+                setWhiteListId([]);
                 setVisible(false);
                 setConfirmLoading(false);
                 fentch();

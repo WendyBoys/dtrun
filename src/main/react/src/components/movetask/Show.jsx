@@ -172,6 +172,7 @@ const Show = (props) => {
         }).then((response) => {
             const result = response.data.message;
             if (result === 'Success') {
+                setTaskId([]);
                 setVisibleDelete(false);
                 setConfirmLoading(false);
                 setSelectedRowKeys([])
