@@ -20,3 +20,7 @@ export async function modifyPassword(params) {
     return await request("/user/modifyPassword", "post", params)
 }
 
+export async function getMessage(params) {
+    return await request("/user/getMessage", "get", params)
+}
+

@@ -5,8 +5,13 @@
 <mapper namespace="com.xuan.dtrun.mapper.ServerparametersMapper">
 
     <insert id="create" >
-        INSERT INTO Serverparameters (date,cpu,runningmemory,diskusagepercentage,uid) VALUES (#{date},#{cpu},#{runningmemory},#{diskusagepercentage},#{uid})
+        INSERT INTO serverparameters (createTime,cpu,runningmemory,diskusagepercentage,uid) VALUES (#{createTime},#{cpu},#{runningmemory},#{diskusagepercentage},#{uid})
     </insert>
+
+    <select id="getMessage" resultType="ServerparametersEntity">
+        SELECT * FROM serverparameters WHERE uid = #{id} ORDER BY createTime ASC limit 5
+    </select>
+
 
 
 </mapper>

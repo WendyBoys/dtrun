@@ -3,7 +3,7 @@ package com.xuan.dtrun.entity;
 public class ServerparametersEntity {
 
      private Integer id;
-     private String date;
+     private String createTime;
      private String cpu;
      private String runningmemory;
      private String diskusagepercentage;
@@ -14,7 +14,7 @@ public class ServerparametersEntity {
 
      public ServerparametersEntity(Integer id, String date, String cpu, String runningmemory, String diskusagepercentage, Integer uid) {
           this.id = id;
-          this.date = date;
+          this.createTime = date;
           this.cpu = cpu;
           this.runningmemory = runningmemory;
           this.diskusagepercentage = diskusagepercentage;
@@ -29,12 +29,12 @@ public class ServerparametersEntity {
           this.id = id;
      }
 
-     public String getDate() {
-          return date;
+     public String getCreateTime() {
+          return createTime;
      }
 
-     public void setDate(String date) {
-          this.date = date;
+     public void setCreateTime(String createTime) {
+          this.createTime = createTime;
      }
 
      public String getCpu() {

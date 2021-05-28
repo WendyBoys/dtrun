@@ -5,125 +5,35 @@ import {NavLink} from "react-router-dom";
 import cookie from "react-cookies";
 import {login} from "../user/service";
 import {notification} from "antd/lib/index";
+import {getMessage} from "../user/service";
 
 
 const contentStyle = {
     height: '510px',
     color: '#fff',
-    width:'100%',
+    width: '100%',
     textAlign: 'center',
     background: '#364d79',
 };
 
 const Dashboard = () => {
 
-    const [data, setData] = useState([
-        {
-            "date": "2018/8/1",
-            "type": "cpu",
-            "value": 46
-        },
-        {
-            "date": "2018/8/1",
-            "type": "运行内存",
-            "value": 22
-        },
-        {
-            "date": "2018/8/1",
-            "type": "磁盘用量",
-            "value": 18
-        },
-        {
-            "date": "2018/8/2",
-            "type": "cpu",
-            "value": 89
-        },
-        {
-            "date": "2018/8/2",
-            "type": "运行内存",
-            "value": 20
-        },
-        {
-            "date": "2018/8/2",
-            "type": "磁盘用量",
-            "value": 25
-        },
-        {
-            "date": "2018/8/3",
-            "type": "cpu",
-            "value": 50
-        },
-        {
-            "date": "2018/8/3",
-            "type": "运行内存",
-            "value": 29
-        },
-        {
-            "date": "2018/8/3",
-            "type": "磁盘用量",
-            "value": 28
-        },
-        {
-            "date": "2018/8/4",
-            "type": "cpu",
-            "value": 6
-        },
-        {
-            "date": "2018/8/4",
-            "type": "运行内存",
-            "value": 45
-        },
-        {
-            "date": "2018/8/4",
-            "type": "磁盘用量",
-            "value": 42
-        },
-        {
-            "date": "2018/8/5",
-            "type": "cpu",
-            "value": 64
-        },
-        {
-            "date": "2018/8/5",
-            "type": "运行内存",
-            "value": 82
-        },
-        {
-            "date": "2018/8/5",
-            "type": "磁盘用量",
-            "value": 61
-        },
-        {
-            "date": "2018/8/6",
-            "type": "cpu",
-            "value": 18
-        },
-        {
-            "date": "2018/8/6",
-            "type": "运行内存",
-            "value": 20
-        },
-        {
-            "date": "2018/8/6",
-            "type": "磁盘用量",
-            "value": 27
-        },
-        {
-            "date": "2018/8/7",
-            "type": "cpu",
-            "value": 42
-        },
-        {
-            "date": "2018/8/7",
-            "type": "运行内存",
-            "value": 12
-        },
-        {
-            "date": "2018/8/7",
-            "type": "磁盘用量",
-            "value": 25
-        }
-    ]);
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        fentch();
+    }, []);
+
+    const fentch = () => {
+        getMessage().then((response) => {
+            const result = response.data.message;
+            const data2 = response.data.data;
+            if (result === 'Success') {
+                setData(JSON.parse(data2));
+            }
+        });
+    }
+
 
     const config = {
         data: data,
@@ -217,7 +127,6 @@ const Dashboard = () => {
                 />
             </div>
         </Carousel>
-
 
 
     </div>
