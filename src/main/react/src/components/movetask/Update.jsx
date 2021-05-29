@@ -1,9 +1,10 @@
-import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
+import {Button, Checkbox, DatePicker, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
 import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
-import {createMoveTask, getMoveTaskById, updateMoveTask} from './service';
+import {getMoveTaskById, updateMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
 import {getContactLists} from "../pushconfig/service";
+import moment from "moment";
 
 const {Step} = Steps;
 const {Option} = Select;
@@ -29,6 +30,7 @@ const Update = (props) => {
     const [contactList, setContactList] = useState([]);
     const [showAddBucket, setShowAddBucket] = useState(false);
     const [newBucketName, setNewBucketName] = useState([]);
+    const [time, setTime] = useState("2021-05-29 17:51:00");
 
     const [form] = Form.useForm();
     useEffect(() => {
@@ -64,6 +66,8 @@ const Update = (props) => {
                 form.setFieldsValue({taskName: data.taskName})
                 setContactChecked(taskJson.contactChecked !== 'false')
                 form.setFieldsValue({email: taskJson.contact})
+                setTime(taskJson.time)
+                console.log(time)
                 srcChange(parseInt(taskJson.srcId), false);
                 desChange(parseInt(taskJson.desId), false)
             } else {
@@ -189,6 +193,10 @@ const Update = (props) => {
         });
     }
 
+    function disabledDate(current) {
+        return current && current < moment().endOf('day');
+    }
+
     const quit = () => {
         props.history.goBack();
 
@@ -211,6 +219,9 @@ const Update = (props) => {
     const onContactChange = values => {
         setData({...data, 'contact': values})
     };
+    const onTimeChange = value => {
+        setData({...data, 'time': value?.format('yyyy-MM-DD HH:mm:ss')})
+    };
 
     const OnFinish = values => {
         const body = {...data, 'option': values}
@@ -226,6 +237,7 @@ const Update = (props) => {
             taskName: body.option.taskName,
             sendMail: contactChecked,
             contact: body.contact,
+            time: body.time
         })
             .then((response) => {
                 const result = response.data.message;
@@ -477,6 +489,20 @@ const Update = (props) => {
                     </Select>
                 </Form.Item>
                 }
+
+
+                <Form.Item
+                    tooltip="可以指定开始启动的时间"
+                    name="time"
+                    label="定时执行"
+                >
+                    <DatePicker
+                        defaultValue={moment(time)}
+                        format="YYYY-MM-DD HH:mm:ss"
+                        showTime
+                        onChange={onTimeChange}
+                    />
+                </Form.Item>
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>

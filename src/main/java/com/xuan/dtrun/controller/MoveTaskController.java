@@ -38,6 +38,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -109,6 +111,7 @@ public class MoveTaskController {
                 String fileNameStart = jsonObject.getString("fileNameStart");
                 String fileNameEnd = jsonObject.getString("fileNameEnd");
                 String taskName = jsonObject.getString("taskName");
+                String time = jsonObject.getString("time");
                 String moveTaskName = moveTaskService.getMoveTaskName(taskName);
                 if (moveTaskName == null) {
                     String sendMail = jsonObject.getString("sendMail");
@@ -122,6 +125,7 @@ public class MoveTaskController {
                     json.put("desBucket", desBucket);
                     json.put("allMove", allMove);
                     json.put("sendMail", sendMail);
+                    json.put("time", time);
                     if ("true".equals(sendMail)) {
                         contact = jsonObject.getString("contact");
                         json.put("contact", contact);
@@ -154,7 +158,8 @@ public class MoveTaskController {
             String desBucket = jsonObject.getString("desBucket");
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
-            String moveTaskName = moveTaskService.getMoveTaskName2(taskName,id);
+            String time = jsonObject.getString("time");
+            String moveTaskName = moveTaskService.getMoveTaskName2(taskName, id);
             if (moveTaskName == null) {
                 String sendMail = jsonObject.getString("sendMail");
                 String contact;
@@ -167,6 +172,7 @@ public class MoveTaskController {
                 json.put("desBucket", desBucket);
                 json.put("allMove", allMove);
                 json.put("sendMail", sendMail);
+                json.put("time", time);
                 if ("true".equals(sendMail)) {
                     contact = jsonObject.getString("contact");
                     json.put("contact", contact);
@@ -325,18 +331,48 @@ public class MoveTaskController {
             }
             //迁移文件
             String desDtSourceType = desDtSourceEntity.getDtSourceType();
-            if ("oss".equals(desDtSourceType)) {
-                JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
-            } else if ("cos".equals(desDtSourceType)) {
-                JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
-            } else if ("obs".equals(desDtSourceType)) {
-                JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
-                new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+            String time = taskJson.getString("time");
+            if (time != null) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date dateTime = null;
+                try {
+                    dateTime = simpleDateFormat.parse(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Timer timer = new Timer();
+                COSClient finalSrcCosClient = srcCosClient;
+                OSS finalSrcOssClient = srcOssClient;
+                ObsClient finalSrcObsClient = srcObsClient;
+                timer.schedule(new TimerTask() {
+                    public void run() {
+                        if ("oss".equals(desDtSourceType)) {
+                            JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                            new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, finalSrcCosClient, finalSrcOssClient, finalSrcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                        } else if ("cos".equals(desDtSourceType)) {
+                            JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                            new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, finalSrcCosClient, finalSrcOssClient, finalSrcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                        } else if ("obs".equals(desDtSourceType)) {
+                            JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                            new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, finalSrcCosClient, finalSrcOssClient, finalSrcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                        }
+                    }
+                }, dateTime);
+            } else {
+                if ("oss".equals(desDtSourceType)) {
+                    JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                    new Thread(new OssThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                } else if ("cos".equals(desDtSourceType)) {
+                    JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                    new Thread(new CosThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                } else if ("obs".equals(desDtSourceType)) {
+                    JSONObject desEntity = JSON.parseObject(desDtSourceEntity.getDtSourceJson());
+                    new Thread(new ObsThread(id, moveTaskById.getTaskName(), desEntity, fileMessageList, srcDtSourceType, srcBucket, srcCosClient, srcOssClient, srcObsClient, taskJson, moveTaskService, resultService), "movetask" + id).start();
+                }
             }
             return new CommonResult(200, MessageEnum.SUCCESS, DataEnum.RUNSUCCESS);
         } catch (Exception e) {
+            e.printStackTrace();
             long endTime = System.currentTimeMillis();
             String timeConsume = String.valueOf((endTime - startTime) / 1000f);
             moveTaskService.updateStatus(id, "FAIL");

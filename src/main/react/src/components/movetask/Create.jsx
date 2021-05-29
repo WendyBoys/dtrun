@@ -1,5 +1,6 @@
-import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
+import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps, DatePicker} from 'antd';
 import React, {useEffect, useState} from 'react';
+import moment from 'moment';
 import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
 import {getContactLists} from '../pushconfig/service';
 import {createMoveTask} from './service';
@@ -144,8 +145,7 @@ const Create = (props) => {
                     duration: 2,
                 });
                 setDesBucketList(response.data.data)
-            }
-            else {
+            } else {
                 notification['error']({
                     message: '通知',
                     description:
@@ -155,6 +155,23 @@ const Create = (props) => {
             }
         });
     }
+
+    function range(start, end) {
+        const result = [];
+        for (let i = start; i < end; i++) {
+            result.push(i);
+        }
+        return result;
+    }
+
+    function disabledDate(current) {
+        return current && current < moment().endOf('day');
+    }
+
+    const onTimeChange = value => {
+        setData({...data, 'time': value?.format('yyyy-MM-DD HH:mm:ss')})
+    };
+
 
     const quit = () => {
         props.history.goBack();
@@ -193,6 +210,7 @@ const Create = (props) => {
             taskName: body.option.taskName,
             sendMail: contactChecked,
             contact: body.contact,
+            time: body.time
         })
             .then((response) => {
                 const result = response.data.message;
@@ -204,15 +222,14 @@ const Create = (props) => {
                         duration: 2,
                     });
                     props.history.push('/movetask/show');
-                } else if(result === 'CreateRepeat'){
+                } else if (result === 'CreateRepeat') {
                     notification['error']({
                         message: '通知',
                         description:
                             '请不要重复使用迁移任务名称',
                         duration: 2,
                     });
-                }
-                else {
+                } else {
                     notification['error']({
                         message: '通知',
                         description:
@@ -310,7 +327,7 @@ const Create = (props) => {
                     <Button htmlType="button" style={{margin: '0 10px 0 25%'}} onClick={() => quit()}>
                         取消
                     </Button>
-                    <Button type="primary" htmlType="submit" >
+                    <Button type="primary" htmlType="submit">
                         下一步
                     </Button>
                 </Form.Item>
@@ -397,10 +414,10 @@ const Create = (props) => {
 
 
                 <Form.Item>
-                    <Button type="primary" htmlType="button" style={{margin: '0 10px 0 25%'}}  onClick={prev}>
+                    <Button type="primary" htmlType="button" style={{margin: '0 10px 0 25%'}} onClick={prev}>
                         上一步
                     </Button>
-                    <Button type="primary" htmlType="submit" >
+                    <Button type="primary" htmlType="submit">
                         下一步
                     </Button>
                 </Form.Item>
@@ -444,6 +461,20 @@ const Create = (props) => {
                     </Select>
                 </Form.Item>
                 }
+
+
+                <Form.Item
+                    tooltip="可以指定开始启动的时间"
+                    name="time"
+                    label="定时执行"
+                >
+                    <DatePicker
+                        format="YYYY-MM-DD HH:mm:ss"
+                        showTime
+                        onChange={onTimeChange}
+                    />
+                </Form.Item>
+
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
