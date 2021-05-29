@@ -148,18 +148,29 @@ public class MoveTaskController {
             int id = Integer.parseInt(jsonObject.getString("id"));
             String srcId = jsonObject.getString("srcId");
             String srcBucket = jsonObject.getString("srcBucket");
+            String fileNameStart = jsonObject.getString("fileNameStart");
+            String fileNameEnd = jsonObject.getString("fileNameEnd");
             String desId = jsonObject.getString("desId");
             String desBucket = jsonObject.getString("desBucket");
             String allMove = jsonObject.getString("allMove");
             String taskName = jsonObject.getString("taskName");
             String moveTaskName = moveTaskService.getMoveTaskName2(taskName,id);
             if (moveTaskName == null) {
+                String sendMail = jsonObject.getString("sendMail");
+                String contact;
                 JSONObject json = new JSONObject();
                 json.put("srcId", srcId);
                 json.put("srcBucket", srcBucket);
+                json.put("fileNameStart", fileNameStart);
+                json.put("fileNameEnd", fileNameEnd);
                 json.put("desId", desId);
                 json.put("desBucket", desBucket);
                 json.put("allMove", allMove);
+                json.put("sendMail", sendMail);
+                if ("true".equals(sendMail)) {
+                    contact = jsonObject.getString("contact");
+                    json.put("contact", contact);
+                }
                 String taskJson = json.toJSONString();
                 MoveTaskEntity moveTaskEntity = new MoveTaskEntity(id, taskName, taskJson);
                 moveTaskService.update(moveTaskEntity);

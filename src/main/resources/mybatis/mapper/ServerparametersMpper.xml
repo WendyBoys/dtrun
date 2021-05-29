@@ -9,7 +9,7 @@
     </insert>
 
     <select id="getMessage" resultType="ServerparametersEntity">
-        SELECT * FROM serverparameters WHERE uid = #{id} ORDER BY createTime ASC limit 5
+        SELECT * FROM serverparameters WHERE uid = #{id} ORDER BY createTime ASC limit 7
     </select>
 
 

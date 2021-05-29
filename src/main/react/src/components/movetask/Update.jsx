@@ -1,8 +1,9 @@
 import {Button, Checkbox, Divider, Form, Input, notification, Popover, Select, Spin, Steps} from 'antd';
 import React, {useEffect, useState} from 'react';
 import {createBucket, getAllDtSourceName, getBucketLists} from '../datasource/service';
-import {getMoveTaskById, updateMoveTask} from './service';
+import {createMoveTask, getMoveTaskById, updateMoveTask} from './service';
 import {PlusOutlined} from '@ant-design/icons';
+import {getContactLists} from "../pushconfig/service";
 
 const {Step} = Steps;
 const {Option} = Select;
@@ -21,9 +22,11 @@ const Update = (props) => {
     const [current, setCurrent] = useState(0);
     const [data, setData] = useState({});
     const [checked, setChecked] = useState(true);
+    const [contactChecked, setContactChecked] = useState(false);
     const [dtsList, setDtsList] = useState([]);
     const [srcBucketList, setSrcBucketList] = useState([]);
     const [desBucketList, setDesBucketList] = useState([]);
+    const [contactList, setContactList] = useState([]);
     const [showAddBucket, setShowAddBucket] = useState(false);
     const [newBucketName, setNewBucketName] = useState([]);
 
@@ -54,9 +57,13 @@ const Update = (props) => {
                 form.setFieldsValue({srcBucket: taskJson.srcBucket})
                 form.setFieldsValue({desBucket: taskJson.desBucket})
                 setChecked(taskJson.allMove !== 'false')
+                form.setFieldsValue({fileNameStart: taskJson.fileNameStart})
+                form.setFieldsValue({fileNameEnd: taskJson.fileNameEnd})
                 form.setFieldsValue({srcId: parseInt(taskJson.srcId)})
                 form.setFieldsValue({desId: parseInt(taskJson.desId)})
                 form.setFieldsValue({taskName: data.taskName})
+                setContactChecked(taskJson.contactChecked !== 'false')
+                form.setFieldsValue({email: taskJson.contact})
                 srcChange(parseInt(taskJson.srcId), false);
                 desChange(parseInt(taskJson.desId), false)
             } else {
@@ -77,6 +84,9 @@ const Update = (props) => {
 
     const onChange = () => {
         setChecked(!checked)
+    }
+    const contactChange = () => {
+        setContactChecked(!contactChecked)
     }
 
     const srcChange = (id, flag) => {
@@ -122,6 +132,28 @@ const Update = (props) => {
                     message: '通知',
                     description:
                         '获取Bucket列表失败，请检查数据源配置',
+                    duration: 2,
+                });
+            }
+            setLoading(false)
+        });
+    }
+
+    const onContactFocus = (id) => {
+        setLoading(true)
+        form.setFieldsValue({desBucket: undefined})
+        setDesBucketList([])
+        getContactLists({
+            id: 42
+        }).then((response) => {
+            const result = response.data.message;
+            if (result === 'Success') {
+                setContactList(response.data.data)
+            } else {
+                notification['error']({
+                    message: '通知',
+                    description:
+                        '获取联系人列表失败，请检查网络配置',
                     duration: 2,
                 });
             }
@@ -176,48 +208,58 @@ const Update = (props) => {
         setCurrent(current + 1);
     };
 
+    const onContactChange = values => {
+        setData({...data, 'contact': values})
+    };
+
     const OnFinish = values => {
         const body = {...data, 'option': values}
         updateMoveTask({
             id: props.match.params.id,
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,
+            fileNameStart: body.src.fileNameStart,
+            fileNameEnd: body.src.fileNameEnd,
             desId: body.des.desId,
             desBucket: body.des.desBucket,
             allMove: body.allMove,
             taskName: body.option.taskName,
-        }).then((response) => {
-            const result = response.data.message;
-            if (result === 'Success') {
-                notification['success']({
-                    message: '通知',
-                    description:
-                        '修改迁移任务成功',
-                    duration: 2,
-                });
-                props.history.push('/movetask/show');
-            }else if(result === 'CreateRepeat'){
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '请不要使用重复的迁移任务名称',
-                    duration: 2,
-                });
-            } else {
-                notification['error']({
-                    message: '通知',
-                    description:
-                        '修改迁移任务失败，请检查配置',
-                    duration: 2,
-                });
-            }
-        });
+            sendMail: contactChecked,
+            contact: body.contact,
+        })
+            .then((response) => {
+                const result = response.data.message;
+                if (result === 'Success') {
+                    notification['success']({
+                        message: '通知',
+                        description:
+                            '修改迁移任务成功',
+                        duration: 2,
+                    });
+                    props.history.push('/movetask/show');
+                } else if(result === 'CreateRepeat'){
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '请不要重复使用迁移任务名称',
+                        duration: 2,
+                    });
+                }
+                else {
+                    notification['error']({
+                        message: '通知',
+                        description:
+                            '修改迁移任务失败，请检查配置',
+                        duration: 2,
+                    });
+                }
+            });
     };
 
 
     const steps = [
         {
-            title: '选择起始数据源',
+            title: '选择初始数据源',
             content: (<Form
                 {...layout}
                 name="basic"
@@ -225,7 +267,8 @@ const Update = (props) => {
                 onFinish={srcOnFinish}
             >
                 <Form.Item
-                    label="起始"
+                    tooltip="选择源端数据源"
+                    label="数据源"
                     name="srcId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
@@ -250,6 +293,7 @@ const Update = (props) => {
                     </Select>
                 </Form.Item>
                 <Form.Item
+                    tooltip="选择你所要迁移的Bucket"
                     name="srcBucket"
                     label="Bucket"
                     rules={[{required: true, message: '请选择Bucket'}]}>
@@ -277,12 +321,30 @@ const Update = (props) => {
                     <Checkbox onChange={onChange} checked={checked}></Checkbox>
                 </Form.Item>
 
+                {!checked &&
+                <div>
+                    <Form.Item
+                        label="请输入文件名前缀"
+                        name="fileNameStart"
+                    >
+                        <Input placeholder="请输入文件名前缀"/>
+                    </Form.Item>
+                    <Form.Item
+                        label="请输入文件名后缀"
+                        name="fileNameEnd"
+                    >
+                        <Input placeholder="请输入文件名后缀"/>
+                    </Form.Item>
+                </div>
+                }
+
+
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
-                        下一步
-                    </Button>
-                    <Button htmlType="button" onClick={() => quit()}>
+                    <Button htmlType="button" style={{margin: '0 10px 0 25%'}} onClick={() => quit()}>
                         取消
+                    </Button>
+                    <Button type="primary" htmlType="submit" >
+                        下一步
                     </Button>
                 </Form.Item>
             </Form>),
@@ -296,7 +358,8 @@ const Update = (props) => {
                 onFinish={desOnFinish}
             >
                 <Form.Item
-                    label="目的数据源"
+                    tooltip="选择目的数据源"
+                    label="数据源"
                     name="desId"
                     rules={[{required: true, message: '请选择数据源'}]}
                 >
@@ -321,7 +384,9 @@ const Update = (props) => {
                     </Select>
                 </Form.Item>
 
+
                 <Form.Item
+                    tooltip="选择你所需要迁移到的Bucket"
                     name="desBucket"
                     label="Bucket"
                     rules={[{required: true, message: '请选择Bucket'}]}
@@ -365,11 +430,11 @@ const Update = (props) => {
 
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
-                        下一步
-                    </Button>
-                    <Button type="primary" htmlType="button" onClick={prev}>
+                    <Button type="primary" htmlType="button" style={{margin: '0 10px 0 25%'}}  onClick={prev}>
                         上一步
+                    </Button>
+                    <Button type="primary" htmlType="submit" >
+                        下一步
                     </Button>
                 </Form.Item>
             </Form>),
@@ -382,12 +447,37 @@ const Update = (props) => {
                 onFinish={OnFinish}
             >
                 <Form.Item
-                    label="任务名称"
+                    tooltip="请输入迁移任务名称"
+                    label="迁移任务名称"
                     name="taskName"
-                    rules={[{required: true, message: '请选择Bucket'}]}
+                    rules={[{required: true, message: '请输入迁移任务名称'}]}
                 >
-                    <Input placeholder="请输入任务名称"/>
+                    <Input placeholder="请输入迁移任务名称"/>
                 </Form.Item>
+
+                <Form.Item label="任务完成通知" name="sendMail">
+                    <Checkbox onChange={contactChange} checked={contactChecked}></Checkbox>
+                </Form.Item>
+
+                {contactChecked &&
+                <Form.Item
+                    tooltip="在推送配置中,可创建联系人"
+                    name="email" label="联系人" rules={[{required: true, message: '请选择联系人'}]}>
+                    <Select
+                        placeholder="请选择联系人"
+                        allowClear
+                        onFocus={onContactFocus}
+                        onChange={onContactChange}
+                    >
+                        {
+                            contactList.map((item, index) =>
+                                <Option key={index} value={item.contactEmail}>{item.contactName}</Option>
+                            )
+                        }
+                    </Select>
+                </Form.Item>
+                }
+
                 <Form.Item>
                     <Button type="primary" htmlType="submit" style={{margin: '0 10px 0 25%'}}>
                         确定
