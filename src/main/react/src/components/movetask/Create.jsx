@@ -164,14 +164,6 @@ const Create = (props) => {
         return result;
     }
 
-    function disabledDate(current) {
-        return current && current < moment().endOf('day');
-    }
-
-    const onTimeChange = value => {
-        setData({...data, 'time': value?.format('yyyy-MM-DD HH:mm:ss')})
-    };
-
 
     const quit = () => {
         props.history.goBack();
@@ -196,9 +188,14 @@ const Create = (props) => {
         setData({...data, 'contact': values})
     };
 
+    const onTimeChange = value => {
+        setData({...data, 'time': value?.format('yyyy-MM-DD HH:mm:ss')})
+    };
+
 
     const OnFinish = values => {
         const body = {...data, 'option': values}
+        const [form] = Form.useForm();
         createMoveTask({
             srcId: body.src.srcId,
             srcBucket: body.src.srcBucket,

@@ -67,7 +67,6 @@ const Update = (props) => {
                 setContactChecked(taskJson.contactChecked !== 'false')
                 form.setFieldsValue({email: taskJson.contact})
                 setTime(taskJson.time)
-                console.log(time)
                 srcChange(parseInt(taskJson.srcId), false);
                 desChange(parseInt(taskJson.desId), false)
             } else {
@@ -193,9 +192,6 @@ const Update = (props) => {
         });
     }
 
-    function disabledDate(current) {
-        return current && current < moment().endOf('day');
-    }
 
     const quit = () => {
         props.history.goBack();
@@ -236,8 +232,8 @@ const Update = (props) => {
             allMove: body.allMove,
             taskName: body.option.taskName,
             sendMail: contactChecked,
-            contact: body.contact,
-            time: body.time
+            contact: body.contact!==undefined?body.contact:body.option?.email,
+            time:body.time!==undefined?body.time:time
         })
             .then((response) => {
                 const result = response.data.message;
